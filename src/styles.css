@@ -96,7 +96,11 @@
   .step-progress .dot.on{ background:var(--teal); }
 
   .layout{ display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); gap:28px; align-items:start; }
-  @media (max-width: 880px){ .layout{ grid-template-columns:1fr; } }
+  @media (max-width: 880px){
+    .layout{ grid-template-columns:1fr; }
+    .pattern-panel{ position:static; }
+    .pattern-body{ max-height:none; }
+  }
 
   .rail-col{ display:flex; flex-direction:column; gap:18px; }
 
@@ -340,4 +344,27 @@
 
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; }
+  }
+
+  /* Phones: reclaim the desktop card padding, shrink the header type scale,
+     and let buttons/panels breathe as full-width stacked blocks instead of
+     the desktop's tight inline rows. */
+  @media (max-width:640px){
+    .wrap{ padding:18px 14px 56px; }
+    header.top{ gap:14px; padding-bottom:16px; margin-bottom:18px; }
+    h1{ font-size:1.32rem; }
+    .tagline{ font-size:0.8rem; }
+    .rail-section{ padding:16px; }
+    .pattern-panel-title{ padding:16px 16px 0; font-size:1.05rem; }
+    .pattern-head{ padding:14px 16px 16px; gap:12px; }
+    .pattern-body{ padding:16px; }
+    .actions{ padding:14px 16px; }
+    .actions .btn{ flex:1 1 140px; justify-content:center; }
+  }
+
+  /* Bump the smaller per-piece color swatches up toward a comfortable tap
+     target on touch-width screens — the full-size .swatch is close enough
+     to 44px already, but .swatches-sm at 26px is too cramped to tap reliably. */
+  @media (max-width:480px){
+    .swatches-sm .swatch{ width:32px; height:32px; }
   }
