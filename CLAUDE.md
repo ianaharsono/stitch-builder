@@ -17,6 +17,15 @@ Publishing requires the `Artifact` tool. If it's not available in the current se
 
 **Keep the live artifact in sync with the local file.** Publish after every meaningful edit rather than batching several sessions' worth of local changes unpublished. If a publish is ever refused as stale/unmerged, that means the live version is behind local — read what the tool hands back, merge if it names content to preserve, then republish the current local file.
 
+## GitHub repo and Pages (a second, separate deployment target)
+
+- Repo: `https://github.com/ianaharsono/stitch-builder` (public). `gh` CLI is installed and authenticated as `ianaharsono` on this machine.
+- Live GitHub Pages URL: `https://ianaharsono.github.io/stitch-builder/` — this serves a static `index.html` at the repo root that does a meta-refresh redirect to `builder_final.html`, since Pages requires `index.html` at the root and `builder_final.html` stays the actual generated filename.
+- **This does not auto-sync with the Claude Artifact URL above.** They're independent publish targets — updating one does not update the other. Publish to both if the user wants both current.
+- Update flow: after `python3 build.py` regenerates `builder_final.html`, stage it (`git add builder_final.html src/`, plus `index.html` only if it changed), commit, and `git push` to `main`. Pages rebuilds automatically within a minute or two — no separate deploy command.
+- Tracked in git: `CLAUDE.md`, `build.py`, `builder_final.html`, `index.html`, `src/`, `images/`. `.DS_Store` is gitignored. `color_tool.html` and `color-preview-prototype.html` are intentionally untracked scratch/prototype files — leave them out of commits unless the user says otherwise.
+- If `git push` over HTTPS fails with `RPC failed; HTTP 400` / "unexpected disconnect while reading sideband packet", that's a one-off transport issue, not something to fix by editing git config — retry with per-invocation flags instead: `git -c http.postBuffer=524288000 -c http.version=HTTP/1.1 push`.
+
 ## Project structure — `builder_final.html` is a generated file
 
 **Edit under `src/`, never edit `builder_final.html` directly.** It's the build output; hand-edits to it are lost the next time `build.py` runs and will silently diverge from `src/` until then.
