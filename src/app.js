@@ -143,7 +143,7 @@ const BODIES = [
 const COLORS = [
   {name:'Natural White', hex:'#F9F4F3', gain:0.6},
   {name:'Milk White', hex:'#EDE5DB', gain:0.6},
-  {name:'Beige', hex:'#D6C3A0'},
+  {name:'Beige', hex:'#D0B79F', gain:0.90},
   {name:'Khaki', hex:'#DC9D62', gain:0.95},
   {name:'Brown', hex:'#9B4C22', gain:1.45},
   {name:'Coffee', hex:'#3E201E', gain:1.05},
@@ -383,8 +383,8 @@ const EAR_STYLES = [
   },
   {
     id:'pointy',
-    name:'Pointy ears',
-    subtitle:'Small pointed paired ears, single color',
+    name:'Triangular ears',
+    subtitle:'Small paired triangular ears, single color',
     photo:'data:image/webp;base64,{{PHOTO_EAR_STYLES_pointy}}',
     cutout:true,
     makeCount:2,
@@ -418,6 +418,30 @@ const EAR_STYLES = [
         ['4','8 sc','8'],
       ]},
       {type:'note', text:'Invisible fasten off, leaving a long tail. Use the yarn tail to sew the ears on either side of the head, spanning rounds 2 to 4.'},
+    ],
+  },
+  {
+    id:'long',
+    name:'Leafy ears',
+    subtitle:'Small paired leafy ears, single color',
+    photo:'data:image/webp;base64,{{PHOTO_EAR_STYLES_long}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for the ears', materialsLabel:'the ears', defaultColorIdx:0},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 4 sc in a magic loop','4'],
+        ['2','4 inc','8'],
+        ['3','8 sc','8'],
+        ['4','[sc, inc] x 4','12'],
+        ['5','12 sc','12'],
+        ['6','[sc, dec] x 4','8'],
+        ['7','8 sc','8'],
+        ['8','4 dec','4'],
+      ]},
+      {type:'note', text:'Fasten off leaving a long tail. Use the yarn tail to sew the ears to the body spanning rounds 2 and 3, centered above each eye.'},
     ],
   },
 ];
@@ -713,34 +737,33 @@ function clearTintTarget(imgEl){
   tintTargets.delete(imgEl);
 }
 
-// Beige is sampled from the reference photos' own natural yarn color, so
-// tinting toward it would just run the overlay math against itself and come
-// out oversaturated — skip tinting entirely for a part resolved to it.
+// Beige (the reference photos' own natural yarn color) is also the app's one
+// fixed swatch for normalizing style-picker thumbnails — see NATIVE_COLOR_HEX
+// below — so every piece is tinted toward its selected color, Beige included,
+// keeping every preview (thumbnail, enlarged preview, pattern-head photo)
+// visually consistent rather than falling back to each photo's own raw tone.
 const NATIVE_COLOR_NAME = 'Beige';
+const NATIVE_COLOR_HEX = COLORS.find(c=>c.name===NATIVE_COLOR_NAME).hex;
 
 // Decides what to hand setTintedPhoto for a piece: one hex for a single-color
-// piece, a [top, bottom] pair for a waist-split two-tone piece (an entry is
-// null where that region is already its native color), or null when nothing
-// needs tinting at all (single native color, or no supported strategy).
+// piece, a [top, bottom] pair for a waist-split two-tone piece, or null when
+// no supported strategy applies.
 function resolveTintColors(piece, colorStore){
   if(piece.colorParts.length === 1){
-    const c = COLORS[colorIdxFromStore(colorStore, piece.colorParts[0])];
-    return c.name === NATIVE_COLOR_NAME ? null : c.hex;
+    return COLORS[colorIdxFromStore(colorStore, piece.colorParts[0])].hex;
   }
   if(piece.colorParts.length === 2 && piece.tintSplit === 'waist'){
     const [c0, c1] = piece.colorParts.map(part => COLORS[colorIdxFromStore(colorStore, part)]);
-    if(c0.name === NATIVE_COLOR_NAME && c1.name === NATIVE_COLOR_NAME) return null;
-    return [c0.name === NATIVE_COLOR_NAME ? null : c0.hex, c1.name === NATIVE_COLOR_NAME ? null : c1.hex];
+    return [c0.hex, c1.hex];
   }
   return null;
 }
 function resolveTintColorsFromResolved(piece, colors){
   if(piece.colorParts.length === 1){
-    return colors[0].name === NATIVE_COLOR_NAME ? null : colors[0].hex;
+    return colors[0].hex;
   }
   if(piece.colorParts.length === 2 && piece.tintSplit === 'waist'){
-    if(colors[0].name === NATIVE_COLOR_NAME && colors[1].name === NATIVE_COLOR_NAME) return null;
-    return [colors[0].name === NATIVE_COLOR_NAME ? null : colors[0].hex, colors[1].name === NATIVE_COLOR_NAME ? null : colors[1].hex];
+    return [colors[0].hex, colors[1].hex];
   }
   return null;
 }
@@ -757,7 +780,7 @@ function renderShapes(){
       <div class="sname">${b.name}</div>
       <div class="ssub">${b.subtitle}</div>
     `;
-    card.querySelector('img').src = b.photo;
+    setTintedPhoto(card.querySelector('img'), b.photo, NATIVE_COLOR_HEX);
     card.addEventListener('click', ()=>{
       state.bodyId = b.id;
       ensureBodyDefaults(b);
@@ -957,7 +980,7 @@ function renderAddonsGrid(body){
             <div class="check">✓</div>
             <div class="sname">${s.name}</div>
           `;
-          if(s.photo) card.querySelector('img').src = s.photo;
+          if(s.photo) setTintedPhoto(card.querySelector('img'), s.photo, NATIVE_COLOR_HEX);
           card.addEventListener('click', (e)=>{
             e.stopPropagation();
             addonState.styleId = s.id;
