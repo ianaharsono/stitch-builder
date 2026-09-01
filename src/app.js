@@ -1184,7 +1184,11 @@ function renderAddonsGrid(body){
 }
 
 function buildPatternTitle(body){
-  return body.name;
+  return state.patternTitle.trim() || body.name;
+}
+
+function slugify(text){
+  return text.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'pattern';
 }
 
 function buildPatternText(body){
@@ -1431,7 +1435,7 @@ function render(){
     try{
       const downloads = await claude.use('downloads');
       if(!downloads){ showToast('Downloads unavailable here — use Copy pattern instead'); return; }
-      await downloads.save({ filename:`custom-${body.id}-amigurumi.txt`, data: txt });
+      await downloads.save({ filename:`${slugify(buildPatternTitle(body))}-amigurumi.txt`, data: txt });
       showToast('Saved');
     }catch(e){
       if(e && e.code === 'declined'){ /* viewer said no, stay quiet */ }
