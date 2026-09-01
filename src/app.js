@@ -138,6 +138,47 @@ const BODIES = [
       {type:'note', text:'Fasten off, leaving a forearm\'s length yarn tail. Thread a needle with the tail; then use it to pull the yarn tail through the front loops of each stitch. Pull tight to close the remaining gap. Hide the tail in the body.'},
     ],
   },
+  {
+    id:'horse',
+    name:'Horse body',
+    subtitle:'Curved head-and-neck silhouette — horse-style',
+    photo:'data:image/webp;base64,{{PHOTO_BODIES_horse}}',
+    cutout:true,
+    colorParts:[
+      {key:'main', label:'Yarn color for the body', materialsLabel:'the head & body', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','start 6 sc in a magic loop','6'],
+        ['2','6 inc','12'],
+        ['3','[sc, inc] x 6','18'],
+        ['4','inc, 6 sc, 4 inc, 6 sc, inc','24'],
+        ['5','8 sc, 8 inc, 8 sc','32'],
+        ['6','14 sc, 4 inc, 14 sc','36'],
+        ['7–8','36 sc','36'],
+      ]},
+      {type:'note', text:'Your piece might start curling — that\'s totally normal. For a neater final look, push the middle of your piece until it curves the other way. This makes the "right side" face out. Then keep crocheting to the left. If you\'re a lefty, keep crocheting to the right.'},
+      {type:'rounds', part:0, rows:[
+        ['9','6 sc, [2 sc, dec] x 6, 6 sc','30'],
+        ['10','6 sc, [sc, dec] x 6, 6 sc','24'],
+        ['11','6 sc, 6 dec, 6 sc','18'],
+        ['12','[2 sc, inc] x 6','24'],
+        ['13','[3 sc, inc] x 6','30'],
+        ['14','[4 sc, inc] x 6','36'],
+      ]},
+      {type:'note', text:'The side that sticks out more from the body is the front of the body. Attach the eyes on the front of the head between rounds 5 and 6, with a 14-stitch space between them. If this amigurumi is for a baby or pet, embroider the eyes instead. Stuff the head.'},
+      {type:'rounds', part:0, rows:[
+        ['15','[7 sc, dec] x 4','32'],
+        ['16','[2 sc, dec] x 8','24'],
+        ['17','[sc, dec] x 8','16'],
+      ]},
+      {type:'note', text:'Stuff the rest of the body. Save a small amount of stuffing for the mane and tail.'},
+      {type:'rounds', part:0, rows:[
+        ['18','8 dec','8'],
+      ]},
+      {type:'note', text:'Fasten off, leaving a forearm\'s length yarn tail. Thread a needle with the tail; then use it to pull the yarn tail through the front loops of each stitch. Pull tight to close the remaining gap. Hide the tail in the body.'},
+    ],
+  },
 ];
 
 const COLORS = [
@@ -383,7 +424,7 @@ const EAR_STYLES = [
   },
   {
     id:'pointy',
-    name:'Triangular ears',
+    name:'Cat ears',
     subtitle:'Small paired triangular ears, single color',
     photo:'data:image/webp;base64,{{PHOTO_EAR_STYLES_pointy}}',
     cutout:true,
@@ -422,7 +463,7 @@ const EAR_STYLES = [
   },
   {
     id:'long',
-    name:'Leafy ears',
+    name:'Rabbit ears',
     subtitle:'Small paired leafy ears, single color',
     photo:'data:image/webp;base64,{{PHOTO_EAR_STYLES_long}}',
     cutout:true,
@@ -449,7 +490,7 @@ const EAR_STYLES = [
 const TAIL_STYLES = [
   {
     id:'long',
-    name:'Long tail',
+    name:'Cat tail',
     subtitle:'Long tail, single color',
     photo:'data:image/webp;base64,{{PHOTO_TAIL_STYLES_long}}',
     cutout:true,
@@ -800,6 +841,28 @@ function checkColorFor(hex){
   return brightness < 140 ? '#fff' : '#2B2130';
 }
 
+// Swatches this close to the panel's own paper-white background (e.g. Natural
+// White, Milk White) nearly vanish against it, since their only edge is the
+// thin var(--line) outline. Reuses the same perceived-brightness formula as
+// checkColorFor, just against the opposite end of the range.
+function isLowContrastSwatch(hex){
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const brightness = (r*299 + g*587 + b*114) / 1000;
+  return brightness > 220;
+}
+
+// Same near-white problem as isLowContrastSwatch, but for a tinted reference
+// photo sitting on var(--locked-wash): a cutout piece tinted Natural White or
+// Milk White blends into that backdrop with nothing to mark its edge. Takes
+// whatever resolveTintColors/resolveTintColorsFromResolved returned — a
+// single hex, a [top, bottom] pair (either half possibly null for a
+// native-color region), or null for an untinted native-color photo.
+function isLowContrastTint(hexOrPair){
+  if(!hexOrPair) return false;
+  const hexes = Array.isArray(hexOrPair) ? hexOrPair : [hexOrPair];
+  return hexes.some(h => h && isLowContrastSwatch(h));
+}
+
 function buildSwatchRow(container, currentIdx, onSelect){
   container.innerHTML='';
   COLORS.forEach((c,i)=>{
@@ -929,6 +992,7 @@ function renderAddonsGrid(body){
       const thumbTint = resolveTintColors(activeStyle, ensureStyleDefaults(body, activeStyle, addonState));
       if(thumbTint) setTintedPhoto(thumbImg, activeStyle.photo, thumbTint);
       else thumbImg.src = activeStyle.photo;
+      thumbImg.classList.toggle('low-contrast-photo', isLowContrastTint(thumbTint));
       panelSide = panel.querySelector('.addon-panel-side');
       wrap.appendChild(panel);
     } else if(isMulti && addonState.on){
@@ -1008,6 +1072,7 @@ function renderAddonsGrid(body){
         const previewTint = resolveTintColors(style, store);
         if(previewTint) setTintedPhoto(previewImg, style.photo, previewTint);
         else { clearTintTarget(previewImg); previewImg.src = style.photo; }
+        previewImg.classList.toggle('low-contrast-photo', isLowContrastTint(previewTint));
 
         const picker = colorSection.querySelector('.color-picker-inline');
         style.colorParts.forEach(part=>{
@@ -1144,6 +1209,7 @@ function render(){
     const previewTint = resolveTintColors(body, bodyStore);
     if(previewTint) setTintedPhoto(previewImg, body.photo, previewTint);
     else { clearTintTarget(previewImg); previewImg.src = body.photo; }
+    previewImg.classList.toggle('low-contrast-photo', isLowContrastTint(previewTint));
 
     let pickerHtml = '';
     body.colorParts.forEach((part,pi)=>{
@@ -1224,6 +1290,7 @@ function render(){
     clearTintTarget(photo);
     photo.src = body.photo;
   }
+  photo.classList.toggle('low-contrast-photo', isLowContrastTint(bodyTint));
   const photoAddons = activeAddons.filter(a=>a.style.photo);
   addonPhotos.innerHTML = photoAddons
     .map(a=>`<div class="addon-photo-item"><img class="pattern-photo${a.style.cutout ? ' is-cutout' : ''}" alt="${a.style.name} reference photo"><div class="pattern-photo-label">${a.style.name}</div></div>`)
@@ -1234,6 +1301,7 @@ function render(){
     const addonTint = resolveTintColorsFromResolved(a.style, a.colors);
     if(addonTint) setTintedPhoto(imgEl, a.style.photo, addonTint);
     else imgEl.src = a.style.photo;
+    imgEl.classList.toggle('low-contrast-photo', isLowContrastTint(addonTint));
   });
   const allColors = [bodyColors, ...activeAddons.map(a=>a.colors)].flat();
   const seenHex = new Set();
