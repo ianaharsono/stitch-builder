@@ -337,6 +337,32 @@ const WING_STYLES = [
       {type:'note', text:'Fasten off, leaving a long tail. Use the yarn tail to sew each wing to the body spanning rounds 9 and 11, seven stitches away from each eye.'},
     ],
   },
+  {
+    id:'fanned',
+    name:'Fanned wings',
+    subtitle:'Folded wing with four fanned feather strands, single color',
+    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_fanned}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for wings', materialsLabel:'the wings', defaultColorIdx:4},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','6 inc','12'],
+        ['3','[sc, inc] x 6','18'],
+      ]},
+      {type:'note', text:'Step 1. Fold the wing in half and insert the hook into the first two stitches across from each other. Sc.'},
+      {type:'note', text:'Step 2. Sc through the next four pairs of stitches.'},
+      {type:'note', text:'Tip: when crocheting into a chain, remember to crochet only into the back loops.'},
+      {type:'note', text:'Step 3. Ch 4. Sl st into the second ch from the hook, 2 sc. Sl st into the next pair of stitches on the wing.'},
+      {type:'note', text:'Step 4. Ch 5. Sl st into the second ch from the hook, 3 sc. Sl st into the next pair of stitches on the wing.'},
+      {type:'note', text:'Step 5. Ch 6. Sl st into the second ch from the hook, 4 sc. Sl st into the next pair of stitches on the wing.'},
+      {type:'note', text:'Step 6. Repeat step 5.'},
+      {type:'note', text:'Fasten off, leaving an arm\'s length yarn tail. Thread a needle with the tail, then use it to sew the wing three stitches away from an eye, at an angle, with the flat edge facing upwards, spanning rounds 10 to 13. The long feathers should be pointing towards the back of the body unsewn. Hide the tail in the body. Repeat for the other wing.'},
+    ],
+  },
 ];
 
 const BEAK_STYLES = [
