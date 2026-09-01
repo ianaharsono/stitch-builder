@@ -90,7 +90,6 @@
     font-family:'Fraunces', Georgia, serif; font-weight:600; font-optical-sizing:auto;
     font-size:1.6rem; margin:0; letter-spacing:-0.01em; text-wrap:balance;
   }
-  .tagline{ color:var(--ink-soft); font-size:0.85rem; margin-top:2px; }
   .step-progress{ display:flex; gap:8px; align-items:center; font-size:0.78rem; color:var(--ink-soft); font-weight:700; }
   .step-progress .dot{ width:7px; height:7px; border-radius:50%; background:var(--line); transition:background .2s; }
   .step-progress .dot.on{ background:var(--teal); }
@@ -117,7 +116,6 @@
     color:var(--hot-pink-ink); background:var(--hot-pink-wash); padding:2px 7px; border-radius:99px;
   }
   .rail-title{ font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem; }
-  .rail-sub{ color:var(--ink-soft); font-size:0.82rem; margin:2px 0 14px; }
 
   .shape-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(108px,1fr)); gap:10px; }
   @media (max-width:520px){ .shape-grid{ grid-template-columns:repeat(auto-fill, minmax(92px,1fr)); } }
@@ -237,15 +235,6 @@
   }
   .addon-color .cp-label{ font-size:0.72rem; opacity:0.85; margin-bottom:6px; }
   .addon-color .cp-group{ margin-top:10px; }
-
-  .ghost-card{
-    border:2px dashed var(--line); border-radius:12px; padding:12px; display:flex; align-items:center; gap:10px;
-    color:var(--ink-soft); font-size:0.8rem; margin-top:10px;
-  }
-  .ghost-card .plus{
-    width:30px; height:30px; border-radius:50%; border:2px dashed var(--line); display:grid; place-items:center;
-    flex-shrink:0; font-size:15px;
-  }
 
   /* Body color section — once a shape is picked, an enlarged live preview
      sits next to its swatches, so a color click shows up right there
@@ -368,7 +357,6 @@
     .wrap{ padding:18px 14px 56px; }
     header.top{ gap:14px; padding-bottom:16px; margin-bottom:18px; }
     h1{ font-size:1.32rem; }
-    .tagline{ font-size:0.8rem; }
     .rail-section{ padding:16px; }
     .pattern-panel-title{ padding:16px 16px 0; font-size:1.05rem; }
     .pattern-head{ padding:14px 16px 16px; gap:12px; }
