@@ -1335,7 +1335,7 @@ function render(){
   if(!body){
     photo.hidden = true; placeholder.style.display='grid'; photoLabel.textContent = ''; addonPhotos.innerHTML = '';
     meta.innerHTML = '';
-    patternBody.innerHTML = '<div class="empty-state">Your assembled pattern will build itself here as you make choices on the left — same idea as the Wooble instruction cards, just generated instead of pre-printed.</div>';
+    patternBody.innerHTML = '<div class="empty-state">Your assembled pattern will build itself here as you make choices on the left.</div>';
     copyBtn.disabled = true; downloadBtn.disabled = true;
     return;
   }
