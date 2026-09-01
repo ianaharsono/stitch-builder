@@ -2,7 +2,7 @@ const BODIES = [
   {
     id:'chick',
     name:'Round body',
-    subtitle:'A simple round ball — chick-style',
+    subtitle:'Perfect for circular or baby animals.',
     photo:'data:image/webp;base64,{{PHOTO_BODIES_chick}}',
     cutout:true,
     colorParts:[
@@ -31,7 +31,7 @@ const BODIES = [
   {
     id:'penguin',
     name:'Egg body',
-    subtitle:'Classic tapered egg — penguin-style',
+    subtitle:'The most common base for many, like bunnies, chicks, penguins, and even lions.',
     photo:'data:image/webp;base64,{{PHOTO_BODIES_penguin}}',
     cutout:true,
     colorParts:[
@@ -61,7 +61,7 @@ const BODIES = [
   {
     id:'peanut',
     name:'Peanut body',
-    subtitle:'Waisted double-lump, two-tone — peanut-style',
+    subtitle:'Used for some humanoid characters, Sanrio, and Stitch',
     photo:'data:image/webp;base64,{{PHOTO_BODIES_peanut}}',
     cutout:true,
     tintSplit:'waist',
@@ -100,7 +100,7 @@ const BODIES = [
   {
     id:'pebble',
     name:'Pebble body',
-    subtitle:'Rounded, flattened oval — pebble-style',
+    subtitle:'Perfect for animals that run on four limbs, such as hamsters',
     photo:'data:image/webp;base64,{{PHOTO_BODIES_pebble}}',
     cutout:true,
     colorParts:[
@@ -113,9 +113,6 @@ const BODIES = [
         ['3','[sc, inc] x 6','18'],
         ['4','[2 sc, inc] x 2, 2 sc, inc, 2 sc, inc, [2 sc, inc] x 2','24'],
         ['5','24 sc','24'],
-      ]},
-      {type:'note', text:'Your piece might start curling — that\'s totally normal. For a neater final look, push the middle of your piece until it curves the other way. This makes the "right side" face out. Then keep crocheting to the left. If you\'re a lefty, keep crocheting to the right.'},
-      {type:'rounds', part:0, rows:[
         ['6','24 sc','24'],
         ['7','5 sc, [2 sc, inc] x 4, 7 sc','28'],
         ['8–9','28 sc','28'],
@@ -141,7 +138,7 @@ const BODIES = [
   {
     id:'horse',
     name:'Horse body',
-    subtitle:'Curved head-and-neck silhouette — horse-style',
+    subtitle:'Base for horses and dinos',
     photo:'data:image/webp;base64,{{PHOTO_BODIES_horse}}',
     cutout:true,
     colorParts:[
@@ -156,9 +153,6 @@ const BODIES = [
         ['5','8 sc, 8 inc, 8 sc','32'],
         ['6','14 sc, 4 inc, 14 sc','36'],
         ['7–8','36 sc','36'],
-      ]},
-      {type:'note', text:'Your piece might start curling — that\'s totally normal. For a neater final look, push the middle of your piece until it curves the other way. This makes the "right side" face out. Then keep crocheting to the left. If you\'re a lefty, keep crocheting to the right.'},
-      {type:'rounds', part:0, rows:[
         ['9','6 sc, [2 sc, dec] x 6, 6 sc','30'],
         ['10','6 sc, [sc, dec] x 6, 6 sc','24'],
         ['11','6 sc, 6 dec, 6 sc','18'],
@@ -177,6 +171,84 @@ const BODIES = [
         ['18','8 dec','8'],
       ]},
       {type:'note', text:'Fasten off, leaving a forearm\'s length yarn tail. Thread a needle with the tail; then use it to pull the yarn tail through the front loops of each stitch. Pull tight to close the remaining gap. Hide the tail in the body.'},
+    ],
+  },
+  {
+    id:'dome',
+    name:'Dome body',
+    subtitle:'Perfect for animals with a shell or rounded back, like roaches, ladybugs, and turtles',
+    photo:'data:image/webp;base64,{{PHOTO_BODIES_dome}}',
+    cutout:true,
+    tintSplit:'waist',
+    // The dome's color-change round reads as a curve, not a flat line, because
+    // the reference photo is shot looking down at a rounded shape: the round
+    // sits higher at the silhouette's left/right edges and dips lower across
+    // the front-center, where more of the curved surface is visible. Tuned by
+    // eye against the actual photo in curve-preview-prototype.html.
+    tintCurve:{edgePct:0.71, centerPct:0.83, featherPct:0.01},
+    colorParts:[
+      {key:'main', label:'Yarn color for the top (rounds 1–9)', materialsLabel:'the top (rounds 1–9)', defaultColorIdx:5},
+      {key:'accent', label:'Yarn color for the base (rounds 10–14)', materialsLabel:'the base (rounds 10–14)', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','6 inc','12'],
+        ['3','[sc, inc] x 6','18'],
+        ['4','[6 sc, 3 inc] x 2','24'],
+        ['5','[5 sc, (2 sc, inc) x 2, sc] x 2','28'],
+        ['6–9','28 sc','28'],
+      ]},
+      {type:'note', text:'You\'re changing colors in the next round. Remember to switch colors in the last step of the stitch before the color change.', whenColorsDiffer:true},
+      {type:'rounds', part:1, rows:[
+        ['10','__COLOR_SWITCH__ 28 sc. Cut the __COLOR0__ yarn.','28','28 sc.'],
+        ['11','[5 sc, (2 sc, dec) x 2, sc] x 2','24'],
+        ['12','[6 sc, 3 dec] x 2','18'],
+      ]},
+      {type:'note', text:'Stuff the piece, shaping it a little bit flat on the bottom. Save a small amount of stuffing for the head.'},
+      {type:'rounds', part:1, rows:[
+        ['13','[sc, dec] x 6','12'],
+        ['14','[sc, dec] x 4','8'],
+      ]},
+      {type:'note', text:'Fasten off leaving a long tail. Thread a needle with the tail; then use it to pull the yarn tail through the front loops of each stitch. Pull tight to close the remaining gap. Hide the yarn tail in the body.'},
+    ],
+  },
+  {
+    id:'snowman',
+    name:'Snowman body',
+    subtitle:'A rounded head stacked on a rounded body, with a gentle waist between them.',
+    photo:'data:image/webp;base64,{{PHOTO_BODIES_snowman}}',
+    cutout:true,
+    colorParts:[
+      {key:'main', label:'Yarn color for the body', materialsLabel:'the head & body', defaultColorIdx:0},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','start 6 sc in a magic loop','6'],
+        ['2','6 inc','12'],
+        ['3','[sc, inc] x 6','18'],
+        ['4','[2 sc, inc] x 6','24'],
+        ['5','6 sc, 8 inc, 10 sc','32'],
+        ['6','[7 sc, inc] x 4','36'],
+        ['7–8','36 sc','36'],
+        ['9','6 sc, [2 sc, dec] x 6, 6 sc','30'],
+        ['10','6 sc, [sc, dec] x 6, 6 sc','24'],
+        ['11','6 sc, 6 dec, 6 sc','18'],
+        ['12','[sc, inc] x 9','27'],
+        ['13','6 sc, [2 sc, inc] x 5, 6 sc','32'],
+        ['14','32 sc','32'],
+        ['15','[2 sc, dec] x 8','24'],
+      ]},
+      {type:'note', text:'The side that is protruding is the front of the body. Attach the eyes between rounds 6 and 7 with an 8-stitch space between them. If this amigurumi is for a baby or pet, embroider the eyes instead.'},
+      {type:'rounds', part:0, rows:[
+        ['16','24 sc','24'],
+        ['17','[sc, dec] x 8','16'],
+      ]},
+      {type:'note', text:'Stuff the head and body.'},
+      {type:'rounds', part:0, rows:[
+        ['18','8 dec','8'],
+      ]},
+      {type:'note', text:'Fasten off leaving a long tail. Thread a needle with the tail; then use it to pull the yarn tail through the front loops of each stitch. Pull tight to close the remaining gap. Hide the yarn tail in the body.'},
     ],
   },
 ];
@@ -423,6 +495,27 @@ const BEAK_STYLES = [
       {type:'note', text:'Invisible fasten off, leaving a long tail. Use the yarn tail to attach the snout to the body centered between the eyes, spanning rounds 7 to 10. When you have a few stitches remaining, lightly stuff the snout.'},
     ],
   },
+  {
+    id:'bug',
+    name:'Bug head',
+    subtitle:'Small rounded head, single color',
+    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_bug}}',
+    cutout:true,
+    makeCount:1,
+    colorParts:[
+      {key:'main', label:'Yarn color for the head', materialsLabel:'the head', defaultColorIdx:5},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','6 inc','12'],
+        ['3','[sc, inc] x 6','18'],
+        ['4–6','18 sc','18'],
+      ]},
+      {type:'note', text:'Attach the eyes between rounds 3–4 with a 10-stitch space between them, measured from the top of the head. If this amigurumi is for a baby or pet, embroider the eyes instead.'},
+      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail, then use it to sew the head to the side of the body that is more curved, spanning rounds 6 to 10. The bottom of the head should cover 4 stitches of round 10. When you have a few stitches remaining, stuff the head lightly.'},
+    ],
+  },
 ];
 
 const HORN_STYLES = [
@@ -450,7 +543,7 @@ const HORN_STYLES = [
 const EAR_STYLES = [
   {
     id:'round',
-    name:'Round ears',
+    name:'Round ears (medium)',
     subtitle:'Small paired ears, single color',
     photo:'data:image/webp;base64,{{PHOTO_EAR_STYLES_round}}',
     cutout:true,
@@ -465,6 +558,24 @@ const EAR_STYLES = [
         ['3','10 sc','10'],
       ]},
       {type:'note', text:'Invisible fasten off, leaving a long tail. Use the yarn tail to sew the ears to either side of the head, between rounds 5 and 6, about 4 stitches back from each eye with the opening facing forward.'},
+    ],
+  },
+  {
+    id:'round_small',
+    name:'Round ears (small)',
+    subtitle:'Small paired ears, single color',
+    photo:'data:image/webp;base64,{{PHOTO_EAR_STYLES_round_small}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for the ears', materialsLabel:'the ears', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 4 sc in a magic loop','4'],
+        ['2','sc, 2 inc, sc','6'],
+      ]},
+      {type:'note', text:'Invisible fasten off, leaving a long tail. Use the yarn tail to sew each ear to the head between rounds 3 and 4, five or six stitches behind each eye, centered on top of the head.'},
     ],
   },
   {
@@ -577,7 +688,7 @@ const TAIL_STYLES = [
 
 const ADDONS = [
   {key:'wings', label:'Limbs', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
-  {key:'beak', label:'Face Feature', emptyIcon:'▲', chooseNote:'choose a style', styles:BEAK_STYLES},
+  {key:'beak', label:'Head & Face', emptyIcon:'▲', chooseNote:'choose a style', styles:BEAK_STYLES},
   {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
   {key:'ears', label:'Ears', emptyIcon:'👂', chooseNote:'choose a style', styles:EAR_STYLES},
   {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
@@ -669,8 +780,22 @@ function tintGainFor(hex){
   return BASE_GAIN - (BASE_GAIN - MIN_GAIN) * t;
 }
 
-function decodeForTint(photoSrc){
-  if(tintDecodeCache.has(photoSrc)) return tintDecodeCache.get(photoSrc);
+// Where the top/bottom split sits at a given column x: a flat waistY for a
+// figure-8 "waist" piece, or — when the piece supplies a curve — a boundary
+// that sits at curve.edgePct (of image height) at the silhouette's left/right
+// edges and dips to curve.centerPct at its horizontal center, tracing the
+// visible curvature of a round on a domed shape (see renderSplitTint).
+function splitYForColumn(x, waistY, x0, x1, curve, height){
+  if(!curve) return waistY;
+  const t = x1 > x0 ? Math.max(0, Math.min(1, (x - x0) / (x1 - x0))) : 0;
+  const shape = Math.sin(Math.PI * t);
+  const edgeY = curve.edgePct * height, centerY = curve.centerPct * height;
+  return edgeY + (centerY - edgeY) * shape;
+}
+
+function decodeForTint(photoSrc, curve){
+  const cacheKey = curve ? `${photoSrc}::curve:${curve.edgePct}:${curve.centerPct}` : photoSrc;
+  if(tintDecodeCache.has(cacheKey)) return tintDecodeCache.get(cacheKey);
   const promise = new Promise(resolve=>{
     const img = new Image();
     img.onload = ()=>{
@@ -683,6 +808,7 @@ function decodeForTint(photoSrc){
 
       let sum=0, count=0;
       const rowOpaqueCount = new Uint32Array(height);
+      let x0=width, x1=0;
       for(let y=0;y<height;y++){
         let rowCount = 0;
         for(let x=0;x<width;x++){
@@ -691,6 +817,7 @@ function decodeForTint(photoSrc){
           rowCount++;
           sum += 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
           count++;
+          if(x<x0) x0=x; if(x>x1) x1=x;
         }
         rowOpaqueCount[y] = rowCount;
       }
@@ -716,17 +843,18 @@ function decodeForTint(photoSrc){
           const i = (y*width+x)*4;
           if(data[i+3]===0) continue;
           const l = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
-          if(y < waistY){ sumAbove += l; countAbove++; } else { sumBelow += l; countBelow++; }
+          const sy = splitYForColumn(x, waistY, x0, x1, curve, height);
+          if(y < sy){ sumAbove += l; countAbove++; } else { sumBelow += l; countBelow++; }
         }
       }
       const lMeanAbove = countAbove ? (sumAbove/countAbove)/255 : lMean;
       const lMeanBelow = countBelow ? (sumBelow/countBelow)/255 : lMean;
 
-      resolve({ img, lMean, waistY, lMeanAbove, lMeanBelow });
+      resolve({ img, lMean, waistY, lMeanAbove, lMeanBelow, x0, x1 });
     };
     img.src = photoSrc;
   });
-  tintDecodeCache.set(photoSrc, promise);
+  tintDecodeCache.set(cacheKey, promise);
   return promise;
 }
 
@@ -762,7 +890,7 @@ function renderTint(img, lMean, hex){
 // Either hex can be null, meaning "this region is already its native color
 // in the photo" — those pixels pass through untouched (see nativeWeight
 // below) instead of being run through the overlay math a second time.
-function renderSplitTint(img, decoded, hexTop, hexBottom){
+function renderSplitTint(img, decoded, hexTop, hexBottom, curve){
   const topNative = hexTop == null, botNative = hexBottom == null;
   let [trT, tgT, tbT] = topNative ? [0,0,0] : hexToRgbFrac(hexTop);
   let [trB, tgB, tbB] = botNative ? [0,0,0] : hexToRgbFrac(hexBottom);
@@ -778,24 +906,27 @@ function renderSplitTint(img, decoded, hexTop, hexBottom){
   ctx.drawImage(img,0,0);
   const frame = ctx.getImageData(0,0,width,height);
   const data = frame.data;
-  const FEATHER = Math.max(2, Math.round(height * 0.02));
+  const FEATHER = curve
+    ? Math.max(2, Math.round(height * curve.featherPct))
+    : Math.max(2, Math.round(height * 0.02));
   for(let y=0;y<height;y++){
-    const isTop = y < decoded.waistY;
-    const lMeanLocal = isTop ? decoded.lMeanAbove : decoded.lMeanBelow;
-    const dist = y - decoded.waistY;
-    let t = isTop ? 0 : 1; // 0 = fully top color, 1 = fully bottom color
-    if(Math.abs(dist) < FEATHER){
-      t = (dist + FEATHER) / (FEATHER*2);
-      t = t < 0 ? 0 : t > 1 ? 1 : t;
-    }
-    const tr = trT + (trB-trT)*t, tg = tgT + (tgB-tgT)*t, tb = tbT + (tbB-tbT)*t;
-    const GAIN = gainT + (gainB-gainT)*t;
-    // how much of the final pixel should be the raw original instead of the
-    // tinted result — 1 deep in a native region, fading to 0 across the seam
-    const nativeWeight = topNative && botNative ? 1 : topNative ? (1-t) : botNative ? t : 0;
     for(let x=0;x<width;x++){
       const i = (y*width+x)*4;
       if(data[i+3]===0) continue;
+      const sy = splitYForColumn(x, decoded.waistY, decoded.x0, decoded.x1, curve, height);
+      const isTop = y < sy;
+      const lMeanLocal = isTop ? decoded.lMeanAbove : decoded.lMeanBelow;
+      const dist = y - sy;
+      let t = isTop ? 0 : 1; // 0 = fully top color, 1 = fully bottom color
+      if(Math.abs(dist) < FEATHER){
+        t = (dist + FEATHER) / (FEATHER*2);
+        t = t < 0 ? 0 : t > 1 ? 1 : t;
+      }
+      const tr = trT + (trB-trT)*t, tg = tgT + (tgB-tgT)*t, tb = tbT + (tbB-tbT)*t;
+      const GAIN = gainT + (gainB-gainT)*t;
+      // how much of the final pixel should be the raw original instead of the
+      // tinted result — 1 deep in a native region, fading to 0 across the seam
+      const nativeWeight = topNative && botNative ? 1 : topNative ? (1-t) : botNative ? t : 0;
       const r0 = data[i]/255, g0 = data[i+1]/255, b0 = data[i+2]/255;
       const l = 0.299*r0 + 0.587*g0 + 0.114*b0;
       let normL = MID + (l - lMeanLocal) * GAIN;
@@ -812,14 +943,16 @@ function renderSplitTint(img, decoded, hexTop, hexBottom){
 
 // `hexOrPair` is either one hex string (single-color piece) or a [top, bottom]
 // pair for a waist-split two-tone piece (either entry may be null for a
-// native-color region).
-function getTintedPhoto(photoSrc, hexOrPair, onReady){
+// native-color region). `piece.tintCurve`, when present, curves that split
+// (see splitYForColumn) instead of using a flat waistY.
+function getTintedPhoto(piece, hexOrPair, onReady){
+  const photoSrc = piece.photo, curve = piece.tintCurve;
   const hexKey = Array.isArray(hexOrPair) ? hexOrPair.map(h=>h||'native').join('|') : hexOrPair;
   const key = photoSrc + '::' + hexKey;
   if(tintResultCache.has(key)) return tintResultCache.get(key);
-  decodeForTint(photoSrc).then(decoded=>{
+  decodeForTint(photoSrc, curve).then(decoded=>{
     const dataUrl = Array.isArray(hexOrPair)
-      ? renderSplitTint(decoded.img, decoded, hexOrPair[0], hexOrPair[1])
+      ? renderSplitTint(decoded.img, decoded, hexOrPair[0], hexOrPair[1], curve)
       : renderTint(decoded.img, decoded.lMean, hexOrPair);
     tintResultCache.set(key, dataUrl);
     onReady(dataUrl);
@@ -830,10 +963,11 @@ function getTintedPhoto(photoSrc, hexOrPair, onReady){
 // Points an <img> at a color-tinted version of a reference photo, showing
 // the untinted photo until the tint is ready (decoding+tinting is cached
 // per photo+color, so repeat renders resolve instantly from cache).
-function setTintedPhoto(imgEl, photoSrc, hexOrPair){
+function setTintedPhoto(imgEl, piece, hexOrPair){
+  const photoSrc = piece.photo;
   const hexKey = Array.isArray(hexOrPair) ? hexOrPair.map(h=>h||'native').join('|') : hexOrPair;
   tintTargets.set(imgEl, { photoSrc, hexKey });
-  const cached = getTintedPhoto(photoSrc, hexOrPair, dataUrl=>{
+  const cached = getTintedPhoto(piece, hexOrPair, dataUrl=>{
     const current = tintTargets.get(imgEl);
     if(current && current.photoSrc===photoSrc && current.hexKey===hexKey){
       imgEl.src = dataUrl;
@@ -889,7 +1023,7 @@ function renderShapes(){
       <div class="sname">${b.name}</div>
       <div class="ssub">${b.subtitle}</div>
     `;
-    setTintedPhoto(card.querySelector('img'), b.photo, NATIVE_COLOR_HEX);
+    setTintedPhoto(card.querySelector('img'), b, NATIVE_COLOR_HEX);
     card.addEventListener('click', ()=>{
       state.bodyId = b.id;
       ensureBodyDefaults(b);
@@ -931,6 +1065,24 @@ function isLowContrastTint(hexOrPair){
   return hexes.some(h => h && isLowContrastSwatch(h));
 }
 
+// renderAddonsGrid and the pattern-head addon photos rebuild their <img>
+// elements from scratch on every render() call, so a plain classList.toggle
+// right after creation has no prior painted state to fade the CSS
+// transition:background-color from — the element is born already in its
+// final state. Replaying the element's own state from before the rebuild,
+// forcing a layout so the browser commits it, then applying the real target
+// state gives the transition a starting point to animate from even though
+// the node itself is new.
+function applyLowContrastFade(imgEl, isLow, prevLow){
+  if(prevLow === undefined || prevLow === isLow){
+    imgEl.classList.toggle('low-contrast-photo', isLow);
+    return;
+  }
+  imgEl.classList.toggle('low-contrast-photo', prevLow);
+  imgEl.offsetHeight;
+  imgEl.classList.toggle('low-contrast-photo', isLow);
+}
+
 function buildSwatchRow(container, currentIdx, onSelect){
   container.innerHTML='';
   COLORS.forEach((c,i)=>{
@@ -962,10 +1114,14 @@ function resolvePieceColors(piece, store){
 // color switch happens inline, mid-round.
 function compilePieceBlocks(piece, store){
   const colors = resolvePieceColors(piece, store);
+  // Only meaningful for a two-tone piece: if both color parts were set to the
+  // same yarn, there's no actual color change to call out mid-round.
+  const colorsMatch = piece.colorParts.length===2 && colors[0]===colors[1];
   const segments = [];
   piece.blocks.forEach(block=>{
     if(block.type==='rounds'){
       const rows = block.rows.map(r=>{
+        if(colorsMatch && r.length>3) return [r[0], r[3], r[2]];
         let instr = r[1];
         instr = instr.replace('__COLOR_START__', `(${colors[block.part].name.toLowerCase()} yarn)`);
         instr = instr.replace('__COLOR_SWITCH__', `(switch to ${colors[block.part].name.toLowerCase()} yarn)`);
@@ -977,6 +1133,7 @@ function compilePieceBlocks(piece, store){
       const toColor = colors[block.toPart];
       segments.push({kind:'note', text:`Invisible fasten off. Make a slip knot with your ${toColor.name.toLowerCase()} yarn and sl st join to the stitch where you fastened off.`});
     } else if(block.type==='note'){
+      if(block.whenColorsDiffer && colorsMatch) return;
       segments.push({kind:'note', text: block.text});
     }
   });
@@ -1012,11 +1169,27 @@ function ensureStyleDefaults(body, style, addonState){
 
 function renderAddonsGrid(body){
   const grid = document.getElementById('addonGrid');
+
+  // Captured before the grid is wiped, keyed by addon so a color change on
+  // one addon doesn't get paired with a stale index if another addon's
+  // on/off state also changed this render — see applyLowContrastFade.
+  const prevLowByKey = {};
+  ADDONS.forEach(addon=>{
+    const prevWrap = grid.querySelector(`.addon-wrap[data-addon-key="${addon.key}"]`);
+    const prevImg = prevWrap && prevWrap.querySelector('.addon-thumb-photo, .body-color-preview');
+    if(prevImg) prevLowByKey[addon.key] = prevImg.classList.contains('low-contrast-photo');
+  });
   grid.innerHTML='';
 
   ADDONS.forEach(addon=>{
     const addonState = ensureAddonState(addon.key);
     const wrap = el('div','addon-wrap' + (addonState.on ? ' on' : ''));
+    wrap.dataset.addonKey = addon.key;
+    // Attached to the live grid immediately, before its photo <img>s are
+    // built and their fade class applied — applyLowContrastFade's forced
+    // reflow only commits a paintable style (giving the transition a start
+    // point) when the element is already connected to the document.
+    grid.appendChild(wrap);
     const activeStyle = addonState.styleId ? addon.styles.find(s=>s.id===addonState.styleId) : null;
     const isMulti = addon.styles.length > 1;
     const hasPhoto = !!(addonState.on && activeStyle && activeStyle.photo);
@@ -1058,11 +1231,14 @@ function renderAddonsGrid(body){
       panel.querySelector('.addon-head-btn').addEventListener('click', toggleAddon);
       const thumbImg = panel.querySelector('.addon-thumb-photo');
       const thumbTint = resolveTintColors(activeStyle, ensureStyleDefaults(body, activeStyle, addonState));
-      if(thumbTint) setTintedPhoto(thumbImg, activeStyle.photo, thumbTint);
+      if(thumbTint) setTintedPhoto(thumbImg, activeStyle, thumbTint);
       else thumbImg.src = activeStyle.photo;
-      thumbImg.classList.toggle('low-contrast-photo', isLowContrastTint(thumbTint));
       panelSide = panel.querySelector('.addon-panel-side');
       wrap.appendChild(panel);
+      // Applied only once thumbImg is connected (wrap is already live in
+      // grid) — applyLowContrastFade's forced reflow needs a connected node
+      // to commit a real "before" state for the transition to fade from.
+      applyLowContrastFade(thumbImg, isLowContrastTint(thumbTint), prevLowByKey[addon.key]);
     } else if(isMulti && addonState.on){
       // Label-only header — the small picker grid lands right below it, and
       // the full-width photo (satisfying the "photo, not a badge" rule) is
@@ -1112,7 +1288,7 @@ function renderAddonsGrid(body){
             <div class="check">✓</div>
             <div class="sname">${s.name}</div>
           `;
-          if(s.photo) setTintedPhoto(card.querySelector('img'), s.photo, NATIVE_COLOR_HEX);
+          if(s.photo) setTintedPhoto(card.querySelector('img'), s, NATIVE_COLOR_HEX);
           card.addEventListener('click', (e)=>{
             e.stopPropagation();
             addonState.styleId = s.id;
@@ -1138,9 +1314,8 @@ function renderAddonsGrid(body){
         const previewImg = colorSection.querySelector('.body-color-preview');
         previewImg.classList.toggle('is-cutout', !!style.cutout);
         const previewTint = resolveTintColors(style, store);
-        if(previewTint) setTintedPhoto(previewImg, style.photo, previewTint);
+        if(previewTint) setTintedPhoto(previewImg, style, previewTint);
         else { clearTintTarget(previewImg); previewImg.src = style.photo; }
-        previewImg.classList.toggle('low-contrast-photo', isLowContrastTint(previewTint));
 
         const picker = colorSection.querySelector('.color-picker-inline');
         style.colorParts.forEach(part=>{
@@ -1153,6 +1328,10 @@ function renderAddonsGrid(body){
         });
         box.appendChild(colorSection);
         wrap.appendChild(box);
+        // Applied only once previewImg is connected (wrap is already live in
+        // grid) — applyLowContrastFade's forced reflow needs a connected node
+        // to commit a real "before" state for the transition to fade from.
+        applyLowContrastFade(previewImg, isLowContrastTint(previewTint), prevLowByKey[addon.key]);
       } else {
         const box = el('div','addon-color');
         style.colorParts.forEach(part=>{
@@ -1165,8 +1344,6 @@ function renderAddonsGrid(body){
         wrap.appendChild(box);
       }
     }
-
-    grid.appendChild(wrap);
   });
 
   LOCKED_ADDONS.forEach(a=>{
@@ -1208,19 +1385,24 @@ function buildPatternText(body){
   lines.push(`${buildPatternTitle(body).toUpperCase()} AMIGURUMI`);
   lines.push('');
   lines.push('MATERIALS');
-  body.colorParts.forEach((part,i)=>{
-    lines.push(`- Yarn in ${colors[i].name} (${colors[i].hex}) for ${part.materialsLabel}`);
-  });
-
-  activeAddons.forEach(a=>{
-    a.style.colorParts.forEach((part,i)=>{
-      lines.push(`- Yarn in ${a.colors[i].name} (${a.colors[i].hex}) for ${part.materialsLabel}`);
-    });
-  });
-
-  lines.push('- Crochet hook sized to your yarn weight');
+  const usedColors = [];
+  const seenColorHexes = new Set();
+  const addUsedColor = c => { if(!seenColorHexes.has(c.hex)){ seenColorHexes.add(c.hex); usedColors.push(c); } };
+  colors.forEach(addUsedColor);
+  activeAddons.forEach(a => a.colors.forEach(addUsedColor));
+  const colorNames = usedColors.map(c=>c.name);
+  const colorList = colorNames.length <= 2
+    ? colorNames.join(' and ')
+    : `${colorNames.slice(0,-1).join(', ')}, and ${colorNames[colorNames.length-1]}`;
+  lines.push(`- Beginner Yarn in ${colorList}`);
+  lines.push('');
+  lines.push('* Cuddle Craft Tube Yarn by Loops & Threads');
+  lines.push('* Easy Peasy Yarn by The Woobles');
+  lines.push('* "Beginner Yarn" on Amazon');
+  lines.push('');
+  lines.push('- 4.00mm Crochet hook');
   lines.push('- Stuffing');
-  lines.push('- 2 safety eyes');
+  lines.push('- 2 8mm safety eyes');
   lines.push('- Stitch marker');
   lines.push('- Yarn needle');
   lines.push('');
@@ -1279,7 +1461,7 @@ function render(){
     const previewImg = document.getElementById('bodyColorPreview');
     previewImg.classList.toggle('is-cutout', !!body.cutout);
     const previewTint = resolveTintColors(body, bodyStore);
-    if(previewTint) setTintedPhoto(previewImg, body.photo, previewTint);
+    if(previewTint) setTintedPhoto(previewImg, body, previewTint);
     else { clearTintTarget(previewImg); previewImg.src = body.photo; }
     previewImg.classList.toggle('low-contrast-photo', isLowContrastTint(previewTint));
 
@@ -1357,23 +1539,28 @@ function render(){
   photo.classList.toggle('is-cutout', !!body.cutout);
   const bodyTint = resolveTintColorsFromResolved(body, bodyColors);
   if(bodyTint){
-    setTintedPhoto(photo, body.photo, bodyTint);
+    setTintedPhoto(photo, body, bodyTint);
   } else {
     clearTintTarget(photo);
     photo.src = body.photo;
   }
   photo.classList.toggle('low-contrast-photo', isLowContrastTint(bodyTint));
   const photoAddons = activeAddons.filter(a=>a.style.photo);
+  const prevAddonPhotoLowByKey = {};
+  Array.from(addonPhotos.children).forEach(itemEl=>{
+    const img = itemEl.querySelector('.pattern-photo');
+    if(img) prevAddonPhotoLowByKey[itemEl.dataset.addonKey] = img.classList.contains('low-contrast-photo');
+  });
   addonPhotos.innerHTML = photoAddons
-    .map(a=>`<div class="addon-photo-item"><img class="pattern-photo${a.style.cutout ? ' is-cutout' : ''}" alt="${a.style.name} reference photo"><div class="pattern-photo-label">${a.style.name}</div></div>`)
+    .map(a=>`<div class="addon-photo-item" data-addon-key="${a.addon.key}"><img class="pattern-photo${a.style.cutout ? ' is-cutout' : ''}" alt="${a.style.name} reference photo"><div class="pattern-photo-label">${a.style.name}</div></div>`)
     .join('');
   Array.from(addonPhotos.children).forEach((itemEl, i)=>{
     const a = photoAddons[i];
     const imgEl = itemEl.querySelector('img');
     const addonTint = resolveTintColorsFromResolved(a.style, a.colors);
-    if(addonTint) setTintedPhoto(imgEl, a.style.photo, addonTint);
+    if(addonTint) setTintedPhoto(imgEl, a.style, addonTint);
     else imgEl.src = a.style.photo;
-    imgEl.classList.toggle('low-contrast-photo', isLowContrastTint(addonTint));
+    applyLowContrastFade(imgEl, isLowContrastTint(addonTint), prevAddonPhotoLowByKey[a.addon.key]);
   });
   const allColors = [bodyColors, ...activeAddons.map(a=>a.colors)].flat();
   const seenHex = new Set();

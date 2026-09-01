@@ -110,7 +110,7 @@
 
   .rail-section{ padding:20px 22px; }
   .rail-section + .rail-section{ border-top:1px solid var(--line); }
-  .rail-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:4px; }
+  .rail-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:16px; }
   .rail-num{
     font-family:'JetBrains Mono', monospace; font-size:0.72rem; font-weight:600;
     color:var(--hot-pink-ink); background:var(--hot-pink-wash); padding:2px 7px; border-radius:99px;
@@ -138,13 +138,13 @@
   }
   .shape-card.selected .check{ display:grid; }
 
-  /* Piece style-picker grids (Limbs, Face Feature, ...) reuse the body-shape
+  /* Piece style-picker grids (Limbs, Head & Face, ...) reuse the body-shape
      card, but with tighter padding so the reference photo reads larger inside
      the tile, and a smaller name label. Body-shape grid is unaffected. */
   .shape-grid.piece-picker .shape-card{ padding:3px; }
   .shape-grid.piece-picker .shape-card img{ margin-bottom:4px; }
   .shape-grid.piece-picker .shape-card img.is-cutout{ padding:2px; }
-  .shape-grid.piece-picker .shape-card .sname{ font-size:0.66rem; }
+  .shape-grid.piece-picker .shape-card .sname{ font-size:0.66rem; padding-left:4px; }
 
   .swatches{ display:flex; flex-wrap:wrap; gap:10px; }
   .swatch{
@@ -221,6 +221,7 @@
   .addon-thumb-photo{
     width:100%; aspect-ratio:1; border-radius:10px; object-fit:contain;
     background:var(--locked-wash); padding:8px; display:block;
+    transition:background-color .4s ease;
   }
   .addon-panel-side{ flex:1; min-width:0; display:flex; flex-direction:column; gap:10px; padding-top:2px; }
   .addon-head-btn{
@@ -247,6 +248,7 @@
   .body-color-preview{
     width:100%; aspect-ratio:1; border-radius:14px; object-fit:cover;
     background:var(--locked-wash);
+    transition:background-color .4s ease;
   }
   .body-color-preview.is-cutout{ object-fit:contain; padding:10px; }
 
@@ -277,7 +279,7 @@
   }
   .pattern-title-input:focus{ outline:none; }
   .pattern-head{
-    padding:16px 22px 20px; display:flex; gap:16px; align-items:center;
+    padding:16px 22px 20px; display:flex; gap:16px; align-items:flex-start;
   }
   .pattern-head-clear{
     padding:6px 12px; font-size:0.72rem; background:var(--paper-raised); box-shadow:var(--shadow); flex-shrink:0;
@@ -285,6 +287,7 @@
   .pattern-photo{
     width:60px; height:60px; border-radius:12px; object-fit:cover; box-shadow:var(--shadow);
     background:var(--locked-wash); flex-shrink:0;
+    transition:background-color .4s ease;
   }
   .pattern-photo.is-cutout{ object-fit:contain; padding:10px; }
 
