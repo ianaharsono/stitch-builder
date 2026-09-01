@@ -1,0 +1,89 @@
+<title>Stitch Builder</title>
+<style>
+{{STYLES}}</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" stroke="white" stroke-width="1.6"/>
+          <path d="M12 3 C 15 7, 9 9, 12 12 C 15 15, 9 17, 12 21" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Stitch Builder</h1>
+        <div class="tagline">Click a shape, click a color, click a part — your pattern writes itself.</div>
+      </div>
+    </div>
+    <div class="step-progress" id="stepProgress">
+      <span class="dot" data-step="1"></span> Body
+      <span class="dot" data-step="2"></span> Add-ons
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- BUILDER RAIL -->
+    <div class="rail-col">
+
+      <div class="card rail-section">
+        <div class="rail-head"><span class="rail-num">1</span><span class="rail-title">Choose a body shape</span></div>
+        <div class="rail-sub">Every shape here is tied to a real round-by-round pattern — pulled straight from the reference photo it was traced from. Pick a shape, then pick its yarn.</div>
+        <div class="shape-grid" id="shapeGrid"></div>
+      </div>
+
+      <div class="card rail-section" id="bodyColorCard" hidden>
+        <div class="rail-head"><span class="rail-title" id="bodyColorCardTitle">Pick your yarn color</span></div>
+        <div class="body-color-section">
+          <img class="body-color-preview" id="bodyColorPreview" alt="">
+          <div class="color-picker-inline" id="bodyColorPicker"></div>
+        </div>
+      </div>
+
+      <div class="card rail-section">
+        <div class="rail-head"><span class="rail-num">2</span><span class="rail-title">Add pieces</span></div>
+        <div class="rail-sub">Each piece asks for its own yarn color the moment you add it, so nothing has to match the body. Wings and Face Feature are fully mapped; the rest are stubbed in to show how the library would grow.</div>
+        <div class="addon-grid" id="addonGrid"></div>
+        <div class="ghost-card">
+          <div class="plus">+</div>
+          <div>Teach it a new piece: attach a photo of the part and its written pattern, and it becomes a clickable tile right here — color picker included.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PATTERN CARD -->
+    <div class="card pattern-panel">
+      <div class="pattern-head-wrap">
+        <div class="pattern-panel-title">
+          <span>New Pattern</span>
+          <button class="btn btn-ghost pattern-head-clear" id="clearBtn" disabled>Start Over</button>
+        </div>
+        <div class="pattern-head">
+          <div class="pattern-photo-item">
+            <img class="pattern-photo" id="patternPhoto" src="" alt="" hidden>
+            <div id="patternPhotoPlaceholder" class="pattern-photo" style="display:grid;place-items:center;font-size:24px;">🧶</div>
+            <div class="pattern-photo-label" id="patternPhotoLabel"></div>
+          </div>
+          <div class="addon-photos" id="addonPhotos"></div>
+          <div class="pattern-meta" id="patternMeta"></div>
+        </div>
+      </div>
+      <div class="pattern-body" id="patternBody">
+        <div class="empty-state">Your assembled pattern will build itself here as you make choices on the left — same idea as the Wooble instruction cards, just generated instead of pre-printed.</div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="copyBtn" disabled>Copy pattern</button>
+        <button class="btn btn-ghost" id="downloadBtn" disabled>Download .txt</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+{{SCRIPT}}</script>
