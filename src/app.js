@@ -525,6 +525,28 @@ const TAIL_STYLES = [
       {type:'note', text:'Invisible fasten off with a long tail. Thread a needle with the yarn tail and use it to attach the tail to the back of the body, spanning rounds 12 to 14.'},
     ],
   },
+  {
+    id:'dino',
+    name:'Dino tail',
+    subtitle:'Short bumpy tail, single color',
+    photo:'data:image/webp;base64,{{PHOTO_TAIL_STYLES_dino}}',
+    cutout:true,
+    makeCount:1,
+    colorParts:[
+      {key:'main', label:'Yarn color for the tail', materialsLabel:'the tail', defaultColorIdx:20},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 4 sc in a magic loop','4'],
+        ['2','[sc, inc] x 2','6'],
+        ['3','2 sc, 2 inc, 2 sc','8'],
+        ['4','3 sc, 2 inc, 3 sc','10'],
+        ['5','4 sc, 2 inc, 4 sc','12'],
+        ['6','5 sc, 2 inc, 5 sc','14'],
+      ]},
+      {type:'note', text:'Invisible fasten off leaving a long yarn tail. Stuff lightly. Thread a needle with the yarn tail and use it to sew the tail to the middle of the body\'s back, spanning rounds 14 to 17. Make sure the inclined part of the tail — the side opposite the yarn tail — is facing up.'},
+    ],
+  },
 ];
 
 const ADDONS = [
