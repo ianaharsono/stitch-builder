@@ -296,6 +296,25 @@ const WING_STYLES = [
     ],
   },
   {
+    id:'tiny',
+    name:'Tiny arms',
+    subtitle:'Extra small arms, worked directly into the body, single color',
+    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_tiny}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for arms', materialsLabel:'the arms', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'note', text:'Repeat the following on each side to create two arms:'},
+      {type:'note', text:'Step 1. Sl st join the yarn to one side of the body between rounds 12 and 13, aligned roughly with the eyes. Insert the hook into the body from the back to the front.'},
+      {type:'note', text:'Step 2. Ch 3.'},
+      {type:'note', text:'Step 3. Sc into the second ch from the hook, sc.'},
+      {type:'note', text:'Step 4. Sl st in the stitch where you made the sl st join, from the front to the back of the body. Both yarn tails should be coming out of the same hole.'},
+      {type:'note', text:'Step 5. Fasten off. Tie the yarn tails together and hide them.'},
+    ],
+  },
+  {
     id:'bat',
     name:'Bat wings',
     subtitle:'Flat, notched wing shape, single color',
