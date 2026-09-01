@@ -272,6 +272,21 @@
     font-family:'Fraunces', serif; font-weight:700; font-size:1.2rem;
     padding:20px 22px 0;
   }
+  .pattern-title-group{ display:flex; align-items:center; gap:6px; min-width:0; }
+  .pattern-title-text{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pattern-title-edit{
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+    width:22px; height:22px; padding:0; border:none; border-radius:6px;
+    background:transparent; color:var(--ink-soft); cursor:pointer;
+  }
+  .pattern-title-edit svg{ width:13px; height:13px; }
+  .pattern-title-edit:hover{ background:var(--paper-raised); color:var(--ink); }
+  .pattern-title-input{
+    font:inherit; color:inherit; min-width:0; width:100%;
+    border:none; border-bottom:1.5px solid var(--teal); background:transparent;
+    padding:0 0 2px;
+  }
+  .pattern-title-input:focus{ outline:none; }
   .pattern-head{
     padding:16px 22px 20px; display:flex; gap:16px; align-items:center;
   }

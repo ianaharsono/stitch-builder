@@ -590,7 +590,7 @@ const LOCKED_ADDONS = [
   {label:'Tummy Patch', icon:'⬤'},
 ];
 
-const state = { bodyId:null, colors:{}, addons:{} };
+const state = { bodyId:null, colors:{}, addons:{}, patternTitle:'' };
 function ensureAddonState(key){
   if(!state.addons[key]) state.addons[key] = { on:false, styleId:null, byStyle:{} };
   return state.addons[key];
@@ -609,6 +609,7 @@ function loadState(){
       state.bodyId = saved.bodyId ?? null;
       state.colors = saved.colors ?? {};
       state.addons = saved.addons ?? {};
+      state.patternTitle = typeof saved.patternTitle === 'string' ? saved.patternTitle : '';
     }
   }catch(e){}
 }
@@ -1447,6 +1448,44 @@ function showToast(msg){
   toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
 }
 
+function initPatternTitle(){
+  const text = document.getElementById('patternTitleText');
+  const input = document.getElementById('patternTitleInput');
+  const editBtn = document.getElementById('patternTitleEditBtn');
+
+  function showView(){
+    text.textContent = state.patternTitle.trim() || 'New Pattern';
+    text.hidden = false;
+    input.hidden = true;
+  }
+  function showEdit(){
+    input.value = state.patternTitle;
+    text.hidden = true;
+    input.hidden = false;
+    input.focus();
+    input.select();
+  }
+  function commit(){
+    state.patternTitle = input.value.trim();
+    saveState();
+    showView();
+  }
+
+  editBtn.addEventListener('click', showEdit);
+  input.addEventListener('input', ()=>{
+    state.patternTitle = input.value;
+    saveState();
+  });
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){ input.blur(); }
+    else if(e.key==='Escape'){ input.value = state.patternTitle; input.blur(); }
+  });
+
+  showView();
+}
+
 loadState();
 renderShapes();
 render();
+initPatternTitle();

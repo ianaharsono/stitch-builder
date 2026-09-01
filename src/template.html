@@ -60,7 +60,15 @@
     <div class="card pattern-panel">
       <div class="pattern-head-wrap">
         <div class="pattern-panel-title">
-          <span>New Pattern</span>
+          <div class="pattern-title-group" id="patternTitleGroup">
+            <span class="pattern-title-text" id="patternTitleText">New Pattern</span>
+            <input class="pattern-title-input" id="patternTitleInput" type="text" maxlength="60" placeholder="New Pattern" hidden>
+            <button class="pattern-title-edit" id="patternTitleEditBtn" type="button" aria-label="Rename pattern" title="Rename pattern">
+              <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
           <button class="btn btn-ghost pattern-head-clear" id="clearBtn" disabled>Start Over</button>
         </div>
         <div class="pattern-head">

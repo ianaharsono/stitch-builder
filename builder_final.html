@@ -276,6 +276,21 @@
     font-family:'Fraunces', serif; font-weight:700; font-size:1.2rem;
     padding:20px 22px 0;
   }
+  .pattern-title-group{ display:flex; align-items:center; gap:6px; min-width:0; }
+  .pattern-title-text{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pattern-title-edit{
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+    width:22px; height:22px; padding:0; border:none; border-radius:6px;
+    background:transparent; color:var(--ink-soft); cursor:pointer;
+  }
+  .pattern-title-edit svg{ width:13px; height:13px; }
+  .pattern-title-edit:hover{ background:var(--paper-raised); color:var(--ink); }
+  .pattern-title-input{
+    font:inherit; color:inherit; min-width:0; width:100%;
+    border:none; border-bottom:1.5px solid var(--teal); background:transparent;
+    padding:0 0 2px;
+  }
+  .pattern-title-input:focus{ outline:none; }
   .pattern-head{
     padding:16px 22px 20px; display:flex; gap:16px; align-items:center;
   }
@@ -430,7 +445,15 @@
     <div class="card pattern-panel">
       <div class="pattern-head-wrap">
         <div class="pattern-panel-title">
-          <span>New Pattern</span>
+          <div class="pattern-title-group" id="patternTitleGroup">
+            <span class="pattern-title-text" id="patternTitleText">New Pattern</span>
+            <input class="pattern-title-input" id="patternTitleInput" type="text" maxlength="60" placeholder="New Pattern" hidden>
+            <button class="pattern-title-edit" id="patternTitleEditBtn" type="button" aria-label="Rename pattern" title="Rename pattern">
+              <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
           <button class="btn btn-ghost pattern-head-clear" id="clearBtn" disabled>Start Over</button>
         </div>
         <div class="pattern-head">
@@ -1050,7 +1073,7 @@ const LOCKED_ADDONS = [
   {label:'Tummy Patch', icon:'⬤'},
 ];
 
-const state = { bodyId:null, colors:{}, addons:{} };
+const state = { bodyId:null, colors:{}, addons:{}, patternTitle:'' };
 function ensureAddonState(key){
   if(!state.addons[key]) state.addons[key] = { on:false, styleId:null, byStyle:{} };
   return state.addons[key];
@@ -1069,6 +1092,7 @@ function loadState(){
       state.bodyId = saved.bodyId ?? null;
       state.colors = saved.colors ?? {};
       state.addons = saved.addons ?? {};
+      state.patternTitle = typeof saved.patternTitle === 'string' ? saved.patternTitle : '';
     }
   }catch(e){}
 }
@@ -1907,7 +1931,45 @@ function showToast(msg){
   toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
 }
 
+function initPatternTitle(){
+  const text = document.getElementById('patternTitleText');
+  const input = document.getElementById('patternTitleInput');
+  const editBtn = document.getElementById('patternTitleEditBtn');
+
+  function showView(){
+    text.textContent = state.patternTitle.trim() || 'New Pattern';
+    text.hidden = false;
+    input.hidden = true;
+  }
+  function showEdit(){
+    input.value = state.patternTitle;
+    text.hidden = true;
+    input.hidden = false;
+    input.focus();
+    input.select();
+  }
+  function commit(){
+    state.patternTitle = input.value.trim();
+    saveState();
+    showView();
+  }
+
+  editBtn.addEventListener('click', showEdit);
+  input.addEventListener('input', ()=>{
+    state.patternTitle = input.value;
+    saveState();
+  });
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){ input.blur(); }
+    else if(e.key==='Escape'){ input.value = state.patternTitle; input.blur(); }
+  });
+
+  showView();
+}
+
 loadState();
 renderShapes();
 render();
+initPatternTitle();
 </script>
