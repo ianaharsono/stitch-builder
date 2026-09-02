@@ -12,38 +12,6 @@ Every piece — body or addon — is backed by a **real reference pattern**: an 
 - **Color is never a single global step.** Every piece — the body, the wings, the beak — asks for its own yarn color(s) the moment it's toggled on. A beak can be yellow while the body is orange; a two-tone wing gets two independent swatch pickers.
 - **Naming is generic, not animal-specific.** Piece names and finishing notes avoid locking a piece to one creature (e.g. "Scalloped Wings," not "Flame Wings"; no landmark references like "black spot"). Subtitles may nod to the original reference pattern's style (e.g. "chick-style," "penguin-style") for context, but the piece itself is meant to mix and match freely across bodies.
 
-## Content library (current state)
-
-**Bodies** — `BODIES` (3):
-| Name | Subtitle | Color parts | Rounds |
-|---|---|---|---|
-| Round Body | A simple round ball — chick-style | single | 18 |
-| Egg Body | Classic tapered egg — penguin-style | single | 18 |
-| Peanut Body | Waisted double-lump, two-tone — peanut-style | two-tone, invisible join at round 10→11 | 18 |
-
-**Wings** — `WING_STYLES` (2), addon key `wings`:
-| Name | Subtitle | Color parts |
-|---|---|---|
-| Flippers | Flat, single color, sewn flush to the body | single |
-| Scalloped Wings | Two-tone with a scalloped, layered edge (mid-round color switch) | two-tone (base + tips) |
-
-**Beak** — `BEAK_STYLES` (2), addon key `beak`:
-| Name | Subtitle | Rounds |
-|---|---|---|
-| Beak | Small pointed beak, single color | 2 |
-| Flattened Beak | Small flattened beak, single color, sewn flat lengthwise | 2 |
-
-**Snout** — `SNOUT_STYLES` (1), addon key `snout`:
-| Name | Subtitle |
-|---|---|
-| Snout | Large oval snout, single color, worked from a foundation chain |
-
-**Locked/stub addons** — `LOCKED_ADDONS` (visual placeholders only, not wired to real data): Feet 🦶, Tail Feathers 🪶, Tummy Patch ⬤. Shown with a 🔒 badge in the grid so the roadmap is visible without pretending they work.
-
-> **Note:** Ears was explicitly excluded (the Peanut Body pattern doesn't call for them) and isn't even a locked stub — don't add it without being asked again.
-
-**Colors** — `COLORS` (9 named yarns): Marigold Orange `#DE6A3D`, Sunshine Yellow `#E3A62B`, Lagoon Blue `#2E8F9E`, Sea Glass Mint `#4FA893`, Blossom Pink `#D9738F`, Plum `#7C5A8C`, Cream Tan `#DAC5A0`, Powder Blue `#A8C8DA`, Cherry Red `#C4432E`.
-
 ## Data model
 
 Every piece — a body, or a style within an addon — is one plain object:
