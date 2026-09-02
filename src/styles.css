@@ -139,7 +139,7 @@
   }
   .shape-card.selected .check{ display:grid; }
 
-  /* Piece style-picker grids (Limbs, Head & Face, ...) reuse the body-shape
+  /* Piece style-picker grids (Head, Arms, ...) reuse the body-shape
      card, but with tighter padding so the reference photo reads larger inside
      the tile, and a smaller name label. Body-shape grid is unaffected. */
   .shape-grid.piece-picker .shape-card{ padding:3px; }

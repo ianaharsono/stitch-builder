@@ -870,19 +870,18 @@ const FEET_STYLES = [
 ];
 
 const ADDONS = [
-  {key:'wings', label:'Limbs', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
   {key:'head', label:'Head', emptyIcon:'⚪', chooseNote:'choose a style', styles:HEAD_STYLES},
-  {key:'mouth', label:'Mouth', emptyIcon:'👄', chooseNote:'choose a style', styles:MOUTH_STYLES},
   {key:'face', label:'Face', emptyIcon:'👁️', chooseNote:'choose a style', styles:FACE_STYLES},
-  {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
+  {key:'mouth', label:'Mouth', emptyIcon:'👄', chooseNote:'choose a style', styles:MOUTH_STYLES},
   {key:'ears', label:'Ears', emptyIcon:'👂', chooseNote:'choose a style', styles:EAR_STYLES},
-  {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
+  {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
+  {key:'wings', label:'Arms', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
   {key:'feet', label:'Feet', emptyIcon:'🦶', chooseNote:'choose a style', styles:FEET_STYLES},
+  {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
 ];
 
 
 const LOCKED_ADDONS = [
-  {label:'Tail Feathers', icon:'🪶'},
   {label:'Tummy Patch', icon:'⬤'},
 ];
 

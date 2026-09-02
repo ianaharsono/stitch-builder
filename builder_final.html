@@ -143,7 +143,7 @@
   }
   .shape-card.selected .check{ display:grid; }
 
-  /* Piece style-picker grids (Limbs, Head & Face, ...) reuse the body-shape
+  /* Piece style-picker grids (Head, Arms, ...) reuse the body-shape
      card, but with tighter padding so the reference photo reads larger inside
      the tile, and a smaller name label. Body-shape grid is unaffected. */
   .shape-grid.piece-picker .shape-card{ padding:3px; }
@@ -1343,19 +1343,18 @@ const FEET_STYLES = [
 ];
 
 const ADDONS = [
-  {key:'wings', label:'Limbs', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
   {key:'head', label:'Head', emptyIcon:'⚪', chooseNote:'choose a style', styles:HEAD_STYLES},
-  {key:'mouth', label:'Mouth', emptyIcon:'👄', chooseNote:'choose a style', styles:MOUTH_STYLES},
   {key:'face', label:'Face', emptyIcon:'👁️', chooseNote:'choose a style', styles:FACE_STYLES},
-  {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
+  {key:'mouth', label:'Mouth', emptyIcon:'👄', chooseNote:'choose a style', styles:MOUTH_STYLES},
   {key:'ears', label:'Ears', emptyIcon:'👂', chooseNote:'choose a style', styles:EAR_STYLES},
-  {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
+  {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
+  {key:'wings', label:'Arms', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
   {key:'feet', label:'Feet', emptyIcon:'🦶', chooseNote:'choose a style', styles:FEET_STYLES},
+  {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
 ];
 
 
 const LOCKED_ADDONS = [
-  {label:'Tail Feathers', icon:'🪶'},
   {label:'Tummy Patch', icon:'⬤'},
 ];
 
