@@ -523,7 +523,31 @@ const WING_STYLES = [
   },
 ];
 
-const BEAK_STYLES = [
+const HEAD_STYLES = [
+  {
+    id:'bug',
+    name:'Bug head',
+    subtitle:'Small rounded head, single color',
+    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_bug}}',
+    cutout:true,
+    makeCount:1,
+    colorParts:[
+      {key:'main', label:'Yarn color for the head', materialsLabel:'the head', defaultColorIdx:5},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','6 inc','12'],
+        ['3','[sc, inc] x 6','18'],
+        ['4–6','18 sc','18'],
+      ]},
+      {type:'note', text:'Attach the eyes between rounds 3–4 with a 10-stitch space between them, measured from the top of the head. If this amigurumi is for a baby or pet, embroider the eyes instead.'},
+      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail, then use it to sew the head to the side of the body that is more curved, spanning rounds 6 to 10. The bottom of the head should cover 4 stitches of round 10. When you have a few stitches remaining, stuff the head lightly.'},
+    ],
+  },
+];
+
+const MOUTH_STYLES = [
   {
     id:'classic',
     name:'Round beak',
@@ -581,27 +605,9 @@ const BEAK_STYLES = [
       {type:'note', text:'Invisible fasten off, leaving a long tail. Use the yarn tail to attach the snout to the body centered between the eyes, spanning rounds 7 to 10. When you have a few stitches remaining, lightly stuff the snout.'},
     ],
   },
-  {
-    id:'bug',
-    name:'Bug head',
-    subtitle:'Small rounded head, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_bug}}',
-    cutout:true,
-    makeCount:1,
-    colorParts:[
-      {key:'main', label:'Yarn color for the head', materialsLabel:'the head', defaultColorIdx:5},
-    ],
-    blocks:[
-      {type:'rounds', part:0, rows:[
-        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
-        ['2','6 inc','12'],
-        ['3','[sc, inc] x 6','18'],
-        ['4–6','18 sc','18'],
-      ]},
-      {type:'note', text:'Attach the eyes between rounds 3–4 with a 10-stitch space between them, measured from the top of the head. If this amigurumi is for a baby or pet, embroider the eyes instead.'},
-      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail, then use it to sew the head to the side of the body that is more curved, spanning rounds 6 to 10. The bottom of the head should cover 4 stitches of round 10. When you have a few stitches remaining, stuff the head lightly.'},
-    ],
-  },
+];
+
+const FACE_STYLES = [
   {
     id:'oval_eyes',
     name:'Oval eyes',
@@ -863,7 +869,9 @@ const FEET_STYLES = [
 
 const ADDONS = [
   {key:'wings', label:'Limbs', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
-  {key:'beak', label:'Head & Face', emptyIcon:'▲', chooseNote:'choose a style', styles:BEAK_STYLES},
+  {key:'head', label:'Head', emptyIcon:'⚪', chooseNote:'choose a style', styles:HEAD_STYLES},
+  {key:'mouth', label:'Mouth', emptyIcon:'👄', chooseNote:'choose a style', styles:MOUTH_STYLES},
+  {key:'face', label:'Face', emptyIcon:'👁️', chooseNote:'choose a style', styles:FACE_STYLES},
   {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
   {key:'ears', label:'Ears', emptyIcon:'👂', chooseNote:'choose a style', styles:EAR_STYLES},
   {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
