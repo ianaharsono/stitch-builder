@@ -925,6 +925,29 @@ const TAIL_STYLES = [
   },
 ];
 
+const TUMMY_STYLES = [
+  {
+    id:'round',
+    name:'Round Tummy',
+    subtitle:'Small round tummy patch, single color',
+    photo:'data:image/webp;base64,{{PHOTO_TUMMY_STYLES_round}}',
+    cutout:true,
+    makeCount:1,
+    colorParts:[
+      {key:'main', label:'Yarn color for the tummy', materialsLabel:'the tummy', defaultColorIdx:0},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','6 inc','12'],
+        ['3','[sc, inc] x 6','18'],
+        ['4','[2 sc, inc] x 6','24'],
+      ]},
+      {type:'note', text:'Invisible fasten off leaving a long tail. Thread a needle with the tail and use it to sew the tummy to the body, starting with the top of the tummy between rounds 9 and 10.'},
+    ],
+  },
+];
+
 const FEET_STYLES = [
   {
     id:'stub',
@@ -953,13 +976,13 @@ const ADDONS = [
   {key:'ears', label:'Ears', emptyIcon:'👂', chooseNote:'choose a style', styles:EAR_STYLES},
   {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
   {key:'wings', label:'Arms', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
+  {key:'tummy', label:'Tummy', emptyIcon:'⬤', chooseNote:'choose a style', styles:TUMMY_STYLES},
   {key:'feet', label:'Feet', emptyIcon:'🦶', chooseNote:'choose a style', styles:FEET_STYLES},
   {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
 ];
 
 
 const LOCKED_ADDONS = [
-  {label:'Tummy Patch', icon:'⬤'},
 ];
 
 const state = { bodyId:null, colors:{}, addons:{}, patternTitle:'' };
