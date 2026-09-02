@@ -605,6 +605,26 @@ const MOUTH_STYLES = [
       {type:'note', text:'Invisible fasten off, leaving a long tail. Use the yarn tail to attach the snout to the body centered between the eyes, spanning rounds 7 to 10. When you have a few stitches remaining, lightly stuff the snout.'},
     ],
   },
+  {
+    id:'round',
+    name:'Medium snout',
+    subtitle:'Medium round snout, single color',
+    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_round}}',
+    cutout:true,
+    makeCount:1,
+    colorParts:[
+      {key:'main', label:'Yarn color for the snout', materialsLabel:'the snout', defaultColorIdx:11},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 4 sc in a magic loop','4'],
+        ['2','4 inc','8'],
+        ['3','[sc, inc] x 4','12'],
+        ['4','12 sc','12'],
+      ]},
+      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail, then use it to sew the snout to the head spanning rounds 6 to 9, centered between the eyes.'},
+    ],
+  },
 ];
 
 const FACE_STYLES = [
