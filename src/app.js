@@ -853,6 +853,8 @@ const FEET_STYLES = [
     id:'stub',
     name:'Stub legs',
     subtitle:'Small round stub legs, single color',
+    photo:'data:image/webp;base64,{{PHOTO_FEET_STYLES_stub}}',
+    cutout:true,
     makeCount:4,
     colorParts:[
       {key:'main', label:'Yarn color for the legs', materialsLabel:'the legs', defaultColorIdx:6},
