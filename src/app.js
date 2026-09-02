@@ -521,6 +521,37 @@ const WING_STYLES = [
       {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail and use it to sew the arms to either side of the body, spanning rounds x to x, with an x-stitch space between them. Hide the yarn tails in the body.'},
     ],
   },
+  {
+    id:'webbed',
+    name:'Webbed Wings',
+    subtitle:'Flat wing worked in turned rows, tapering from a wide base to a point',
+    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_webbed}}',
+    cutout:true,
+    makeCount:2,
+    tintSplit:'waist',
+    // The color-change row reads as a diagonal, not a flat line or a symmetric
+    // dip, because the reference photo is shot at an angle — tuned by eye
+    // against the actual photo in curve-preview-wing-webbed.html.
+    tintCurve:{edgePct:0.54, centerPct:0.35, featherPct:0.01, tiltPct:-0.20},
+    colorParts:[
+      {key:'main', label:'Yarn color for the wing base (row 1)', materialsLabel:'the wing base', defaultColorIdx:11},
+      {key:'accent', label:'Yarn color for the wing body (rows 2–5)', materialsLabel:'the wing body', defaultColorIdx:6},
+    ],
+    blocks:[
+      {type:'note', text:'Leave a forearm\'s length yarn tail before starting row 1.'},
+      {type:'note', text:'Tip: when crocheting a new row, skip the first stitch from the hook. For the first row after a chain, crochet in the back loops only.'},
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ ch 12','12'],
+      ]},
+      {type:'rounds', part:1, rows:[
+        ['2','sl st in the second ch from the hook, 10 sc, __COLOR_SWITCH__ ch 2 and turn','11','sl st in the second ch from the hook, 10 sc, ch 2 and turn'],
+        ['3','hdc in the third st from the hook, 5 hdc, 3 sc, sl st, ch 1 and turn','10'],
+        ['4','skip 1 st, sl st, 2 sc, dec, 4 hdc, ch 2 and turn','8'],
+        ['5','hdc in the third st from the hook, 2 hdc, dec, 2 sc, sl st','7'],
+      ]},
+      {type:'note', text:'Fasten off, leaving a long tail. Weave the yarn tail through the last row so it comes out the opposite side of the wing tip. Thread a needle with the tail, then use it to sew the wings to the back of the body, spanning rounds 11 and 16, with the row 1 edge on top, two stitches away from each leg. Hide the tails in the body.'},
+    ],
+  },
 ];
 
 const HEAD_STYLES = [
@@ -989,16 +1020,22 @@ function tintGainFor(hex){
 // that sits at curve.edgePct (of image height) at the silhouette's left/right
 // edges and dips to curve.centerPct at its horizontal center, tracing the
 // visible curvature of a round on a domed shape (see renderSplitTint).
+// An optional curve.tiltPct rotates that boundary about its own horizontal
+// center — the left edge (t=0) and right edge (t=1) shift by equal and
+// opposite amounts, t=0.5 unaffected — for a piece photographed at an angle,
+// where the color-change line reads as a straight diagonal rather than a
+// symmetric dip (tuned by eye in curve-preview-wing-webbed.html).
 function splitYForColumn(x, waistY, x0, x1, curve, height){
   if(!curve) return waistY;
   const t = x1 > x0 ? Math.max(0, Math.min(1, (x - x0) / (x1 - x0))) : 0;
   const shape = Math.sin(Math.PI * t);
   const edgeY = curve.edgePct * height, centerY = curve.centerPct * height;
-  return edgeY + (centerY - edgeY) * shape;
+  const tilt = (curve.tiltPct || 0) * height * (t - 0.5);
+  return edgeY + (centerY - edgeY) * shape + tilt;
 }
 
 function decodeForTint(photoSrc, curve){
-  const cacheKey = curve ? `${photoSrc}::curve:${curve.edgePct}:${curve.centerPct}` : photoSrc;
+  const cacheKey = curve ? `${photoSrc}::curve:${curve.edgePct}:${curve.centerPct}:${curve.tiltPct||0}` : photoSrc;
   if(tintDecodeCache.has(cacheKey)) return tintDecodeCache.get(cacheKey);
   const promise = new Promise(resolve=>{
     const img = new Image();
