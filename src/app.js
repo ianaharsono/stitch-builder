@@ -552,6 +552,32 @@ const WING_STYLES = [
       {type:'note', text:'Fasten off, leaving a long tail. Weave the yarn tail through the last row so it comes out the opposite side of the wing tip. Thread a needle with the tail, then use it to sew the wings to the back of the body, spanning rounds 11 and 16, with the row 1 edge on top, two stitches away from each leg. Hide the tails in the body.'},
     ],
   },
+  {
+    id:'sleeved',
+    name:'Sleeved arms',
+    subtitle:'Small round arms with a contrasting cuff, two colors',
+    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_sleeved}}',
+    cutout:true,
+    makeCount:2,
+    tintSplit:'waist',
+    tintCurve:{edgePct:0.44, centerPct:0.47, featherPct:0.015, tiltPct:0.04},
+    colorParts:[
+      {key:'accent', label:'Yarn color for the cuff (round 5)', materialsLabel:'the arm cuffs', defaultColorIdx:14},
+      {key:'main', label:'Yarn color for the arm (rounds 1–4)', materialsLabel:'the arms', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'rounds', part:1, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2–4','6 sc','6'],
+      ]},
+      {type:'note', text:'You\'re changing colors in the next round. Remember to switch colors in the last step of the stitch before the color change.', whenColorsDiffer:true},
+      {type:'rounds', part:0, rows:[
+        ['5','__COLOR_SWITCH__ 6 sc','6','6 sc'],
+      ]},
+      {type:'note', text:'Flatten the arm and insert the hook under the first two stitches across from each other, so there are five loops on the hook. Sc both sides together, then continue to sc together the next two pairs of stitches. Fasten off leaving a forearm\'s length yarn tail.'},
+      {type:'note', text:'Thread a needle with the tail and use it to sew the arm to the body, between rounds 11 and 12. Hide the yarn tail in the body. Repeat for the other arm.'},
+    ],
+  },
 ];
 
 const HEAD_STYLES = [
@@ -1306,18 +1332,33 @@ function isLowContrastTint(hexOrPair){
   return hexes.some(h => h && isLowContrastSwatch(h));
 }
 
+// Many swatches (Seafoam, Pink, Lavender, Light Blue, Lime, ...) are too
+// light to read as text on the panel's white background at their literal
+// hex, even though they're not light enough to trip isLowContrastSwatch's
+// near-white cutoff. Rather than falling back to plain ink at some single
+// threshold, darkens the swatch itself in fixed steps until it's legible —
+// scaling all three channels by the same factor moves only RGB lightness,
+// so hue and saturation (and the color's identity) are preserved.
+function readableSwatchTextColor(hex){
+  let r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const brightness = () => (r*299 + g*587 + b*114) / 1000;
+  while(brightness() > 115){
+    r = Math.round(r*0.9); g = Math.round(g*0.9); b = Math.round(b*0.9);
+  }
+  return `rgb(${r},${g},${b})`;
+}
+
 // compilePieceBlocks resolves __COLOR_START__/__COLOR_SWITCH__ into plain
 // "(pink yarn)" / "(switch to pink yarn)" call-outs so the same text also
 // works unstyled in the plain-text pattern export. The on-screen render only
-// bolds and tints them with that color's own hex, so a color change mid-round
-// reads at a glance — falls back to the ink color for a near-white swatch
-// (isLowContrastSwatch) rather than rendering barely-visible bold text.
+// bolds and tints them with that color's own hex (darkened via
+// readableSwatchTextColor for contrast), so a color change mid-round reads
+// at a glance.
 function highlightYarnColorCallouts(text){
   return text.replace(/\((?:switch to )?([a-z][a-z ]*?) yarn\)/g, (match, colorName)=>{
     const color = COLORS.find(c=>c.name.toLowerCase()===colorName);
     if(!color) return match;
-    const textColor = isLowContrastSwatch(color.hex) ? 'var(--ink)' : color.hex;
-    return `<strong style="color:${textColor}">${match}</strong>`;
+    return `<strong style="color:${readableSwatchTextColor(color.hex)}">${match}</strong>`;
   });
 }
 
