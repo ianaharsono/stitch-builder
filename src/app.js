@@ -251,17 +251,85 @@ const BODIES = [
       {type:'note', text:'Fasten off leaving a long tail. Thread a needle with the tail; then use it to pull the yarn tail through the front loops of each stitch. Pull tight to close the remaining gap. Hide the yarn tail in the body.'},
     ],
   },
+  {
+    id:'thimble',
+    name:'Thimble body',
+    subtitle:'A tall, rounded dome shape like a sewing thimble.',
+    photo:'data:image/webp;base64,{{PHOTO_BODIES_thimble}}',
+    cutout:true,
+    colorParts:[
+      {key:'main', label:'Yarn color for the body', materialsLabel:'the body', defaultColorIdx:0},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','6 inc','12'],
+        ['3','[sc, inc] x 6','18'],
+        ['4','[2 sc, inc] x 6','24'],
+        ['5','24 sc','24'],
+        ['6','[3 sc, inc] x 6','30'],
+        ['7–9','30 sc','30'],
+        ['10','[4 sc, inc] x 6','36'],
+        ['11–16','36 sc','36'],
+        ['17','[4 sc, dec] x 6, working in the back loops only (BLO)','30'],
+        ['18','[3 sc, dec] x 6','24'],
+        ['19','[2 sc, dec] x 6','18'],
+        ['20','[sc, dec] x 6','12'],
+        ['21','6 dec','6'],
+      ]},
+      {type:'note', text:'Stuff the piece.'},
+      {type:'note', text:'Fasten off leaving a long tail. Thread a needle with the tail; then use it to pull the yarn tail through the front loops of each stitch. Pull tight to close the remaining gap.'},
+    ],
+  },
+  {
+    id:'dino',
+    name:'Dino body',
+    subtitle:'A rounded head tapering to a pointed back, perfect for dinos and other four-legged animals',
+    photo:'data:image/webp;base64,{{PHOTO_BODIES_dino}}',
+    cutout:true,
+    colorParts:[
+      {key:'main', label:'Yarn color for the body', materialsLabel:'the head & body', defaultColorIdx:6},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','start 6 sc in a magic loop','6'],
+        ['2','6 inc','12'],
+        ['3','[sc, inc] x 6','18'],
+        ['4–5','18 sc','18'],
+        ['6','[5 sc, inc] x 3','21'],
+        ['7–8','21 sc','21'],
+        ['9','7 sc, 7 inc, 7 sc','28'],
+        ['10','28 sc','28'],
+        ['11','13 sc, 2 inc, 13 sc','30'],
+        ['12–14','30 sc','30'],
+        ['15','7 sc, dec, [sc, dec] x 5, 6 sc','24'],
+        ['16–17','24 sc','24'],
+        ['18','7 sc, dec, [sc, dec] x 3, 6 sc','20'],
+      ]},
+      {type:'note', text:'The beginning of each round is the belly of the body. Attach the eyes between rounds 4 and 5 with an 8-stitch space between them from the top of the head. If this amigurumi is for a baby or pet, embroider the eyes instead. Stuff the piece, shaping it like a peanut, and continue to stuff the body as you go.'},
+      {type:'rounds', part:0, rows:[
+        ['19','20 sc','20'],
+        ['20','6 sc, 4 dec, 6 sc','16'],
+        ['21','16 sc','16'],
+        ['22','4 sc, 4 dec, 4 sc','12'],
+        ['23','12 sc','12'],
+        ['24','[sc, dec] x 4','8'],
+        ['25','2 sc, 2 dec, 2 sc','6'],
+      ]},
+      {type:'note', text:'Fasten off, leaving a long tail. Thread a needle with the tail; then use it to pull the yarn tail through the front loops of each stitch. Pull tight to close the remaining gap.'},
+    ],
+  },
 ];
 
 const COLORS = [
-  {name:'Natural White', hex:'#F9F4F3', gain:0.6},
-  {name:'Milk White', hex:'#EDE5DB', gain:0.6},
+  {name:'White', hex:'#F9F4F3', gain:0.6},
+  {name:'Cream', hex:'#EDE5DB', gain:0.6},
   {name:'Beige', hex:'#D0B79F', gain:0.90},
   {name:'Khaki', hex:'#DC9D62', gain:0.95},
   {name:'Brown', hex:'#9B4C22', gain:1.45},
   {name:'Coffee', hex:'#3E201E', gain:1.05},
-  {name:'Goose Yellow', hex:'#F6C339', gain:0.8},
-  {name:'Golden Yellow', hex:'#E6AD34', gain:0.85},
+  {name:'Yellow', hex:'#F6C339', gain:0.8},
+  {name:'Marigold', hex:'#E6AD34', gain:0.85},
   {name:'Orange', hex:'#FB6209', gain:0.95},
   {name:'Red', hex:'#D2192B', gain:0.9},
   {name:'Terracotta Red', hex:'#AA464E', gain:1.05},
@@ -270,15 +338,15 @@ const COLORS = [
   {name:'Lavender', hex:'#B79BCB', gain:0.8},
   {name:'Light Blue', hex:'#8DB1D8', gain:0.9},
   {name:'Sea Blue', hex:'#21ACDE', gain:1.15},
-  {name:'Denim Blue', hex:'#213450', gain:1.1},
-  {name:'Seafoam Green', hex:'#B3D6CA', gain:0.7},
-  {name:'Autumn Green', hex:'#9FB951', gain:1.0},
-  {name:'Sage Green', hex:'#768A60', gain:1.3},
-  {name:'Kelly Green', hex:'#31B478', gain:1.4},
-  {name:'Forest Green', hex:'#26502D', gain:1.3},
-  {name:'Army Green', hex:'#403D20', gain:1.45},
-  {name:'Pigeon Gray', hex:'#A7A4B6', gain:1.2},
-  {name:'Dark Gray', hex:'#504C5C', gain:1.3},
+  {name:'Navy', hex:'#213450', gain:1.1},
+  {name:'Seafoam', hex:'#B3D6CA', gain:0.7},
+  {name:'Lime', hex:'#9FB951', gain:1.0},
+  {name:'Sage', hex:'#768A60', gain:1.3},
+  {name:'Green', hex:'#31B478', gain:1.4},
+  {name:'Forest', hex:'#26502D', gain:1.3},
+  {name:'Olive', hex:'#403D20', gain:1.45},
+  {name:'Gray', hex:'#A7A4B6', gain:1.2},
+  {name:'Charcoal', hex:'#504C5C', gain:1.3},
   {name:'Black', hex:'#1C1C1C', gain:1.05},
 ];
 
@@ -435,6 +503,24 @@ const WING_STYLES = [
       {type:'note', text:'Fasten off, leaving an arm\'s length yarn tail. Thread a needle with the tail, then use it to sew the wing three stitches away from an eye, at an angle, with the flat edge facing upwards, spanning rounds 10 to 13. The long feathers should be pointing towards the back of the body unsewn. Hide the tail in the body. Repeat for the other wing.'},
     ],
   },
+  {
+    id:'stub',
+    name:'Stub arms',
+    subtitle:'Small round stub arms, single color',
+    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_stub}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for the arms', materialsLabel:'the arms', defaultColorIdx:6},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','[2 sc, inc] x 2','8'],
+      ]},
+      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail and use it to sew the arms to either side of the body, spanning rounds x to x, with an x-stitch space between them. Hide the yarn tails in the body.'},
+    ],
+  },
 ];
 
 const BEAK_STYLES = [
@@ -516,6 +602,25 @@ const BEAK_STYLES = [
       {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail, then use it to sew the head to the side of the body that is more curved, spanning rounds 6 to 10. The bottom of the head should cover 4 stitches of round 10. When you have a few stitches remaining, stuff the head lightly.'},
     ],
   },
+  {
+    id:'oval_eyes',
+    name:'Oval eyes',
+    subtitle:'Paired oval eyes, single color',
+    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_oval_eyes}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for the eyes', materialsLabel:'the eyes', defaultColorIdx:0},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 4 sc in a magic loop','4'],
+        ['2','[inc, hdc inc] x 2','8'],
+      ]},
+      {type:'note', text:'Invisible fasten off with a long tail. Attach the safety eyes between rounds 1 and 2, centered in the eye piece.'},
+      {type:'note', text:'Thread a needle with the yarn tail and use it to sew each eye to the body, spanning rounds 6–10. The eyes should be two stitches apart.'},
+    ],
+  },
 ];
 
 const HORN_STYLES = [
@@ -536,6 +641,57 @@ const HORN_STYLES = [
         ['3','6 sc','6'],
       ]},
       {type:'note', text:'Invisible fasten off, leaving a long tail. Use the yarn tail to sew the horns above the ears on either side of the head, between rounds 3 and 4.'},
+    ],
+  },
+  {
+    id:'spike',
+    name:'Spikes (small)',
+    subtitle:'Small pointed spikes, single color',
+    photo:'data:image/webp;base64,{{PHOTO_HORN_STYLES_spike}}',
+    cutout:true,
+    colorParts:[
+      {key:'main', label:'Yarn color for the spikes', materialsLabel:'the spikes', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 4 sc in a magic loop','4'],
+        ['2','[sc, inc] x 2','6'],
+      ]},
+      {type:'note', text:'Invisible fasten off leaving a long tail. Thread a needle with the tail and use it to sew each spike in place, leaving one to two rounds between each spike.'},
+    ],
+  },
+  {
+    id:'spike_medium',
+    name:'Spikes (medium)',
+    subtitle:'Small pointed spikes, single color',
+    photo:'data:image/webp;base64,{{PHOTO_HORN_STYLES_spike_medium}}',
+    cutout:true,
+    colorParts:[
+      {key:'main', label:'Yarn color for the spikes', materialsLabel:'the spikes', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 5 sc in a magic loop','5'],
+        ['2','sc, inc, 2 sc, inc','7'],
+      ]},
+      {type:'note', text:'Invisible fasten off leaving a long tail. Thread a needle with the tail and use it to sew each spike in place, leaving one to two rounds between each spike.'},
+    ],
+  },
+  {
+    id:'spike_large',
+    name:'Spikes (large)',
+    subtitle:'Small pointed spikes, single color',
+    photo:'data:image/webp;base64,{{PHOTO_HORN_STYLES_spike_large}}',
+    cutout:true,
+    colorParts:[
+      {key:'main', label:'Yarn color for the spikes', materialsLabel:'the spikes', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','[sc, inc] x 3','9'],
+      ]},
+      {type:'note', text:'Invisible fasten off leaving a long tail. Thread a needle with the tail and use it to sew each spike in place, leaving one to two rounds between each spike.'},
     ],
   },
 ];
@@ -686,17 +842,36 @@ const TAIL_STYLES = [
   },
 ];
 
+const FEET_STYLES = [
+  {
+    id:'stub',
+    name:'Stub legs',
+    subtitle:'Small round stub legs, single color',
+    makeCount:4,
+    colorParts:[
+      {key:'main', label:'Yarn color for the legs', materialsLabel:'the legs', defaultColorIdx:6},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','[2 sc, inc] x 2','8'],
+      ]},
+      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail, then use it to sew the first pair of legs centered to either side near the belly spanning rounds x to x, with an x-stitch space between them. Sew the second pair of legs centered to either side near the belly and tail spanning rounds x to x, with an x-stitch space between them. Hide the yarn tails in the body.'},
+    ],
+  },
+];
+
 const ADDONS = [
   {key:'wings', label:'Limbs', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
   {key:'beak', label:'Head & Face', emptyIcon:'▲', chooseNote:'choose a style', styles:BEAK_STYLES},
   {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
   {key:'ears', label:'Ears', emptyIcon:'👂', chooseNote:'choose a style', styles:EAR_STYLES},
   {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
+  {key:'feet', label:'Feet', emptyIcon:'🦶', chooseNote:'choose a style', styles:FEET_STYLES},
 ];
 
 
 const LOCKED_ADDONS = [
-  {label:'Feet', icon:'🦶'},
   {label:'Tail Feathers', icon:'🪶'},
   {label:'Tummy Patch', icon:'⬤'},
 ];
@@ -1043,8 +1218,8 @@ function checkColorFor(hex){
   return brightness < 140 ? '#fff' : '#2B2130';
 }
 
-// Swatches this close to the panel's own paper-white background (e.g. Natural
-// White, Milk White) nearly vanish against it, since their only edge is the
+// Swatches this close to the panel's own paper-white background (e.g. White,
+// Cream) nearly vanish against it, since their only edge is the
 // thin var(--line) outline. Reuses the same perceived-brightness formula as
 // checkColorFor, just against the opposite end of the range.
 function isLowContrastSwatch(hex){
@@ -1054,8 +1229,8 @@ function isLowContrastSwatch(hex){
 }
 
 // Same near-white problem as isLowContrastSwatch, but for a tinted reference
-// photo sitting on var(--locked-wash): a cutout piece tinted Natural White or
-// Milk White blends into that backdrop with nothing to mark its edge. Takes
+// photo sitting on var(--locked-wash): a cutout piece tinted White or
+// Cream blends into that backdrop with nothing to mark its edge. Takes
 // whatever resolveTintColors/resolveTintColorsFromResolved returned — a
 // single hex, a [top, bottom] pair (either half possibly null for a
 // native-color region), or null for an untinted native-color photo.
@@ -1063,6 +1238,21 @@ function isLowContrastTint(hexOrPair){
   if(!hexOrPair) return false;
   const hexes = Array.isArray(hexOrPair) ? hexOrPair : [hexOrPair];
   return hexes.some(h => h && isLowContrastSwatch(h));
+}
+
+// compilePieceBlocks resolves __COLOR_START__/__COLOR_SWITCH__ into plain
+// "(pink yarn)" / "(switch to pink yarn)" call-outs so the same text also
+// works unstyled in the plain-text pattern export. The on-screen render only
+// bolds and tints them with that color's own hex, so a color change mid-round
+// reads at a glance — falls back to the ink color for a near-white swatch
+// (isLowContrastSwatch) rather than rendering barely-visible bold text.
+function highlightYarnColorCallouts(text){
+  return text.replace(/\((?:switch to )?([a-z][a-z ]*?) yarn\)/g, (match, colorName)=>{
+    const color = COLORS.find(c=>c.name.toLowerCase()===colorName);
+    if(!color) return match;
+    const textColor = isLowContrastSwatch(color.hex) ? 'var(--ink)' : color.hex;
+    return `<strong style="color:${textColor}">${match}</strong>`;
+  });
 }
 
 // renderAddonsGrid and the pattern-head addon photos rebuild their <img>
@@ -1573,7 +1763,7 @@ function render(){
     if(seg.kind==='table'){
       html += `<table class="rounds">`;
       seg.rows.forEach(r=>{
-        html += `<tr><td class="rnd">Rnd ${r[0]}</td><td>${r[1]}</td><td class="count">${r[2] ? '('+r[2]+')' : ''}</td></tr>`;
+        html += `<tr><td class="rnd">Rnd ${r[0]}</td><td>${highlightYarnColorCallouts(r[1])}</td><td class="count">${r[2] ? '('+r[2]+')' : ''}</td></tr>`;
       });
       html += `</table>`;
     } else {
@@ -1590,7 +1780,7 @@ function render(){
         if(seg.kind==='table'){
           html += `<table class="rounds">`;
           seg.rows.forEach(r=>{
-            html += `<tr><td class="rnd">Rnd ${r[0]}</td><td>${r[1]}</td><td class="count">${r[2] ? '('+r[2]+')' : ''}</td></tr>`;
+            html += `<tr><td class="rnd">Rnd ${r[0]}</td><td>${highlightYarnColorCallouts(r[1])}</td><td class="count">${r[2] ? '('+r[2]+')' : ''}</td></tr>`;
           });
           html += `</table>`;
         } else {
@@ -1676,7 +1866,35 @@ function initPatternTitle(){
   showView();
 }
 
+// The pattern panel is sticky-positioned so its Copy/Download buttons stay
+// on screen, but its max-height needs to leave room for whatever the page
+// header above it actually measures (title length, wrapping, etc. all shift
+// this) rather than a guessed constant, or the buttons can render below the
+// viewport on load. As the page scrolls, the sticky panel's own top shrinks
+// toward its pinned `top:20px` — recomputing on scroll (not just resize)
+// lets the panel grow to use that extra room instead of staying capped at
+// the smaller pre-scroll height.
+function syncPatternPanelMaxHeight(){
+  const panel = document.querySelector('.pattern-panel');
+  if(!panel || window.innerWidth <= 880){
+    document.documentElement.style.removeProperty('--pattern-panel-max-height');
+    return;
+  }
+  const top = panel.getBoundingClientRect().top;
+  const maxHeight = Math.max(320, window.innerHeight - top - 20);
+  document.documentElement.style.setProperty('--pattern-panel-max-height', `${maxHeight}px`);
+}
+let patternPanelSyncQueued = false;
+function queueSyncPatternPanelMaxHeight(){
+  if(patternPanelSyncQueued) return;
+  patternPanelSyncQueued = true;
+  requestAnimationFrame(()=>{ patternPanelSyncQueued = false; syncPatternPanelMaxHeight(); });
+}
+window.addEventListener('resize', queueSyncPatternPanelMaxHeight);
+window.addEventListener('scroll', queueSyncPatternPanelMaxHeight, {passive:true});
+
 loadState();
 renderShapes();
 render();
 initPatternTitle();
+syncPatternPanelMaxHeight();

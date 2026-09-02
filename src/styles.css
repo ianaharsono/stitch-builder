@@ -97,8 +97,8 @@
   .layout{ display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr); gap:28px; align-items:start; }
   @media (max-width: 880px){
     .layout{ grid-template-columns:1fr; }
-    .pattern-panel{ position:static; }
-    .pattern-body{ max-height:none; }
+    .pattern-panel{ position:static; overflow:visible; max-height:none; display:block; }
+    .pattern-body{ flex:none; overflow-y:visible; }
   }
 
   .rail-col{ display:flex; flex-direction:column; gap:18px; }
@@ -110,6 +110,7 @@
 
   .rail-section{ padding:20px 22px; }
   .rail-section + .rail-section{ border-top:1px solid var(--line); }
+  .body-color-block{ margin-top:20px; padding-top:20px; border-top:1px solid var(--line); }
   .rail-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:16px; }
   .rail-num{
     font-family:'JetBrains Mono', monospace; font-size:0.72rem; font-weight:600;
@@ -253,8 +254,13 @@
   .body-color-preview.is-cutout{ object-fit:contain; padding:10px; }
 
   /* Pattern panel */
-  .pattern-panel{ position:sticky; top:20px; overflow:hidden; }
+  .pattern-panel{
+    position:sticky; top:20px; overflow:hidden;
+    max-height:var(--pattern-panel-max-height, calc(100vh - 40px));
+    display:flex; flex-direction:column;
+  }
   .pattern-head-wrap{
+    flex-shrink:0;
     background: linear-gradient(135deg, var(--hot-pink-wash), var(--gold-wash) 60%, var(--teal-wash));
     border-bottom:1px solid var(--line);
   }
@@ -291,7 +297,7 @@
   }
   .pattern-photo.is-cutout{ object-fit:contain; padding:10px; }
 
-  /* A cutout piece tinted a near-white color (Natural White, Milk White)
+  /* A cutout piece tinted a near-white color (White, Cream)
      blends into the standard var(--locked-wash) backdrop these four photo
      spots share — swap to a visibly darker neutral just for those pieces.
      Toggled in JS by isLowContrastTint. */
@@ -311,7 +317,7 @@
   .pattern-meta span{ display:inline-flex; align-items:center; gap:5px; }
   .meta-dot{ width:8px; height:8px; border-radius:50%; display:inline-block; }
 
-  .pattern-body{ padding:20px 22px; max-height:62vh; overflow-y:auto; }
+  .pattern-body{ padding:20px 22px; flex:1 1 auto; min-height:0; overflow-y:auto; }
   .empty-state{ color:var(--ink-soft); font-size:0.88rem; padding:6px 2px 2px; line-height:1.6; }
 
   .p-section + .p-section{ margin-top:20px; padding-top:18px; border-top:1px dashed var(--line); }
@@ -328,7 +334,7 @@
   table.rounds td.count{ text-align:right; color:var(--ink-soft); white-space:nowrap; width:44px; }
   .finishing{ font-size:0.82rem; line-height:1.6; margin-top:12px; color:var(--ink); }
 
-  .actions{ display:flex; gap:10px; padding:16px 22px; border-top:1px solid var(--line); }
+  .actions{ display:flex; gap:10px; padding:16px 22px; border-top:1px solid var(--line); flex-shrink:0; }
   .btn{
     font-family:'Nunito', sans-serif; font-weight:800; font-size:0.82rem; border-radius:10px;
     padding:10px 14px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:7px;
