@@ -636,7 +636,7 @@
           <button type="button" class="cm-tool-btn selected" data-tool="pencil" title="Pencil — click to paint a stitch, drag to paint a line (right-click erases)">
             <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l.8-3.4L11.6 3.8a1.3 1.3 0 0 1 1.8 0l.8.8a1.3 1.3 0 0 1 0 1.8L6.4 14.2 3 15z"/><path d="M10.2 5.4l2.4 2.4"/></svg>
           </button>
-          <button type="button" class="cm-tool-btn" data-tool="bucket" title="Fill bucket — click the shape to fill every stitch with the selected color">
+          <button type="button" class="cm-tool-btn" data-tool="bucket" title="Fill bucket — click a stitch to fill the connected patch of matching stitches touching it">
             <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 8.2L8.6 2.4l6.4 6.4a2 2 0 0 1 0 2.9l-2.7 2.7a2 2 0 0 1-2.9 0L2.8 8.2z"/><path d="M2.8 8.2h9.4"/><circle cx="15" cy="14.5" r="1.1" fill="currentColor" stroke="none"/></svg>
           </button>
           <button type="button" class="cm-tool-btn" data-tool="rect" title="Rectangle — drag to fill a block of rounds and stitches">
@@ -3684,7 +3684,7 @@ const ColorMapper = (function(){
     if(moved > CLICK_MOVE_THRESHOLD) return;
     if(activeTool==='bucket' && e.button===0){
       const hit = pickBlock(e);
-      if(hit) fillAll();
+      if(hit) floodFill(hit.ri, hit.bi);
     }
   }
   function onCanvasHover(e){
@@ -3704,10 +3704,50 @@ const ColorMapper = (function(){
     renderLegend();
     renderPreview();
   }
-  function fillAll(){
-    if(selected===null){ showToast('Pick a color first'); return; }
-    const val = selected==='erase' ? null : selected;
-    rounds.forEach(r=>{ r.colors = Array(r.count).fill(val); });
+  // Every stitch in a round whose fractional span [bi/count, (bi+1)/count)
+  // overlaps the given fractional range — the same fraction-based mapping
+  // rectIncluded uses, since round stitch counts differ and a stitch can
+  // sit against more than one stitch in a neighboring round.
+  function stitchesOverlappingFraction(ri, s, e){
+    const count = rounds[ri].count;
+    const result = [];
+    for(let bi=0; bi<count; bi++){
+      const bs = bi/count, be = (bi+1)/count;
+      if(bs < e && be > s) result.push(bi);
+    }
+    return result;
+  }
+
+  // Fills the connected patch of stitches sharing the clicked stitch's
+  // current color — a paint-program bucket fill that stops at any stitch
+  // that's already a different color, rather than repainting the whole piece.
+  function floodFill(startRi, startBi){
+    const val = currentPaintValue();
+    if(val===undefined){ showToast('Pick a color first'); return; }
+    const target = rounds[startRi].colors[startBi];
+    if(target === val) return;
+    const visited = rounds.map(r=>Array(r.count).fill(false));
+    const stack = [[startRi, startBi]];
+    visited[startRi][startBi] = true;
+    while(stack.length){
+      const [ri, bi] = stack.pop();
+      rounds[ri].colors[bi] = val;
+      const count = rounds[ri].count;
+      [(bi-1+count)%count, (bi+1)%count].forEach(nb=>{
+        if(!visited[ri][nb] && rounds[ri].colors[nb]===target){ visited[ri][nb] = true; stack.push([ri, nb]); }
+      });
+      const s = bi/count, e = (bi+1)/count;
+      if(ri>0){
+        stitchesOverlappingFraction(ri-1, s, e).forEach(nb=>{
+          if(!visited[ri-1][nb] && rounds[ri-1].colors[nb]===target){ visited[ri-1][nb] = true; stack.push([ri-1, nb]); }
+        });
+      }
+      if(ri<rounds.length-1){
+        stitchesOverlappingFraction(ri+1, s, e).forEach(nb=>{
+          if(!visited[ri+1][nb] && rounds[ri+1].colors[nb]===target){ visited[ri+1][nb] = true; stack.push([ri+1, nb]); }
+        });
+      }
+    }
     buildMesh({refit:false});
     renderLegend();
     renderPreview();

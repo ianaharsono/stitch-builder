@@ -3006,7 +3006,7 @@ const ColorMapper = (function(){
     if(moved > CLICK_MOVE_THRESHOLD) return;
     if(activeTool==='bucket' && e.button===0){
       const hit = pickBlock(e);
-      if(hit) fillAll();
+      if(hit) floodFill(hit.ri, hit.bi);
     }
   }
   function onCanvasHover(e){
@@ -3026,10 +3026,50 @@ const ColorMapper = (function(){
     renderLegend();
     renderPreview();
   }
-  function fillAll(){
-    if(selected===null){ showToast('Pick a color first'); return; }
-    const val = selected==='erase' ? null : selected;
-    rounds.forEach(r=>{ r.colors = Array(r.count).fill(val); });
+  // Every stitch in a round whose fractional span [bi/count, (bi+1)/count)
+  // overlaps the given fractional range — the same fraction-based mapping
+  // rectIncluded uses, since round stitch counts differ and a stitch can
+  // sit against more than one stitch in a neighboring round.
+  function stitchesOverlappingFraction(ri, s, e){
+    const count = rounds[ri].count;
+    const result = [];
+    for(let bi=0; bi<count; bi++){
+      const bs = bi/count, be = (bi+1)/count;
+      if(bs < e && be > s) result.push(bi);
+    }
+    return result;
+  }
+
+  // Fills the connected patch of stitches sharing the clicked stitch's
+  // current color — a paint-program bucket fill that stops at any stitch
+  // that's already a different color, rather than repainting the whole piece.
+  function floodFill(startRi, startBi){
+    const val = currentPaintValue();
+    if(val===undefined){ showToast('Pick a color first'); return; }
+    const target = rounds[startRi].colors[startBi];
+    if(target === val) return;
+    const visited = rounds.map(r=>Array(r.count).fill(false));
+    const stack = [[startRi, startBi]];
+    visited[startRi][startBi] = true;
+    while(stack.length){
+      const [ri, bi] = stack.pop();
+      rounds[ri].colors[bi] = val;
+      const count = rounds[ri].count;
+      [(bi-1+count)%count, (bi+1)%count].forEach(nb=>{
+        if(!visited[ri][nb] && rounds[ri].colors[nb]===target){ visited[ri][nb] = true; stack.push([ri, nb]); }
+      });
+      const s = bi/count, e = (bi+1)/count;
+      if(ri>0){
+        stitchesOverlappingFraction(ri-1, s, e).forEach(nb=>{
+          if(!visited[ri-1][nb] && rounds[ri-1].colors[nb]===target){ visited[ri-1][nb] = true; stack.push([ri-1, nb]); }
+        });
+      }
+      if(ri<rounds.length-1){
+        stitchesOverlappingFraction(ri+1, s, e).forEach(nb=>{
+          if(!visited[ri+1][nb] && rounds[ri+1].colors[nb]===target){ visited[ri+1][nb] = true; stack.push([ri+1, nb]); }
+        });
+      }
+    }
     buildMesh({refit:false});
     renderLegend();
     renderPreview();
