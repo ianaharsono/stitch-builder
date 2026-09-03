@@ -416,45 +416,6 @@ const WING_STYLES = [
     ],
   },
   {
-    id:'round',
-    name:'Round arms',
-    subtitle:'Small round arms, single color',
-    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_round}}',
-    cutout:true,
-    makeCount:2,
-    colorParts:[
-      {key:'main', label:'Yarn color for arms', materialsLabel:'the arms', defaultColorIdx:13},
-    ],
-    blocks:[
-      {type:'rounds', part:0, rows:[
-        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
-        ['2','[2 sc, inc] x 2','8'],
-        ['3','8 sc','8'],
-      ]},
-      {type:'note', text:'Flatten the arm and insert the hook under the first two stitches across from each other so there are five loops on the hook. Sc both sides together, then continue to sc together the next three pairs of stitches. Fasten off leaving a long tail.'},
-      {type:'note', text:'Thread a needle with the tail and use it to sew the arms to either side of the body, three stitches back from the eyes, between rounds 10 and 11. Hide the yarn tail in the body.'},
-    ],
-  },
-  {
-    id:'tiny',
-    name:'Tiny arms',
-    subtitle:'Extra small arms, worked directly into the body, single color',
-    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_tiny}}',
-    cutout:true,
-    makeCount:2,
-    colorParts:[
-      {key:'main', label:'Yarn color for arms', materialsLabel:'the arms', defaultColorIdx:2},
-    ],
-    blocks:[
-      {type:'note', text:'Repeat the following on each side to create two arms:'},
-      {type:'note', text:'Step 1. Sl st join the yarn to one side of the body between rounds 12 and 13, aligned roughly with the eyes. Insert the hook into the body from the back to the front.'},
-      {type:'note', text:'Step 2. Ch 3.'},
-      {type:'note', text:'Step 3. Sc into the second ch from the hook, sc.'},
-      {type:'note', text:'Step 4. Sl st in the stitch where you made the sl st join, from the front to the back of the body. Both yarn tails should be coming out of the same hole.'},
-      {type:'note', text:'Step 5. Fasten off. Tie the yarn tails together and hide them.'},
-    ],
-  },
-  {
     id:'bat',
     name:'Bat wings',
     subtitle:'Flat, notched wing shape, single color',
@@ -504,24 +465,6 @@ const WING_STYLES = [
     ],
   },
   {
-    id:'stub',
-    name:'Stub arms',
-    subtitle:'Small round stub arms, single color',
-    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_stub}}',
-    cutout:true,
-    makeCount:2,
-    colorParts:[
-      {key:'main', label:'Yarn color for the arms', materialsLabel:'the arms', defaultColorIdx:6},
-    ],
-    blocks:[
-      {type:'rounds', part:0, rows:[
-        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
-        ['2','[2 sc, inc] x 2','8'],
-      ]},
-      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail and use it to sew the arms to either side of the body, spanning rounds x to x, with an x-stitch space between them. Hide the yarn tails in the body.'},
-    ],
-  },
-  {
     id:'webbed',
     name:'Webbed Wings',
     subtitle:'Flat wing worked in turned rows, tapering from a wide base to a point',
@@ -552,11 +495,71 @@ const WING_STYLES = [
       {type:'note', text:'Fasten off, leaving a long tail. Weave the yarn tail through the last row so it comes out the opposite side of the wing tip. Thread a needle with the tail, then use it to sew the wings to the back of the body, spanning rounds 11 and 16, with the row 1 edge on top, two stitches away from each leg. Hide the tails in the body.'},
     ],
   },
+];
+
+const ARM_STYLES = [
+  {
+    id:'round',
+    name:'Round arms',
+    subtitle:'Small round arms, single color',
+    photo:'data:image/webp;base64,{{PHOTO_ARM_STYLES_round}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for arms', materialsLabel:'the arms', defaultColorIdx:13},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','[2 sc, inc] x 2','8'],
+        ['3','8 sc','8'],
+      ]},
+      {type:'note', text:'Flatten the arm and insert the hook under the first two stitches across from each other so there are five loops on the hook. Sc both sides together, then continue to sc together the next three pairs of stitches. Fasten off leaving a long tail.'},
+      {type:'note', text:'Thread a needle with the tail and use it to sew the arms to either side of the body, three stitches back from the eyes, between rounds 10 and 11. Hide the yarn tail in the body.'},
+    ],
+  },
+  {
+    id:'tiny',
+    name:'Tiny arms',
+    subtitle:'Extra small arms, worked directly into the body, single color',
+    photo:'data:image/webp;base64,{{PHOTO_ARM_STYLES_tiny}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for arms', materialsLabel:'the arms', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'note', text:'Repeat the following on each side to create two arms:'},
+      {type:'note', text:'Step 1. Sl st join the yarn to one side of the body between rounds 12 and 13, aligned roughly with the eyes. Insert the hook into the body from the back to the front.'},
+      {type:'note', text:'Step 2. Ch 3.'},
+      {type:'note', text:'Step 3. Sc into the second ch from the hook, sc.'},
+      {type:'note', text:'Step 4. Sl st in the stitch where you made the sl st join, from the front to the back of the body. Both yarn tails should be coming out of the same hole.'},
+      {type:'note', text:'Step 5. Fasten off. Tie the yarn tails together and hide them.'},
+    ],
+  },
+  {
+    id:'stub',
+    name:'Stub arms',
+    subtitle:'Small round stub arms, single color',
+    photo:'data:image/webp;base64,{{PHOTO_ARM_STYLES_stub}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for the arms', materialsLabel:'the arms', defaultColorIdx:6},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','[2 sc, inc] x 2','8'],
+      ]},
+      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail and use it to sew the arms to either side of the body, spanning rounds x to x, with an x-stitch space between them. Hide the yarn tails in the body.'},
+    ],
+  },
   {
     id:'sleeved',
     name:'Sleeved arms',
     subtitle:'Small round arms with a contrasting cuff, two colors',
-    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_sleeved}}',
+    photo:'data:image/webp;base64,{{PHOTO_ARM_STYLES_sleeved}}',
     cutout:true,
     makeCount:2,
     tintSplit:'waist',
@@ -585,7 +588,7 @@ const HEAD_STYLES = [
     id:'bug',
     name:'Bug head',
     subtitle:'Small rounded head, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_bug}}',
+    photo:'data:image/webp;base64,{{PHOTO_HEAD_STYLES_bug}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -609,7 +612,7 @@ const MOUTH_STYLES = [
     id:'classic',
     name:'Round beak',
     subtitle:'Small pointed beak, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_classic}}',
+    photo:'data:image/webp;base64,{{PHOTO_MOUTH_STYLES_classic}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -627,7 +630,7 @@ const MOUTH_STYLES = [
     id:'flattened',
     name:'Flat beak',
     subtitle:'Small flattened beak, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_flattened}}',
+    photo:'data:image/webp;base64,{{PHOTO_MOUTH_STYLES_flattened}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -645,7 +648,7 @@ const MOUTH_STYLES = [
     id:'oval',
     name:'Large snout',
     subtitle:'Large oval snout, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_oval}}',
+    photo:'data:image/webp;base64,{{PHOTO_MOUTH_STYLES_oval}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -666,7 +669,7 @@ const MOUTH_STYLES = [
     id:'round',
     name:'Medium snout',
     subtitle:'Medium round snout, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_round}}',
+    photo:'data:image/webp;base64,{{PHOTO_MOUTH_STYLES_round}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -689,7 +692,7 @@ const FACE_STYLES = [
     id:'oval_eyes',
     name:'Oval eyes',
     subtitle:'Paired oval eyes, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_oval_eyes}}',
+    photo:'data:image/webp;base64,{{PHOTO_FACE_STYLES_oval_eyes}}',
     cutout:true,
     makeCount:2,
     colorParts:[
@@ -976,7 +979,8 @@ const ADDONS = [
   {key:'mouth', label:'Mouth', emptyIcon:'👄', chooseNote:'choose a style', styles:MOUTH_STYLES},
   {key:'ears', label:'Ears', emptyIcon:'👂', chooseNote:'choose a style', styles:EAR_STYLES},
   {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
-  {key:'wings', label:'Arms', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
+  {key:'wings', label:'Wings', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
+  {key:'arms', label:'Arms', emptyIcon:'💪', chooseNote:'choose a style', styles:ARM_STYLES},
   {key:'tummy', label:'Tummy', emptyIcon:'⬤', chooseNote:'choose a style', styles:TUMMY_STYLES},
   {key:'feet', label:'Feet', emptyIcon:'🦶', chooseNote:'choose a style', styles:FEET_STYLES},
   {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
