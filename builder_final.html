@@ -384,6 +384,126 @@
   @media (max-width:480px){
     .swatches-sm .swatch{ width:32px; height:32px; }
   }
+
+  /* ---------- Color Mapper launch link + embedded modal ---------- */
+  .color-mapper-actions{ margin-top:12px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .link-btn{
+    background:none; border:none; padding:0; cursor:pointer; font-family:'Nunito', sans-serif;
+    font-weight:800; font-size:0.8rem; color:var(--teal-ink); text-decoration:underline; text-underline-offset:2px;
+  }
+  .link-btn:hover{ color:var(--hot-pink-ink); }
+  .link-btn.subtle{ color:var(--ink-soft); font-weight:700; }
+
+  .cm-modal{ position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .cm-modal[hidden]{ display:none; }
+  .cm-modal-backdrop{ position:absolute; inset:0; background:rgba(20,14,22,0.55); }
+  .cm-modal-panel{
+    position:relative; background:var(--paper); border-radius:16px; box-shadow:var(--shadow);
+    width:100%; max-width:1180px; max-height:100%; overflow-y:auto; display:flex; flex-direction:column;
+  }
+  .cm-modal-head{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    padding:20px 22px 12px; border-bottom:1px solid var(--line); flex-shrink:0;
+  }
+  .cm-modal-head h2{ font-family:'Fraunces', serif; font-size:1.2rem; font-weight:700; margin:0 0 4px; }
+  .cm-hint{ font-size:0.8rem; color:var(--ink-soft); margin:0; max-width:640px; line-height:1.5; }
+  .cm-close{
+    background:none; border:none; cursor:pointer; font-size:1.4rem; line-height:1; color:var(--ink-soft);
+    width:32px; height:32px; border-radius:50%; flex-shrink:0;
+  }
+  .cm-close:hover{ background:var(--locked-wash); color:var(--ink); }
+
+  .cm-layout{ display:grid; grid-template-columns:240px minmax(360px,1fr) 300px; gap:18px; padding:18px 22px; }
+  @media (max-width:1100px){ .cm-layout{ grid-template-columns:1fr; } }
+
+  .cm-panel h3{ font-family:'Fraunces', serif; font-size:0.92rem; font-weight:700; margin:0 0 10px; }
+  .cm-panel .btn{ width:100%; justify-content:center; margin-top:10px; }
+
+  .cm-palette{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+  .cm-swatch{
+    aspect-ratio:1; border-radius:7px; border:2px solid transparent; cursor:pointer; position:relative;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.12);
+  }
+  .cm-swatch.selected{ border-color:var(--teal); box-shadow:0 0 0 2px var(--teal-wash), inset 0 0 0 1px rgba(0,0,0,0.12); }
+  .cm-swatch.cm-eraser{
+    background:repeating-linear-gradient(45deg, var(--locked), var(--locked) 4px, var(--paper) 4px, var(--paper) 8px);
+    display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--ink-soft);
+  }
+  .cm-selected-label{ margin-top:10px; font-size:0.78rem; color:var(--ink-soft); }
+  .cm-selected-label b{ color:var(--ink); }
+
+  .cm-tool-row{ display:flex; gap:8px; margin-top:10px; }
+  .cm-tool-btn{
+    width:36px; height:36px; flex-shrink:0; border-radius:8px;
+    border:1px solid var(--line); background:var(--paper-raised); color:var(--ink-soft);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .cm-tool-btn svg{ width:18px; height:18px; }
+  .cm-tool-btn:hover{ border-color:var(--teal); color:var(--teal-ink); }
+  .cm-tool-btn.selected{ border-color:var(--teal); background:var(--teal-wash); color:var(--teal-ink); }
+
+  .cm-rounds-head{ margin-top:18px; }
+  .cm-rounds-list{ display:flex; flex-direction:column; gap:5px; max-height:260px; overflow-y:auto; padding-right:2px; }
+  .cm-round-row{
+    display:flex; align-items:center; gap:8px; padding:5px 7px; border-radius:7px;
+    border:1px solid var(--line); background:var(--paper-raised); font-size:0.76rem;
+  }
+  .cm-round-num{ font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--hot-pink-ink); flex-shrink:0; }
+  .cm-round-count{ color:var(--ink-soft); }
+  .cm-round-actions{ display:flex; gap:4px; margin-left:auto; }
+  .cm-icon-btn{
+    border:1px solid var(--line); background:var(--paper); color:var(--ink-soft);
+    border-radius:6px; width:22px; height:22px; font-size:11px; cursor:pointer; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cm-icon-btn:hover{ border-color:var(--teal); color:var(--teal-ink); }
+
+  .cm-canvas-area{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .cm-view-controls{ display:flex; align-items:center; gap:8px; }
+  .cm-spacer{ flex:1; }
+  .cm-hover-info{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); }
+  .cm-three-wrap{
+    position:relative; width:100%; aspect-ratio:1; border-radius:12px; overflow:hidden;
+    background:radial-gradient(circle at 50% 38%, var(--paper) 0%, var(--paper-raised) 72%);
+    border:1px solid var(--line); touch-action:none; cursor:grab;
+  }
+  .cm-three-wrap:active{ cursor:grabbing; }
+  #cmThreeCanvas{ display:block; width:100%; height:100%; }
+
+  .cm-legend{ display:flex; flex-wrap:wrap; gap:8px; }
+  .cm-legend-chip{
+    display:flex; align-items:center; gap:6px; font-size:0.76rem; padding:4px 8px 4px 4px;
+    border:1px solid var(--line); border-radius:20px; background:var(--paper-raised);
+  }
+  .cm-legend-chip .cm-dot{ width:14px; height:14px; border-radius:50%; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.15); }
+  .cm-legend-chip .cm-n{ color:var(--ink-soft); font-family:'JetBrains Mono', monospace; font-size:0.7rem; }
+  .cm-legend-empty{ font-size:0.78rem; color:var(--ink-soft); }
+
+  .cm-output-panel{ display:flex; flex-direction:column; min-height:0; }
+  .cm-warnings{
+    display:none; font-size:0.76rem; color:#8a5a12; background:var(--gold-wash);
+    border-radius:8px; padding:8px 10px; margin-bottom:10px; line-height:1.5;
+  }
+  .cm-warnings.show{ display:block; }
+  .cm-pattern-preview{
+    white-space:pre-wrap; font-family:'JetBrains Mono', monospace; font-size:0.72rem; line-height:1.6;
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:10px;
+    flex:1; min-height:200px; max-height:460px; overflow-y:auto; margin:0;
+  }
+
+  .cm-modal-actions{
+    display:flex; justify-content:flex-end; gap:10px; padding:14px 22px; border-top:1px solid var(--line); flex-shrink:0;
+    /* .cm-modal-panel (not the page) is the scroll container here, so pinning
+       this to its bottom keeps Apply reachable without scrolling the modal's
+       full height first, even when the 3-column layout above runs tall. */
+    position:sticky; bottom:0; background:var(--paper); z-index:2;
+  }
+
+  @media (max-width:640px){
+    .cm-modal{ padding:0; }
+    .cm-modal-panel{ border-radius:0; max-height:100vh; }
+  }
 </style>
 
 <div class="wrap">
@@ -420,6 +540,10 @@
           <div class="body-color-section">
             <img class="body-color-preview" id="bodyColorPreview" alt="">
             <div class="color-picker-inline" id="bodyColorPicker"></div>
+          </div>
+          <div class="color-mapper-actions">
+            <button type="button" class="link-btn" id="launchColorMapperBtn">Launch Color Mapper</button>
+            <button type="button" class="link-btn subtle" id="clearColorMapperBtn" hidden>Clear custom colors</button>
           </div>
         </div>
       </div>
@@ -471,7 +595,66 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="cm-modal" id="colorMapperModal" hidden>
+  <div class="cm-modal-backdrop" id="cmBackdrop"></div>
+  <div class="cm-modal-panel" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
+    <div class="cm-modal-head">
+      <div>
+        <h2 id="cmTitle">Color Mapper</h2>
+        <p class="cm-hint">Drag to rotate, scroll to zoom. Pencil paints one stitch at a time (right-click erases); fill bucket paints the whole piece; rectangle and circle drag across the shape to fill an area.</p>
+      </div>
+      <button type="button" class="cm-close" id="cmCloseBtn" aria-label="Close">&times;</button>
+    </div>
+    <div class="cm-layout">
+      <aside class="cm-panel">
+        <h3>Yarn color</h3>
+        <div id="cmPaletteGrid" class="cm-palette"></div>
+        <div id="cmSelectedLabel" class="cm-selected-label">Pick a color, then paint stitches.</div>
+        <div id="cmToolRow" class="cm-tool-row">
+          <button type="button" class="cm-tool-btn selected" data-tool="pencil" title="Pencil — click a stitch to paint it">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l.8-3.4L11.6 3.8a1.3 1.3 0 0 1 1.8 0l.8.8a1.3 1.3 0 0 1 0 1.8L6.4 14.2 3 15z"/><path d="M10.2 5.4l2.4 2.4"/></svg>
+          </button>
+          <button type="button" class="cm-tool-btn" data-tool="bucket" title="Fill bucket — fill every stitch with the selected color">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 8.2L8.6 2.4l6.4 6.4a2 2 0 0 1 0 2.9l-2.7 2.7a2 2 0 0 1-2.9 0L2.8 8.2z"/><path d="M2.8 8.2h9.4"/><circle cx="15" cy="14.5" r="1.1" fill="currentColor" stroke="none"/></svg>
+          </button>
+          <button type="button" class="cm-tool-btn" data-tool="rect" title="Rectangle — drag to fill a block of rounds and stitches">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.8" y="4.8" width="12.4" height="8.4" rx="1.3"/></svg>
+          </button>
+          <button type="button" class="cm-tool-btn" data-tool="circle" title="Circle — drag to fill a circular area">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="9" r="6.2"/></svg>
+          </button>
+        </div>
+        <h3 class="cm-rounds-head">Rounds</h3>
+        <div id="cmRoundsList" class="cm-rounds-list"></div>
+      </aside>
+      <main class="cm-canvas-area">
+        <div class="cm-view-controls">
+          <button type="button" class="btn btn-ghost" id="cmResetViewBtn">Reset view</button>
+          <button type="button" class="btn btn-ghost" id="cmResetFrontBtn">Reset to front</button>
+          <span class="cm-spacer"></span>
+          <span id="cmHoverInfo" class="cm-hover-info"></span>
+        </div>
+        <div id="cmThreeWrap" class="cm-three-wrap">
+          <canvas id="cmThreeCanvas"></canvas>
+        </div>
+        <div id="cmLegend" class="cm-legend"></div>
+      </main>
+      <aside class="cm-panel cm-output-panel">
+        <h3>Pattern preview</h3>
+        <div id="cmWarnings" class="cm-warnings"></div>
+        <pre id="cmPatternPreview" class="cm-pattern-preview"></pre>
+      </aside>
+    </div>
+    <div class="cm-modal-actions">
+      <button type="button" class="btn btn-ghost" id="cmCancelBtn">Cancel</button>
+      <button type="button" class="btn btn-primary" id="cmApplyBtn">Apply Colors</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 const BODIES = [
   {
@@ -1295,6 +1478,7 @@ const EAR_STYLES = [
   {
     id:'pointy',
     name:'Cat ears',
+    docName:'Ears',
     subtitle:'Small paired triangular ears, single color',
     photo:'data:image/webp;base64,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',
     cutout:true,
@@ -1460,7 +1644,7 @@ const ADDONS = [
 const LOCKED_ADDONS = [
 ];
 
-const state = { bodyId:null, colors:{}, addons:{}, patternTitle:'' };
+const state = { bodyId:null, colors:{}, addons:{}, patternTitle:'', customColorMaps:{} };
 function ensureAddonState(key){
   if(!state.addons[key]) state.addons[key] = { on:false, styleId:null, byStyle:{} };
   return state.addons[key];
@@ -1480,6 +1664,7 @@ function loadState(){
       state.colors = saved.colors ?? {};
       state.addons = saved.addons ?? {};
       state.patternTitle = typeof saved.patternTitle === 'string' ? saved.patternTitle : '';
+      state.customColorMaps = saved.customColorMaps && typeof saved.customColorMaps === 'object' ? saved.customColorMaps : {};
     }
   }catch(e){}
 }
@@ -1935,6 +2120,326 @@ function compilePieceBlocks(piece, store){
   return { colors, segments };
 }
 
+// ---------- Color Mapper: per-stitch color injection into a body's rounds ----------
+// A body's rounds text is built from just three stitch primitives — sc
+// (1 previous st -> 1 new st), inc (1 -> 2), dec (2 -> 1) — combined with
+// plain comma clauses and "[…] x N" (optionally nested "(…) x N") repeat
+// groups. That's a tight enough grammar that a real per-stitch color map
+// from the Color Mapper can be spliced back into the exact instruction
+// text a round already has, rather than replacing it with a generic
+// round-by-round summary.
+const CM_VERB_WORD = {sc:'sc', inc:'inc', dec:'dec'};
+const CM_SKIP_LEAD = Symbol('cm-skip-lead'); // the round right after a `join` block never gets its own leading call-out — the join's own note text already announces the incoming color
+let cmRepCounter = 0; // unique id source for cmParseClause's repeat-group tagging, see cmRep below
+
+function cmSplitTopLevel(text){
+  const parts = [];
+  let depth = 0, start = 0;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(c==='['||c==='(') depth++;
+    else if(c===']'||c===')') depth--;
+    else if(c===',' && depth===0){ parts.push(text.slice(start,i)); start=i+1; }
+  }
+  parts.push(text.slice(start));
+  return parts.map(s=>s.trim()).filter(Boolean);
+}
+function cmParseClauseList(text){
+  const ops = [];
+  cmSplitTopLevel(text).forEach(clause => ops.push(...cmParseClause(clause)));
+  return ops;
+}
+function cmParseClause(clause){
+  let m = clause.match(/^\[(.+)\]\s*x\s*(\d+)$/) || clause.match(/^\((.+)\)\s*x\s*(\d+)$/);
+  if(m){
+    const inner = cmParseClauseList(m[1]);
+    const times = parseInt(m[2],10);
+    const id = cmRepCounter++;
+    const result = [];
+    // Each op remembers which repeat group it came from (id), which
+    // iteration of that group (iter, 0-based), and its position within one
+    // iteration (posInIter) — cmRenderOpsAsClauses uses this to recognize
+    // when a run of same-color ops still forms N whole iterations of the
+    // original cycle, so it can render "[…]xN" instead of spelling every
+    // iteration out, while a color change that lands mid-iteration still
+    // falls back to spelling that iteration out (see cmColorRuns, which
+    // drops this tag off any op a color boundary splits).
+    for(let k=0;k<times;k++){
+      inner.forEach((op,posInIter) => result.push({...op, cmRep:{id, iter:k, len:inner.length, posInIter}}));
+    }
+    return result;
+  }
+  m = clause.match(/^(\d+)\s*(sc|inc|dec)$/);
+  if(m) return Array.from({length:parseInt(m[1],10)}, ()=>({type:m[2]}));
+  m = clause.match(/^(sc|inc|dec)$/);
+  if(m) return [{type:m[1]}];
+  throw new Error(`Color Mapper: unrecognized stitch clause "${clause}"`);
+}
+
+// Parses a body round's raw instruction text (the same text compilePieceBlocks
+// would otherwise resolve __COLOR_START__/__COLOR_SWITCH__ tokens in) into a
+// flat sequence of {type, label?} stitch primitives, plus any non-stitch
+// framing the row also carries: the round-1 magic-loop-start phrasing, the
+// Peanut round-11 "resume after the join" phrasing, and a trailing
+// back/front-loop-only annotation. The raw color tokens are stripped — a
+// custom color map replaces the callouts they would have produced.
+function parseRowOps(rawText){
+  let text = rawText.replace(/^__COLOR_START__\s*/, '').replace(/^__COLOR_SWITCH__\s*/, '');
+  text = text.replace(/__COLOR\d+__/g, 'working');
+
+  const cutMatch = text.match(/^(.*?)\.\s*Cut the working yarn\.$/);
+  if(cutMatch) text = cutMatch[1];
+
+  let suffix = '';
+  const bloMatch = text.match(/^(.*?),\s*(working in the (?:back|front) loops only \([A-Z]+\))$/);
+  if(bloMatch){ text = bloMatch[1]; suffix = ', ' + bloMatch[2]; }
+
+  const magicMatch = text.match(/^start\s+(\d+)\s+sc in a magic loop$/);
+  if(magicMatch){
+    return { ops: Array.from({length:parseInt(magicMatch[1],10)}, ()=>({type:'sc'})), suffix, magicLoopStart:true };
+  }
+
+  const joinMatch = text.match(/^inc into the same stitch as your sl st join,\s*(\d+)\s*inc$/);
+  if(joinMatch){
+    const ops = [{type:'inc', label:'inc into the same stitch as your sl st join'}];
+    for(let k=0;k<parseInt(joinMatch[1],10);k++) ops.push({type:'inc'});
+    return { ops, suffix, magicLoopStart:false };
+  }
+
+  return { ops: cmParseClauseList(text), suffix, magicLoopStart:false };
+}
+
+function cmOpsToPositions(ops){
+  let pos = 0;
+  return ops.map(op=>{
+    const width = op.type==='inc' ? 2 : 1;
+    const posRange = [pos, pos+width-1];
+    pos += width;
+    return { ...op, posRange };
+  });
+}
+// Starting at ops[i] (the first position of one of its repeat group's
+// iterations), counts how many WHOLE consecutive iterations of that same
+// group follow with no gaps, label, or type mismatch — i.e. how many times
+// the color map left that cycle fully intact and fully within this same
+// color run. Returns 0 if ops[i] isn't cleanly "iteration N, position 0" of
+// a repeat group at all.
+function cmCountWholeIterations(ops, i){
+  const rep = ops[i] && ops[i].cmRep;
+  if(!rep || rep.posInIter !== 0) return 0;
+  const template = ops.slice(i, i+rep.len).map(o=>o && o.type);
+  let n = 0, j = i;
+  while(j + rep.len <= ops.length){
+    let ok = true;
+    for(let k=0; k<rep.len; k++){
+      const o = ops[j+k];
+      if(!o || o.label || o.type !== template[k] || !o.cmRep ||
+         o.cmRep.id !== rep.id || o.cmRep.iter !== rep.iter+n || o.cmRep.posInIter !== k){
+        ok = false; break;
+      }
+    }
+    if(!ok) break;
+    n++; j += rep.len;
+  }
+  return n;
+}
+
+// Renders a run of same-color ops as instruction clauses. Where the color
+// map left a "[…] x N" repeat group's cycle fully untouched for two or more
+// consecutive iterations, that stretch is rendered back as "[…]xN" instead
+// of spelling every iteration out — mirroring how the source pattern itself
+// would write it. Any op a color change split off from its cycle (see
+// cmColorRuns) simply carries no repeat tag, so it always falls through to
+// the plain same-type collapsing below.
+function cmRenderOpsAsClauses(ops){
+  const clauses = [];
+  let i = 0;
+  while(i < ops.length){
+    const op = ops[i];
+    if(op.label){ clauses.push(op.label); i++; continue; }
+    const n = cmCountWholeIterations(ops, i);
+    if(n >= 2){
+      const rep = op.cmRep;
+      const cycleOps = ops.slice(i, i+rep.len).map(o=>({type:o.type}));
+      clauses.push(`[${cmRenderOpsAsClauses(cycleOps)}]x${n}`);
+      i += rep.len*n;
+      continue;
+    }
+    let j = i;
+    while(j < ops.length && ops[j].type===op.type && !ops[j].label) j++;
+    const n2 = j - i;
+    clauses.push(n2===1 ? CM_VERB_WORD[op.type] : `${n2} ${CM_VERB_WORD[op.type]}`);
+    i = j;
+  }
+  return clauses.join(', ');
+}
+// Groups ops into runs of consecutive same-color stitches. colorIdxPerStitch
+// has one entry per FINAL stitch of the round; an `inc` op spans two of
+// those entries, so a color boundary landing between them decomposes that
+// one inc into the two single stitches it actually produces.
+function cmColorRuns(ops, colorIdxPerStitch){
+  const expanded = [];
+  cmOpsToPositions(ops).forEach(op=>{
+    const [a,b] = op.posRange;
+    if(a===b){ expanded.push({type:op.type, color:colorIdxPerStitch[a], label:op.label, cmRep:op.cmRep}); return; }
+    const c0 = colorIdxPerStitch[a], c1 = colorIdxPerStitch[b];
+    if(c0===c1){ expanded.push({type:'inc', color:c0, label:op.label, cmRep:op.cmRep}); return; }
+    // A color boundary landing inside this inc splits it into the two
+    // single stitches it actually produces — that stitch is no longer a
+    // whole, untouched iteration of whatever repeat group it came from, so
+    // it's deliberately left untagged rather than carrying op.cmRep forward.
+    expanded.push({type:'sc', color:c0, label:op.label});
+    expanded.push({type:'sc', color:c1, label:'sc in the same st'});
+  });
+  const runs = [];
+  expanded.forEach(op=>{
+    const last = runs[runs.length-1];
+    if(last && last.color===op.color) last.ops.push(op);
+    else runs.push({ color: op.color, ops:[op] });
+  });
+  return runs;
+}
+// Renders one round's colored instruction text. `leadColor` is whatever
+// color the piece was already working in — a run only gets a
+// "(…yarn)"/"(switch to …yarn)" call-out when its color actually differs
+// from that, so a round that continues the established color reads exactly
+// like it would with no custom map at all.
+function renderColoredRow(parsed, colorIdxPerStitch, colorNames, leadColor){
+  const runs = cmColorRuns(parsed.ops, colorIdxPerStitch);
+  const pieces = runs.map((run, ri)=>{
+    let clauseText = cmRenderOpsAsClauses(run.ops);
+    if(ri===0 && parsed.magicLoopStart) clauseText = `start ${clauseText} in a magic loop`;
+    const needsCallout = ri > 0 || (leadColor !== CM_SKIP_LEAD && leadColor !== run.color);
+    if(!needsCallout) return clauseText;
+    const label = colorNames[run.color].toLowerCase();
+    const callout = (ri===0 && leadColor==null) ? `(${label} yarn)` : `(switch to ${label} yarn)`;
+    return `${callout} ${clauseText}`;
+  });
+  const endColor = runs.length ? runs[runs.length-1].color : leadColor;
+  return { text: pieces.join(', ') + (parsed.suffix || ''), endColor };
+}
+
+function cmExpandRoundLabel(label){
+  const m = String(label).match(/^(\d+)[–-](\d+)$/);
+  if(!m) return [parseInt(label,10)];
+  const out = [];
+  for(let n=parseInt(m[1],10); n<=parseInt(m[2],10); n++) out.push(n);
+  return out;
+}
+
+// Flattens a body's `rounds` blocks into one entry per individual round (in
+// body order, expanding merged ranges like '7–10'), giving each a stable
+// `index` — this is what both the embedded Color Mapper's 3D round list and
+// a saved custom color map (keyed by that same index) are built against,
+// instead of a hand-maintained duplicate of each body's round counts.
+function bodyRoundSpec(body){
+  const list = [];
+  const byNum = {};
+  let pendingAfterJoin = false;
+  body.blocks.forEach(block=>{
+    if(block.type==='join'){ pendingAfterJoin = true; return; }
+    if(block.type!=='rounds') return;
+    block.rows.forEach((r, rowIdx)=>{
+      cmExpandRoundLabel(r[0]).forEach((n, i)=>{
+        const isFirst = rowIdx===0 && i===0 && pendingAfterJoin;
+        const entry = { num:n, index:list.length, count:parseInt(r[2],10), baseText:r[1], afterJoin:isFirst };
+        list.push(entry);
+        byNum[n] = entry;
+        if(isFirst) pendingAfterJoin = false;
+      });
+    });
+  });
+  return { list, byNum };
+}
+
+function cmDistinctColorsUsed(customMap){
+  const seen = new Set();
+  const colors = [];
+  customMap.rounds.forEach(roundColors => roundColors.forEach(idx=>{
+    if(idx!=null && !seen.has(idx)){ seen.add(idx); colors.push(COLORS[idx]); }
+  }));
+  return colors;
+}
+
+function formatColorNameList(names){
+  if(names.length <= 2) return names.join(' and ');
+  return `${names.slice(0,-1).join(', ')}, and ${names[names.length-1]}`;
+}
+
+// Rewrites a body's `rounds` blocks with a custom per-stitch color map
+// spliced in, in place of the ordinary single/dual-swatch token
+// substitution compilePieceBlocks performs. Only a round whose coloring
+// actually changes gets rewritten — one that simply continues in the color
+// already established is left exactly as written today, brackets and all.
+function compileBodySegmentsWithCustomColors(body, customMap){
+  const spec = bodyRoundSpec(body);
+  const colorNames = COLORS.map(c=>c.name);
+  const colorState = { leadColor: null };
+  const segments = [];
+
+  body.blocks.forEach(block=>{
+    if(block.type==='rounds'){
+      const rows = [];
+      block.rows.forEach(r=>{
+        const nums = cmExpandRoundLabel(r[0]);
+        const hasColorToken = /__COLOR/.test(r[1]);
+        const perRoundColors = nums.map(n => customMap.rounds[spec.byNum[n].index]);
+        const allMatchLead = perRoundColors.every(cols => cols.every(c=>c===cols[0]) && cols[0]===colorState.leadColor);
+        if(allMatchLead && !hasColorToken){
+          rows.push([r[0], r[1], r[2]]);
+          return;
+        }
+        nums.forEach(n=>{
+          const entry = spec.byNum[n];
+          const stitchColors = customMap.rounds[entry.index];
+          const parsed = parseRowOps(entry.baseText);
+          const lead = entry.afterJoin ? CM_SKIP_LEAD : colorState.leadColor;
+          const { text, endColor } = renderColoredRow(parsed, stitchColors, colorNames, lead);
+          rows.push([String(n), text, String(stitchColors.length)]);
+          colorState.leadColor = endColor;
+        });
+      });
+      segments.push({kind:'table', rows});
+    } else if(block.type==='join'){
+      let toColorIdx = null;
+      const blockIdx = body.blocks.indexOf(block);
+      for(let i=blockIdx+1; i<body.blocks.length; i++){
+        const nb = body.blocks[i];
+        if(nb.type==='rounds'){
+          const firstNum = cmExpandRoundLabel(nb.rows[0][0])[0];
+          toColorIdx = customMap.rounds[spec.byNum[firstNum].index][0];
+          break;
+        }
+      }
+      const toName = toColorIdx==null ? colorNames[0] : colorNames[toColorIdx];
+      segments.push({kind:'note', text:`Invisible fasten off. Make a slip knot with your ${toName.toLowerCase()} yarn and sl st join to the stitch where you fastened off.`});
+    } else if(block.type==='note'){
+      if(block.whenColorsDiffer && cmDistinctColorsUsed(customMap).length < 2) return;
+      segments.push({kind:'note', text: block.text});
+    }
+  });
+  return segments;
+}
+
+// Custom map can go stale if a body's own round structure ever changes
+// (round count, or a round's stitch count) after the map was saved.
+function customColorMapMatchesBody(body, customMap){
+  if(!customMap || !Array.isArray(customMap.rounds)) return false;
+  const spec = bodyRoundSpec(body);
+  if(customMap.rounds.length !== spec.list.length) return false;
+  return spec.list.every(entry => (customMap.rounds[entry.index]||[]).length === entry.count);
+}
+
+// compilePieceBlocks with a custom color map spliced in for the body, when
+// one exists and still matches that body's current round structure.
+function compileBody(body, bodyStore){
+  const customMap = state.customColorMaps[body.id];
+  if(customMap && customColorMapMatchesBody(body, customMap)){
+    return { colors: cmDistinctColorsUsed(customMap), segments: compileBodySegmentsWithCustomColors(body, customMap) };
+  }
+  return compilePieceBlocks(body, bodyStore);
+}
+
 function ensureBodyDefaults(body){
   const store = ensureStore(state.colors, body.id);
   body.colorParts.forEach(part=>{
@@ -2165,7 +2670,7 @@ function slugify(text){
 
 function buildPatternText(body){
   const bodyStore = ensureBodyDefaults(body);
-  const { colors, segments } = compilePieceBlocks(body, bodyStore);
+  const { colors, segments } = compileBody(body, bodyStore);
 
   const activeAddons = ADDONS.map(addon=>{
     const addonState = ensureAddonState(addon.key);
@@ -2185,10 +2690,7 @@ function buildPatternText(body){
   const addUsedColor = c => { if(!seenColorHexes.has(c.hex)){ seenColorHexes.add(c.hex); usedColors.push(c); } };
   colors.forEach(addUsedColor);
   activeAddons.forEach(a => a.colors.forEach(addUsedColor));
-  const colorNames = usedColors.map(c=>c.name);
-  const colorList = colorNames.length <= 2
-    ? colorNames.join(' and ')
-    : `${colorNames.slice(0,-1).join(', ')}, and ${colorNames[colorNames.length-1]}`;
+  const colorList = formatColorNameList(usedColors.map(c=>c.name));
   lines.push(`- Beginner Yarn in ${colorList}`);
   lines.push('');
   lines.push('* Cuddle Craft Tube Yarn by Loops & Threads');
@@ -2202,7 +2704,7 @@ function buildPatternText(body){
   lines.push('- Yarn needle');
   lines.push('');
   lines.push('HEAD & BODY');
-  lines.push(`With ${colors.map(c=>c.name.toLowerCase()).join(' and ')} yarn.`);
+  lines.push(`With ${formatColorNameList(colors.map(c=>c.name.toLowerCase()))} yarn.`);
   lines.push('');
   segments.forEach(seg=>{
     if(seg.kind==='table'){
@@ -2304,7 +2806,7 @@ function buildPatternDocHeaderHtml(title){
 
 function buildPatternDocPieceHtml(heading, makeCount, colors, segments){
   const makeSuffix = makeCount && makeCount > 1 ? ` (make ${makeCount})` : '';
-  const colorNames = colors.map(c=>c.name).join(' and ');
+  const colorNames = formatColorNameList(colors.map(c=>c.name));
   let html = `<h2 style="font-family:Nunito, Arial, sans-serif;font-size:18px;font-weight:800;color:#2B2130;margin:22px 0 8px 0;">${escapeHtml(heading)}${escapeHtml(makeSuffix)}</h2>`;
   html += `<p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 10px 0;">📷&nbsp;&nbsp;With <b>${escapeHtml(colorNames)}</b> yarn.</p>`;
   segments.forEach(seg=>{
@@ -2327,7 +2829,7 @@ function buildPatternDocPieceHtml(heading, makeCount, colors, segments){
 
 function buildPatternDocHtml(body){
   const bodyStore = ensureBodyDefaults(body);
-  const { colors: bodyColors, segments } = compilePieceBlocks(body, bodyStore);
+  const { colors: bodyColors, segments } = compileBody(body, bodyStore);
 
   const activeAddons = ADDONS.map(addon=>{
     const addonState = ensureAddonState(addon.key);
@@ -2342,7 +2844,7 @@ function buildPatternDocHtml(body){
   html += buildPatternDocHeaderHtml(buildPatternTitle(body));
   html += buildPatternDocPieceHtml('Head & Body', 1, bodyColors, segments);
   activeAddons.forEach(a=>{
-    html += buildPatternDocPieceHtml(a.style.name, a.style.makeCount, a.colors, a.segments);
+    html += buildPatternDocPieceHtml(a.style.docName || a.style.name, a.style.makeCount, a.colors, a.segments);
   });
   html += '</div>';
   return html;
@@ -2425,6 +2927,15 @@ function render(){
       buildSwatchRow(document.getElementById(`bodySwatch_${pi}`), idx, (i)=>{ bodyStore[part.key] = i; });
       document.getElementById(`bodyColorName_${pi}`).textContent = COLORS[idx].name;
     });
+
+    const launchColorMapperBtn = document.getElementById('launchColorMapperBtn');
+    const clearColorMapperBtn = document.getElementById('clearColorMapperBtn');
+    const existingMap = state.customColorMaps[body.id];
+    const hasCustomMap = existingMap && customColorMapMatchesBody(body, existingMap);
+    launchColorMapperBtn.textContent = hasCustomMap ? 'Edit custom colors in Color Mapper' : 'Launch Color Mapper';
+    launchColorMapperBtn.onclick = ()=> ColorMapper.open(body, hasCustomMap ? existingMap : null);
+    clearColorMapperBtn.hidden = !hasCustomMap;
+    clearColorMapperBtn.onclick = ()=> clearCustomColorMap(body.id);
   } else {
     bodyColorCard.hidden = true;
   }
@@ -2474,7 +2985,7 @@ function render(){
   }
 
   const bodyStore = ensureBodyDefaults(body);
-  const { colors: bodyColors, segments } = compilePieceBlocks(body, bodyStore);
+  const { colors: bodyColors, segments } = compileBody(body, bodyStore);
 
   const activeAddons = ADDONS.map(addon=>{
     const addonState = ensureAddonState(addon.key);
@@ -2519,7 +3030,7 @@ function render(){
   meta.innerHTML = uniqueColors.map(c=>`<span><span class="meta-dot" style="background:${c.hex}"></span>${c.name}</span>`).join('');
 
   let html = '';
-  html += `<div class="p-section"><h3>Head &amp; Body</h3><div class="p-hint" style="background:transparent;padding:0 0 8px;">With ${bodyColors.map(c=>c.name.toLowerCase()).join(' and ')} yarn.</div>`;
+  html += `<div class="p-section"><h3>Head &amp; Body</h3><div class="p-hint" style="background:transparent;padding:0 0 8px;">With ${formatColorNameList(bodyColors.map(c=>c.name.toLowerCase()))} yarn.</div>`;
   segments.forEach(seg=>{
     if(seg.kind==='table'){
       html += `<table class="rounds">`;
@@ -2611,6 +3122,582 @@ function showToast(msg){
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+// ---------- Embedded Color Mapper modal ----------
+// A trimmed, in-page copy of the standalone color-mapper.html's 3D paint
+// engine, bound to whichever body is already selected: its round list is
+// fixed to that body's real construction (from bodyRoundSpec) instead of
+// freely editable, and "Apply Colors" hands the painted result straight to
+// applyCustomColorMap below instead of just displaying a summary. The 3D
+// scene/mesh-building/raycasting code mirrors color-mapper.html's own —
+// there's no shared build step between the two HTML outputs in this
+// project, so keep them in sync by hand if that engine ever changes.
+const ColorMapper = (function(){
+  const SHAPE_PRESETS = {
+    chick:   {equator:0.50, pTop:2.0, pBottom:2.0, aspect:1.00},
+    penguin: {equator:0.60, pTop:2.0, pBottom:2.2, aspect:1.20},
+    peanut:  {equator:0.50, pTop:2.2, pBottom:2.2, aspect:1.35},
+    pebble:  {equator:0.62, pTop:2.0, pBottom:2.8, aspect:0.70},
+    horse:   {equator:0.58, pTop:1.6, pBottom:1.6, aspect:1.40},
+    dome:    {equator:0.45, pTop:2.6, pBottom:1.8, aspect:0.85},
+    snowman: {equator:0.50, pTop:1.7, pBottom:2.0, aspect:1.25},
+    thimble: {equator:0.60, pTop:2.2, pBottom:3.5, aspect:1.30},
+    dino:    {equator:0.50, pTop:1.9, pBottom:1.4, aspect:1.90},
+  };
+  const SEAM_ANGLE = 0;
+  const STITCH_UNIT = 1;
+  const HILITE_OFFSET = 0.035;
+  const PROFILE_SUBSTEPS = 3;
+  const CLICK_MOVE_THRESHOLD = 6;
+
+  let body = null, spec = null, rounds = [], shape = null, selected = null;
+  let activeTool = 'pencil'; // 'pencil' | 'rect' | 'circle' — the fill bucket is a one-shot action, not a persistent tool
+  let scene, camera, renderer, controls, raycaster, mouse, initialized = false, staticWired = false;
+  let bodyMesh=null, lineMesh=null, seamMesh=null, markerGroup=null, highlightMesh=null;
+  let triToBlock=[], blockVertexOffset=[], blockCorners=[];
+  let unsetColor=null, seamColor=null, startColor=null;
+  let pointerDownPos = null, shapeDragStart = null;
+
+  function makeRoundsFromSpec(existingMap){
+    return spec.list.map(entry=>{
+      const saved = existingMap && existingMap.rounds[entry.index];
+      return { count: entry.count, colors: saved ? saved.slice() : Array(entry.count).fill(null) };
+    });
+  }
+
+  function radiusFor(count){ return count * STITCH_UNIT / (2*Math.PI); }
+  function profileRadius(v){
+    const {equator, pTop, pBottom} = shape;
+    if(v <= equator){
+      const u = v/equator;
+      return Math.pow(1 - Math.pow(1-u, pTop), 1/pTop);
+    }
+    const u = (v-equator)/(1-equator);
+    return Math.pow(1 - Math.pow(u, pBottom), 1/pBottom);
+  }
+  function computeProfile(){
+    let maxCount = 0;
+    rounds.forEach(r=>{ if(r.count>maxCount) maxCount=r.count; });
+    const maxR = radiusFor(maxCount);
+    return { N: rounds.length, maxR, totalHeight: maxR*2*shape.aspect };
+  }
+  function blockColor(val){ return val==null ? unsetColor : new THREE.Color(COLORS[val].hex); }
+
+  function initThree(){
+    const canvas = document.getElementById('cmThreeCanvas');
+    renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(38, 1, 0.05, 200);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x9a8f96, 0.95));
+    const dir = new THREE.DirectionalLight(0xffffff, 0.55);
+    dir.position.set(3,5,2);
+    scene.add(dir);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.enablePan = false;
+    controls.minDistance = 1;
+    controls.maxDistance = 80;
+    controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: null };
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
+
+    const bodyStyle = getComputedStyle(document.body);
+    unsetColor = new THREE.Color(bodyStyle.getPropertyValue('--locked').trim() || '#C9C0C6');
+    seamColor = new THREE.Color(bodyStyle.getPropertyValue('--hot-pink').trim() || '#E63888');
+    startColor = new THREE.Color(bodyStyle.getPropertyValue('--gold').trim() || '#E3A62B');
+
+    resizeThree();
+    window.addEventListener('resize', resizeThree);
+    renderer.domElement.addEventListener('pointerdown', onPointerDown);
+    renderer.domElement.addEventListener('pointerup', onPointerUp);
+    renderer.domElement.addEventListener('contextmenu', e=>e.preventDefault());
+    renderer.domElement.addEventListener('pointermove', onCanvasHover);
+    renderer.domElement.addEventListener('pointerleave', ()=>setHover(null));
+    document.getElementById('cmResetViewBtn').addEventListener('click', ()=>fitCamera(true));
+    document.getElementById('cmResetFrontBtn').addEventListener('click', resetToFront);
+    animate();
+    initialized = true;
+  }
+  function resizeThree(){
+    const wrap = document.getElementById('cmThreeWrap');
+    const size = wrap.clientWidth || 1;
+    renderer.setSize(size, size, false);
+    camera.aspect = 1;
+    camera.updateProjectionMatrix();
+  }
+  function animate(){
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  function resetToFront(){
+    const camAngle = SEAM_ANGLE + Math.PI;
+    const dx = camera.position.x - controls.target.x;
+    const dz = camera.position.z - controls.target.z;
+    const horiz = Math.hypot(dx, dz);
+    camera.position.x = controls.target.x + horiz*Math.cos(camAngle);
+    camera.position.z = controls.target.z + horiz*Math.sin(camAngle);
+    controls.update();
+  }
+  function disposeMesh(){
+    if(bodyMesh){ scene.remove(bodyMesh); bodyMesh.geometry.dispose(); bodyMesh.material.dispose(); bodyMesh=null; }
+    if(lineMesh){ scene.remove(lineMesh); lineMesh.geometry.dispose(); lineMesh.material.dispose(); lineMesh=null; }
+    if(seamMesh){ scene.remove(seamMesh); seamMesh.geometry.dispose(); seamMesh.material.dispose(); seamMesh=null; }
+    if(markerGroup){
+      scene.remove(markerGroup);
+      const seen = new Set();
+      markerGroup.traverse(o=>{
+        if(o.geometry && !seen.has(o.geometry)){ o.geometry.dispose(); seen.add(o.geometry); }
+        if(o.material && !seen.has(o.material)){ o.material.dispose(); seen.add(o.material); }
+      });
+      markerGroup = null;
+    }
+  }
+  function buildMesh(opts){
+    disposeMesh();
+    triToBlock = [];
+    blockVertexOffset = rounds.map(()=>[]);
+    blockCorners = rounds.map(()=>[]);
+    if(rounds.length===0){ if(opts&&opts.refit) fitCamera(true); return; }
+
+    const {N, maxR, totalHeight} = computeProfile();
+    const height = v => totalHeight * (1-v);
+    const radius = v => maxR * profileRadius(v);
+    const positions = [], colors = [], linePts = [];
+
+    for(let ri=0; ri<N; ri++){
+      const rnd = rounds[ri];
+      const step = (Math.PI*2)/rnd.count;
+      for(let bi=0; bi<rnd.count; bi++){
+        const a0 = SEAM_ANGLE + bi*step;
+        const a1 = SEAM_ANGLE + (bi+1)*step;
+        const col = blockColor(rnd.colors[bi]);
+        const vOffset = positions.length/3;
+        for(let s=0; s<PROFILE_SUBSTEPS; s++){
+          const v0 = (ri+s/PROFILE_SUBSTEPS)/N, v1 = (ri+(s+1)/PROFILE_SUBSTEPS)/N;
+          const r0=radius(v0), r1=radius(v1), h0=height(v0), h1=height(v1);
+          const bl=[r0*Math.cos(a0),h0,r0*Math.sin(a0)];
+          const br=[r0*Math.cos(a1),h0,r0*Math.sin(a1)];
+          const tr=[r1*Math.cos(a1),h1,r1*Math.sin(a1)];
+          const tl=[r1*Math.cos(a0),h1,r1*Math.sin(a0)];
+          positions.push(...bl,...br,...tr, ...bl,...tr,...tl);
+          for(let k=0;k<6;k++) colors.push(col.r,col.g,col.b);
+          triToBlock.push({ri,bi},{ri,bi});
+          linePts.push(...bl,...tl);
+          linePts.push(...tl,...tr);
+        }
+        blockVertexOffset[ri][bi] = {offset:vOffset, count:PROFILE_SUBSTEPS*6};
+        const vLo=ri/N, vHi=(ri+1)/N;
+        const rLo=radius(vLo), rHi=radius(vHi), hLo=height(vLo), hHi=height(vHi);
+        blockCorners[ri][bi] = [
+          [rLo*Math.cos(a0),hLo,rLo*Math.sin(a0)],
+          [rLo*Math.cos(a1),hLo,rLo*Math.sin(a1)],
+          [rHi*Math.cos(a1),hHi,rHi*Math.sin(a1)],
+          [rHi*Math.cos(a0),hHi,rHi*Math.sin(a0)],
+        ];
+      }
+    }
+
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
+    geom.setAttribute('color', new THREE.Float32BufferAttribute(colors,3));
+    geom.computeVertexNormals();
+    const mat = new THREE.MeshStandardMaterial({vertexColors:true, side:THREE.DoubleSide, roughness:0.9, metalness:0});
+    bodyMesh = new THREE.Mesh(geom, mat);
+    scene.add(bodyMesh);
+
+    const lineGeom = new THREE.BufferGeometry();
+    lineGeom.setAttribute('position', new THREE.Float32BufferAttribute(linePts,3));
+    const lineMat = new THREE.LineBasicMaterial({color:0x2b2130, transparent:true, opacity:0.22});
+    lineMesh = new THREE.LineSegments(lineGeom, lineMat);
+    scene.add(lineMesh);
+
+    buildSeamMarker(N, height, radius);
+    if(opts && opts.refit) fitCamera(true, maxR, totalHeight);
+  }
+  function buildSeamMarker(N, height, radius){
+    const totalSamples = N*PROFILE_SUBSTEPS;
+    const pts = [];
+    for(let k=0;k<=totalSamples;k++){
+      const v = k/(N*PROFILE_SUBSTEPS);
+      const r = radius(v), h = height(v);
+      const [x,y,z] = pushOut([r*Math.cos(SEAM_ANGLE), h, r*Math.sin(SEAM_ANGLE)]);
+      pts.push(new THREE.Vector3(x,y,z));
+    }
+    if(pts.length<2) return;
+    const path = new THREE.CurvePath();
+    for(let i=0;i<pts.length-1;i++) path.add(new THREE.LineCurve3(pts[i], pts[i+1]));
+    const tubeGeom = new THREE.TubeGeometry(path, totalSamples, STITCH_UNIT*0.035, 6, false);
+    seamMesh = new THREE.Mesh(tubeGeom, new THREE.MeshBasicMaterial({color:seamColor}));
+    scene.add(seamMesh);
+    const dotGeom = new THREE.SphereGeometry(STITCH_UNIT*0.09, 10, 8);
+    const dotMat = new THREE.MeshBasicMaterial({color:seamColor});
+    const startMat = new THREE.MeshBasicMaterial({color:startColor});
+    markerGroup = new THREE.Group();
+    for(let ri=0; ri<=N; ri++){
+      const dot = new THREE.Mesh(dotGeom, ri===0 ? startMat : dotMat);
+      dot.position.copy(pts[ri*PROFILE_SUBSTEPS]);
+      if(ri===0) dot.scale.setScalar(1.7);
+      markerGroup.add(dot);
+    }
+    scene.add(markerGroup);
+  }
+  function fitCamera(animateReset, maxR, totalHeight){
+    if(maxR===undefined || totalHeight===undefined){
+      const p = computeProfile();
+      maxR = p.maxR; totalHeight = p.totalHeight;
+    }
+    const dist = Math.max(maxR*3.3, totalHeight*1.7, 3);
+    const midH = totalHeight*0.5;
+    const camAngle = SEAM_ANGLE + Math.PI;
+    camera.position.set(dist*Math.cos(camAngle), midH, dist*Math.sin(camAngle));
+    controls.target.set(0, midH, 0);
+    camera.near = Math.max(dist/200, 0.01);
+    camera.far = dist*20;
+    camera.updateProjectionMatrix();
+    controls.update();
+  }
+  function updateBlockColor(ri, bi){
+    if(!bodyMesh) return;
+    const info = blockVertexOffset[ri] && blockVertexOffset[ri][bi];
+    if(!info) return;
+    const col = blockColor(rounds[ri].colors[bi]);
+    const attr = bodyMesh.geometry.attributes.color;
+    for(let k=0;k<info.count;k++) attr.setXYZ(info.offset+k, col.r, col.g, col.b);
+    attr.needsUpdate = true;
+  }
+  function pushOut(c){
+    const len = Math.hypot(c[0],c[2]);
+    if(len<1e-6) return c.slice();
+    const k = HILITE_OFFSET/len;
+    return [c[0]+c[0]*k, c[1], c[2]+c[2]*k];
+  }
+  function ensureHighlight(){
+    if(highlightMesh) return;
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(18),3));
+    const mat = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.4, side:THREE.DoubleSide, depthTest:false});
+    highlightMesh = new THREE.Mesh(geom, mat);
+    highlightMesh.renderOrder = 999;
+    highlightMesh.visible = false;
+    scene.add(highlightMesh);
+  }
+  function setHover(hit){
+    ensureHighlight();
+    const info = document.getElementById('cmHoverInfo');
+    if(!hit || !blockCorners[hit.ri] || !blockCorners[hit.ri][hit.bi]){
+      highlightMesh.visible = false;
+      info.textContent = '';
+      return;
+    }
+    const {ri,bi} = hit;
+    const [bl,br,tr,tl] = blockCorners[ri][bi].map(pushOut);
+    const arr = [...bl,...br,...tr, ...bl,...tr,...tl];
+    highlightMesh.geometry.setAttribute('position', new THREE.Float32BufferAttribute(arr,3));
+    highlightMesh.geometry.attributes.position.needsUpdate = true;
+    highlightMesh.visible = true;
+    const rnd = rounds[ri];
+    const colName = rnd.colors[bi]==null ? 'unpainted' : COLORS[rnd.colors[bi]].name;
+    info.textContent = `Round ${spec.list[ri].num} · stitch ${bi+1} of ${rnd.count} — ${colName}`;
+  }
+  function pickBlock(e){
+    if(!bodyMesh) return null;
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX-rect.left)/rect.width)*2-1;
+    mouse.y = -((e.clientY-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObject(bodyMesh);
+    if(!hits.length) return null;
+    return triToBlock[hits[0].faceIndex] || null;
+  }
+  function currentPaintValue(){
+    if(selected===null) return undefined;
+    return selected==='erase' ? null : selected;
+  }
+
+  // Center point of a stitch's whole-stitch corners (blockCorners), used by
+  // the circle tool to measure real 3D distance across the curved surface.
+  function blockCenter(ri, bi){
+    const c = blockCorners[ri] && blockCorners[ri][bi];
+    if(!c) return null;
+    const [bl, br, tr, tl] = c;
+    return [
+      (bl[0]+br[0]+tr[0]+tl[0])/4,
+      (bl[1]+br[1]+tr[1]+tl[1])/4,
+      (bl[2]+br[2]+tr[2]+tl[2])/4,
+    ];
+  }
+  function dist3(a, b){
+    return Math.hypot(a[0]-b[0], a[1]-b[1], a[2]-b[2]);
+  }
+
+  // Fills every stitch whose round falls between the two dragged rounds and
+  // whose position-around-the-round (as a fraction, since round stitch
+  // counts differ) falls between the two dragged fractions — a rectangle in
+  // the unrolled round/stitch grid, which is the grid a crochet pattern is
+  // actually written in.
+  function fillRect(start, end){
+    const val = currentPaintValue();
+    if(val===undefined){ showToast('Pick a color first'); return; }
+    const riLo = Math.min(start.ri, end.ri), riHi = Math.max(start.ri, end.ri);
+    const fracA = start.bi / rounds[start.ri].count;
+    const fracB = end.bi / rounds[end.ri].count;
+    const fLo = Math.min(fracA, fracB), fHi = Math.max(fracA, fracB);
+    for(let ri=riLo; ri<=riHi; ri++){
+      const rnd = rounds[ri];
+      for(let bi=0; bi<rnd.count; bi++){
+        const frac = bi / rnd.count;
+        if(frac >= fLo && frac <= fHi) rnd.colors[bi] = val;
+      }
+    }
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+
+  // Fills every stitch within the real 3D distance (across the curved
+  // surface) between the drag's start and end stitches.
+  function fillCircle(start, end){
+    const val = currentPaintValue();
+    if(val===undefined){ showToast('Pick a color first'); return; }
+    const center = blockCenter(start.ri, start.bi);
+    const edge = blockCenter(end.ri, end.bi);
+    if(!center || !edge) return;
+    const radius = dist3(center, edge);
+    for(let ri=0; ri<rounds.length; ri++){
+      const rnd = rounds[ri];
+      for(let bi=0; bi<rnd.count; bi++){
+        const c = blockCenter(ri, bi);
+        if(c && dist3(c, center) <= radius) rnd.colors[bi] = val;
+      }
+    }
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+
+  // Orbit-rotate on left-drag is switched off (in favor of drawing) whenever
+  // the rect/circle tool is active — those two tools have no other use for
+  // a left-drag.
+  function updateCanvasInteractionMode(){
+    const dragToDraw = activeTool==='rect' || activeTool==='circle';
+    controls.mouseButtons.LEFT = dragToDraw ? null : THREE.MOUSE.ROTATE;
+  }
+  function setActiveTool(tool){
+    activeTool = tool;
+    document.querySelectorAll('#cmToolRow .cm-tool-btn[data-tool]').forEach(b=>{
+      b.classList.toggle('selected', b.dataset.tool===tool);
+    });
+    updateCanvasInteractionMode();
+  }
+
+  function onPointerDown(e){
+    pointerDownPos = {x:e.clientX, y:e.clientY};
+    if(activeTool==='rect' || activeTool==='circle'){
+      if(e.button===0) shapeDragStart = pickBlock(e);
+    }
+  }
+  function onPointerUp(e){
+    if(activeTool==='rect' || activeTool==='circle'){
+      const start = shapeDragStart;
+      shapeDragStart = null;
+      pointerDownPos = null;
+      if(!start) return;
+      const end = pickBlock(e) || start;
+      if(activeTool==='rect') fillRect(start, end);
+      else fillCircle(start, end);
+      return;
+    }
+    if(!pointerDownPos) return;
+    const moved = Math.hypot(e.clientX-pointerDownPos.x, e.clientY-pointerDownPos.y);
+    pointerDownPos = null;
+    if(moved > CLICK_MOVE_THRESHOLD) return;
+    if(e.button===2){
+      const hit = pickBlock(e);
+      if(hit) paintBlock(hit.ri, hit.bi, null);
+      return;
+    }
+    if(e.button!==0) return;
+    const val = currentPaintValue();
+    if(val===undefined){ showToast('Pick a color first'); return; }
+    const hit = pickBlock(e);
+    if(hit) paintBlock(hit.ri, hit.bi, val);
+  }
+  function onCanvasHover(e){ setHover(pickBlock(e)); }
+  function paintBlock(ri, bi, val){
+    rounds[ri].colors[bi] = val;
+    updateBlockColor(ri, bi);
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+  function fillRound(ri){
+    if(selected===null){ showToast('Pick a color first'); return; }
+    const val = selected==='erase' ? null : selected;
+    rounds[ri].colors = Array(rounds[ri].count).fill(val);
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+  function clearRound(ri){
+    rounds[ri].colors = Array(rounds[ri].count).fill(null);
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+  function fillAll(){
+    if(selected===null){ showToast('Pick a color first'); return; }
+    const val = selected==='erase' ? null : selected;
+    rounds.forEach(r=>{ r.colors = Array(r.count).fill(val); });
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+
+  function renderPalette(){
+    const wrap = document.getElementById('cmPaletteGrid');
+    let html = `<div class="cm-swatch cm-eraser${selected==='erase'?' selected':''}" data-pick="erase" title="Eraser">&empty;</div>`;
+    html += COLORS.map((c,i)=>`<div class="cm-swatch${selected===i?' selected':''}" data-pick="${i}" style="background:${c.hex}" title="${c.name}"></div>`).join('');
+    wrap.innerHTML = html;
+    const label = document.getElementById('cmSelectedLabel');
+    if(selected===null) label.textContent = 'Pick a color, then paint stitches.';
+    else if(selected==='erase') label.innerHTML = 'Selected: <b>Eraser</b>';
+    else label.innerHTML = `Selected: <b>${COLORS[selected].name}</b>`;
+  }
+  function renderRoundsList(){
+    const wrap = document.getElementById('cmRoundsList');
+    wrap.innerHTML = rounds.map((rnd, ri)=>{
+      const num = spec.list[ri].num;
+      const unpainted = rnd.colors.filter(c=>c==null).length;
+      return `
+        <div class="cm-round-row">
+          <span class="cm-round-num">R${num}</span>
+          <span class="cm-round-count">${rnd.count} sts${unpainted ? ` &middot; ${unpainted} unpainted` : ''}</span>
+          <div class="cm-round-actions">
+            <button type="button" class="cm-icon-btn" data-fill="${ri}" title="Fill round with selected color">&#9638;</button>
+            <button type="button" class="cm-icon-btn" data-clear="${ri}" title="Clear round">&empty;</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+  function renderLegend(){
+    const counts = new Map();
+    rounds.forEach(r=>r.colors.forEach(c=>{ if(c!=null) counts.set(c, (counts.get(c)||0)+1); }));
+    const used = COLORS.map((c,i)=>({...c, idx:i, n:counts.get(i)||0})).filter(c=>c.n>0);
+    document.getElementById('cmLegend').innerHTML = used.length
+      ? used.map(c=>`<div class="cm-legend-chip"><span class="cm-dot" style="background:${c.hex}"></span>${c.name}<span class="cm-n">${c.n}</span></div>`).join('')
+      : '<span class="cm-legend-empty">No stitches painted yet.</span>';
+  }
+  function unpaintedCount(){
+    return rounds.reduce((s,r)=> s + r.colors.filter(c=>c==null).length, 0);
+  }
+  function renderPreview(){
+    const warn = document.getElementById('cmWarnings');
+    const pre = document.getElementById('cmPatternPreview');
+    const applyBtn = document.getElementById('cmApplyBtn');
+    const unpainted = unpaintedCount();
+    if(unpainted > 0){
+      warn.textContent = `${unpainted} stitch${unpainted===1?'':'es'} still unpainted — pick a color and paint them in before applying.`;
+      warn.classList.add('show');
+      pre.textContent = '';
+      applyBtn.disabled = true;
+      return;
+    }
+    warn.classList.remove('show');
+    applyBtn.disabled = false;
+    const customMap = { rounds: rounds.map(r=>r.colors.slice()) };
+    const segments = compileBodySegmentsWithCustomColors(body, customMap);
+    const lines = [];
+    // Only the stitch-by-stitch rounds matter while painting — a body's
+    // finishing notes (eye placement, fasten off, join instructions) belong
+    // in the real generated pattern, not in this in-progress preview.
+    segments.forEach(seg=>{
+      if(seg.kind!=='table') return;
+      seg.rows.forEach(r=> lines.push(`Rnd ${r[0]}.  ${r[1]}${r[2] ? `  (${r[2]})` : ''}`));
+    });
+    pre.textContent = lines.join('\n');
+  }
+
+  function wireStaticControlsOnce(){
+    document.getElementById('cmPaletteGrid').addEventListener('click', e=>{
+      const el = e.target.closest('[data-pick]');
+      if(!el) return;
+      selected = el.dataset.pick==='erase' ? 'erase' : parseInt(el.dataset.pick,10);
+      renderPalette();
+    });
+    document.getElementById('cmToolRow').addEventListener('click', e=>{
+      const btn = e.target.closest('[data-tool]');
+      if(!btn) return;
+      if(btn.dataset.tool==='bucket') fillAll();
+      else setActiveTool(btn.dataset.tool);
+    });
+    document.getElementById('cmRoundsList').addEventListener('click', e=>{
+      if(e.target.dataset.fill!==undefined) fillRound(parseInt(e.target.dataset.fill,10));
+      else if(e.target.dataset.clear!==undefined) clearRound(parseInt(e.target.dataset.clear,10));
+    });
+    document.getElementById('cmCloseBtn').addEventListener('click', close);
+    document.getElementById('cmCancelBtn').addEventListener('click', close);
+    document.getElementById('cmBackdrop').addEventListener('click', close);
+    document.getElementById('cmApplyBtn').addEventListener('click', apply);
+    document.addEventListener('keydown', e=>{
+      if(e.key==='Escape' && !document.getElementById('colorMapperModal').hidden) close();
+    });
+  }
+
+  function open(bodyArg, existingMap){
+    body = bodyArg;
+    spec = bodyRoundSpec(body);
+    rounds = makeRoundsFromSpec(existingMap);
+    shape = {...(SHAPE_PRESETS[body.id] || {equator:0.5, pTop:2, pBottom:2, aspect:1})};
+    selected = null;
+    activeTool = 'pencil';
+
+    document.getElementById('colorMapperModal').hidden = false;
+    document.getElementById('cmTitle').textContent = `Color Mapper — ${body.name}`;
+    if(!staticWired){ wireStaticControlsOnce(); staticWired = true; }
+    if(!initialized) initThree();
+    document.querySelectorAll('#cmToolRow .cm-tool-btn[data-tool]').forEach(b=>{
+      b.classList.toggle('selected', b.dataset.tool===activeTool);
+    });
+    if(initialized) updateCanvasInteractionMode();
+    renderPalette();
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+    buildMesh({refit:true});
+    requestAnimationFrame(resizeThree);
+  }
+  function close(){
+    document.getElementById('colorMapperModal').hidden = true;
+  }
+  function apply(){
+    if(unpaintedCount() > 0) return;
+    applyCustomColorMap(body.id, { rounds: rounds.map(r=>r.colors.slice()) });
+    close();
+  }
+
+  return { open };
+})();
+
+function applyCustomColorMap(bodyId, customMap){
+  state.customColorMaps[bodyId] = customMap;
+  saveState();
+  render();
+  showToast('Custom colors applied');
+}
+function clearCustomColorMap(bodyId){
+  delete state.customColorMaps[bodyId];
+  saveState();
+  render();
+  showToast('Custom colors cleared');
 }
 
 function initPatternTitle(){

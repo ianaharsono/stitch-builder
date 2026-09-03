@@ -380,3 +380,123 @@
   @media (max-width:480px){
     .swatches-sm .swatch{ width:32px; height:32px; }
   }
+
+  /* ---------- Color Mapper launch link + embedded modal ---------- */
+  .color-mapper-actions{ margin-top:12px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .link-btn{
+    background:none; border:none; padding:0; cursor:pointer; font-family:'Nunito', sans-serif;
+    font-weight:800; font-size:0.8rem; color:var(--teal-ink); text-decoration:underline; text-underline-offset:2px;
+  }
+  .link-btn:hover{ color:var(--hot-pink-ink); }
+  .link-btn.subtle{ color:var(--ink-soft); font-weight:700; }
+
+  .cm-modal{ position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .cm-modal[hidden]{ display:none; }
+  .cm-modal-backdrop{ position:absolute; inset:0; background:rgba(20,14,22,0.55); }
+  .cm-modal-panel{
+    position:relative; background:var(--paper); border-radius:16px; box-shadow:var(--shadow);
+    width:100%; max-width:1180px; max-height:100%; overflow-y:auto; display:flex; flex-direction:column;
+  }
+  .cm-modal-head{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    padding:20px 22px 12px; border-bottom:1px solid var(--line); flex-shrink:0;
+  }
+  .cm-modal-head h2{ font-family:'Fraunces', serif; font-size:1.2rem; font-weight:700; margin:0 0 4px; }
+  .cm-hint{ font-size:0.8rem; color:var(--ink-soft); margin:0; max-width:640px; line-height:1.5; }
+  .cm-close{
+    background:none; border:none; cursor:pointer; font-size:1.4rem; line-height:1; color:var(--ink-soft);
+    width:32px; height:32px; border-radius:50%; flex-shrink:0;
+  }
+  .cm-close:hover{ background:var(--locked-wash); color:var(--ink); }
+
+  .cm-layout{ display:grid; grid-template-columns:240px minmax(360px,1fr) 300px; gap:18px; padding:18px 22px; }
+  @media (max-width:1100px){ .cm-layout{ grid-template-columns:1fr; } }
+
+  .cm-panel h3{ font-family:'Fraunces', serif; font-size:0.92rem; font-weight:700; margin:0 0 10px; }
+  .cm-panel .btn{ width:100%; justify-content:center; margin-top:10px; }
+
+  .cm-palette{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+  .cm-swatch{
+    aspect-ratio:1; border-radius:7px; border:2px solid transparent; cursor:pointer; position:relative;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.12);
+  }
+  .cm-swatch.selected{ border-color:var(--teal); box-shadow:0 0 0 2px var(--teal-wash), inset 0 0 0 1px rgba(0,0,0,0.12); }
+  .cm-swatch.cm-eraser{
+    background:repeating-linear-gradient(45deg, var(--locked), var(--locked) 4px, var(--paper) 4px, var(--paper) 8px);
+    display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--ink-soft);
+  }
+  .cm-selected-label{ margin-top:10px; font-size:0.78rem; color:var(--ink-soft); }
+  .cm-selected-label b{ color:var(--ink); }
+
+  .cm-tool-row{ display:flex; gap:8px; margin-top:10px; }
+  .cm-tool-btn{
+    width:36px; height:36px; flex-shrink:0; border-radius:8px;
+    border:1px solid var(--line); background:var(--paper-raised); color:var(--ink-soft);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .cm-tool-btn svg{ width:18px; height:18px; }
+  .cm-tool-btn:hover{ border-color:var(--teal); color:var(--teal-ink); }
+  .cm-tool-btn.selected{ border-color:var(--teal); background:var(--teal-wash); color:var(--teal-ink); }
+
+  .cm-rounds-head{ margin-top:18px; }
+  .cm-rounds-list{ display:flex; flex-direction:column; gap:5px; max-height:260px; overflow-y:auto; padding-right:2px; }
+  .cm-round-row{
+    display:flex; align-items:center; gap:8px; padding:5px 7px; border-radius:7px;
+    border:1px solid var(--line); background:var(--paper-raised); font-size:0.76rem;
+  }
+  .cm-round-num{ font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--hot-pink-ink); flex-shrink:0; }
+  .cm-round-count{ color:var(--ink-soft); }
+  .cm-round-actions{ display:flex; gap:4px; margin-left:auto; }
+  .cm-icon-btn{
+    border:1px solid var(--line); background:var(--paper); color:var(--ink-soft);
+    border-radius:6px; width:22px; height:22px; font-size:11px; cursor:pointer; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cm-icon-btn:hover{ border-color:var(--teal); color:var(--teal-ink); }
+
+  .cm-canvas-area{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .cm-view-controls{ display:flex; align-items:center; gap:8px; }
+  .cm-spacer{ flex:1; }
+  .cm-hover-info{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); }
+  .cm-three-wrap{
+    position:relative; width:100%; aspect-ratio:1; border-radius:12px; overflow:hidden;
+    background:radial-gradient(circle at 50% 38%, var(--paper) 0%, var(--paper-raised) 72%);
+    border:1px solid var(--line); touch-action:none; cursor:grab;
+  }
+  .cm-three-wrap:active{ cursor:grabbing; }
+  #cmThreeCanvas{ display:block; width:100%; height:100%; }
+
+  .cm-legend{ display:flex; flex-wrap:wrap; gap:8px; }
+  .cm-legend-chip{
+    display:flex; align-items:center; gap:6px; font-size:0.76rem; padding:4px 8px 4px 4px;
+    border:1px solid var(--line); border-radius:20px; background:var(--paper-raised);
+  }
+  .cm-legend-chip .cm-dot{ width:14px; height:14px; border-radius:50%; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.15); }
+  .cm-legend-chip .cm-n{ color:var(--ink-soft); font-family:'JetBrains Mono', monospace; font-size:0.7rem; }
+  .cm-legend-empty{ font-size:0.78rem; color:var(--ink-soft); }
+
+  .cm-output-panel{ display:flex; flex-direction:column; min-height:0; }
+  .cm-warnings{
+    display:none; font-size:0.76rem; color:#8a5a12; background:var(--gold-wash);
+    border-radius:8px; padding:8px 10px; margin-bottom:10px; line-height:1.5;
+  }
+  .cm-warnings.show{ display:block; }
+  .cm-pattern-preview{
+    white-space:pre-wrap; font-family:'JetBrains Mono', monospace; font-size:0.72rem; line-height:1.6;
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:10px;
+    flex:1; min-height:200px; max-height:460px; overflow-y:auto; margin:0;
+  }
+
+  .cm-modal-actions{
+    display:flex; justify-content:flex-end; gap:10px; padding:14px 22px; border-top:1px solid var(--line); flex-shrink:0;
+    /* .cm-modal-panel (not the page) is the scroll container here, so pinning
+       this to its bottom keeps Apply reachable without scrolling the modal's
+       full height first, even when the 3-column layout above runs tall. */
+    position:sticky; bottom:0; background:var(--paper); z-index:2;
+  }
+
+  @media (max-width:640px){
+    .cm-modal{ padding:0; }
+    .cm-modal-panel{ border-radius:0; max-height:100vh; }
+  }

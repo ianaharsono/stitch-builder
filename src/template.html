@@ -39,6 +39,10 @@
             <img class="body-color-preview" id="bodyColorPreview" alt="">
             <div class="color-picker-inline" id="bodyColorPicker"></div>
           </div>
+          <div class="color-mapper-actions">
+            <button type="button" class="link-btn" id="launchColorMapperBtn">Launch Color Mapper</button>
+            <button type="button" class="link-btn subtle" id="clearColorMapperBtn" hidden>Clear custom colors</button>
+          </div>
         </div>
       </div>
 
@@ -89,6 +93,65 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="cm-modal" id="colorMapperModal" hidden>
+  <div class="cm-modal-backdrop" id="cmBackdrop"></div>
+  <div class="cm-modal-panel" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
+    <div class="cm-modal-head">
+      <div>
+        <h2 id="cmTitle">Color Mapper</h2>
+        <p class="cm-hint">Drag to rotate, scroll to zoom. Pencil paints one stitch at a time (right-click erases); fill bucket paints the whole piece; rectangle and circle drag across the shape to fill an area.</p>
+      </div>
+      <button type="button" class="cm-close" id="cmCloseBtn" aria-label="Close">&times;</button>
+    </div>
+    <div class="cm-layout">
+      <aside class="cm-panel">
+        <h3>Yarn color</h3>
+        <div id="cmPaletteGrid" class="cm-palette"></div>
+        <div id="cmSelectedLabel" class="cm-selected-label">Pick a color, then paint stitches.</div>
+        <div id="cmToolRow" class="cm-tool-row">
+          <button type="button" class="cm-tool-btn selected" data-tool="pencil" title="Pencil — click a stitch to paint it">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l.8-3.4L11.6 3.8a1.3 1.3 0 0 1 1.8 0l.8.8a1.3 1.3 0 0 1 0 1.8L6.4 14.2 3 15z"/><path d="M10.2 5.4l2.4 2.4"/></svg>
+          </button>
+          <button type="button" class="cm-tool-btn" data-tool="bucket" title="Fill bucket — fill every stitch with the selected color">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 8.2L8.6 2.4l6.4 6.4a2 2 0 0 1 0 2.9l-2.7 2.7a2 2 0 0 1-2.9 0L2.8 8.2z"/><path d="M2.8 8.2h9.4"/><circle cx="15" cy="14.5" r="1.1" fill="currentColor" stroke="none"/></svg>
+          </button>
+          <button type="button" class="cm-tool-btn" data-tool="rect" title="Rectangle — drag to fill a block of rounds and stitches">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.8" y="4.8" width="12.4" height="8.4" rx="1.3"/></svg>
+          </button>
+          <button type="button" class="cm-tool-btn" data-tool="circle" title="Circle — drag to fill a circular area">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="9" r="6.2"/></svg>
+          </button>
+        </div>
+        <h3 class="cm-rounds-head">Rounds</h3>
+        <div id="cmRoundsList" class="cm-rounds-list"></div>
+      </aside>
+      <main class="cm-canvas-area">
+        <div class="cm-view-controls">
+          <button type="button" class="btn btn-ghost" id="cmResetViewBtn">Reset view</button>
+          <button type="button" class="btn btn-ghost" id="cmResetFrontBtn">Reset to front</button>
+          <span class="cm-spacer"></span>
+          <span id="cmHoverInfo" class="cm-hover-info"></span>
+        </div>
+        <div id="cmThreeWrap" class="cm-three-wrap">
+          <canvas id="cmThreeCanvas"></canvas>
+        </div>
+        <div id="cmLegend" class="cm-legend"></div>
+      </main>
+      <aside class="cm-panel cm-output-panel">
+        <h3>Pattern preview</h3>
+        <div id="cmWarnings" class="cm-warnings"></div>
+        <pre id="cmPatternPreview" class="cm-pattern-preview"></pre>
+      </aside>
+    </div>
+    <div class="cm-modal-actions">
+      <button type="button" class="btn btn-ghost" id="cmCancelBtn">Cancel</button>
+      <button type="button" class="btn btn-primary" id="cmApplyBtn">Apply Colors</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 {{SCRIPT}}</script>

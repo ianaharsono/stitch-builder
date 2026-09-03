@@ -820,6 +820,7 @@ const EAR_STYLES = [
   {
     id:'pointy',
     name:'Cat ears',
+    docName:'Ears',
     subtitle:'Small paired triangular ears, single color',
     photo:'data:image/webp;base64,{{PHOTO_EAR_STYLES_pointy}}',
     cutout:true,
@@ -985,7 +986,7 @@ const ADDONS = [
 const LOCKED_ADDONS = [
 ];
 
-const state = { bodyId:null, colors:{}, addons:{}, patternTitle:'' };
+const state = { bodyId:null, colors:{}, addons:{}, patternTitle:'', customColorMaps:{} };
 function ensureAddonState(key){
   if(!state.addons[key]) state.addons[key] = { on:false, styleId:null, byStyle:{} };
   return state.addons[key];
@@ -1005,6 +1006,7 @@ function loadState(){
       state.colors = saved.colors ?? {};
       state.addons = saved.addons ?? {};
       state.patternTitle = typeof saved.patternTitle === 'string' ? saved.patternTitle : '';
+      state.customColorMaps = saved.customColorMaps && typeof saved.customColorMaps === 'object' ? saved.customColorMaps : {};
     }
   }catch(e){}
 }
@@ -1460,6 +1462,326 @@ function compilePieceBlocks(piece, store){
   return { colors, segments };
 }
 
+// ---------- Color Mapper: per-stitch color injection into a body's rounds ----------
+// A body's rounds text is built from just three stitch primitives — sc
+// (1 previous st -> 1 new st), inc (1 -> 2), dec (2 -> 1) — combined with
+// plain comma clauses and "[…] x N" (optionally nested "(…) x N") repeat
+// groups. That's a tight enough grammar that a real per-stitch color map
+// from the Color Mapper can be spliced back into the exact instruction
+// text a round already has, rather than replacing it with a generic
+// round-by-round summary.
+const CM_VERB_WORD = {sc:'sc', inc:'inc', dec:'dec'};
+const CM_SKIP_LEAD = Symbol('cm-skip-lead'); // the round right after a `join` block never gets its own leading call-out — the join's own note text already announces the incoming color
+let cmRepCounter = 0; // unique id source for cmParseClause's repeat-group tagging, see cmRep below
+
+function cmSplitTopLevel(text){
+  const parts = [];
+  let depth = 0, start = 0;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(c==='['||c==='(') depth++;
+    else if(c===']'||c===')') depth--;
+    else if(c===',' && depth===0){ parts.push(text.slice(start,i)); start=i+1; }
+  }
+  parts.push(text.slice(start));
+  return parts.map(s=>s.trim()).filter(Boolean);
+}
+function cmParseClauseList(text){
+  const ops = [];
+  cmSplitTopLevel(text).forEach(clause => ops.push(...cmParseClause(clause)));
+  return ops;
+}
+function cmParseClause(clause){
+  let m = clause.match(/^\[(.+)\]\s*x\s*(\d+)$/) || clause.match(/^\((.+)\)\s*x\s*(\d+)$/);
+  if(m){
+    const inner = cmParseClauseList(m[1]);
+    const times = parseInt(m[2],10);
+    const id = cmRepCounter++;
+    const result = [];
+    // Each op remembers which repeat group it came from (id), which
+    // iteration of that group (iter, 0-based), and its position within one
+    // iteration (posInIter) — cmRenderOpsAsClauses uses this to recognize
+    // when a run of same-color ops still forms N whole iterations of the
+    // original cycle, so it can render "[…]xN" instead of spelling every
+    // iteration out, while a color change that lands mid-iteration still
+    // falls back to spelling that iteration out (see cmColorRuns, which
+    // drops this tag off any op a color boundary splits).
+    for(let k=0;k<times;k++){
+      inner.forEach((op,posInIter) => result.push({...op, cmRep:{id, iter:k, len:inner.length, posInIter}}));
+    }
+    return result;
+  }
+  m = clause.match(/^(\d+)\s*(sc|inc|dec)$/);
+  if(m) return Array.from({length:parseInt(m[1],10)}, ()=>({type:m[2]}));
+  m = clause.match(/^(sc|inc|dec)$/);
+  if(m) return [{type:m[1]}];
+  throw new Error(`Color Mapper: unrecognized stitch clause "${clause}"`);
+}
+
+// Parses a body round's raw instruction text (the same text compilePieceBlocks
+// would otherwise resolve __COLOR_START__/__COLOR_SWITCH__ tokens in) into a
+// flat sequence of {type, label?} stitch primitives, plus any non-stitch
+// framing the row also carries: the round-1 magic-loop-start phrasing, the
+// Peanut round-11 "resume after the join" phrasing, and a trailing
+// back/front-loop-only annotation. The raw color tokens are stripped — a
+// custom color map replaces the callouts they would have produced.
+function parseRowOps(rawText){
+  let text = rawText.replace(/^__COLOR_START__\s*/, '').replace(/^__COLOR_SWITCH__\s*/, '');
+  text = text.replace(/__COLOR\d+__/g, 'working');
+
+  const cutMatch = text.match(/^(.*?)\.\s*Cut the working yarn\.$/);
+  if(cutMatch) text = cutMatch[1];
+
+  let suffix = '';
+  const bloMatch = text.match(/^(.*?),\s*(working in the (?:back|front) loops only \([A-Z]+\))$/);
+  if(bloMatch){ text = bloMatch[1]; suffix = ', ' + bloMatch[2]; }
+
+  const magicMatch = text.match(/^start\s+(\d+)\s+sc in a magic loop$/);
+  if(magicMatch){
+    return { ops: Array.from({length:parseInt(magicMatch[1],10)}, ()=>({type:'sc'})), suffix, magicLoopStart:true };
+  }
+
+  const joinMatch = text.match(/^inc into the same stitch as your sl st join,\s*(\d+)\s*inc$/);
+  if(joinMatch){
+    const ops = [{type:'inc', label:'inc into the same stitch as your sl st join'}];
+    for(let k=0;k<parseInt(joinMatch[1],10);k++) ops.push({type:'inc'});
+    return { ops, suffix, magicLoopStart:false };
+  }
+
+  return { ops: cmParseClauseList(text), suffix, magicLoopStart:false };
+}
+
+function cmOpsToPositions(ops){
+  let pos = 0;
+  return ops.map(op=>{
+    const width = op.type==='inc' ? 2 : 1;
+    const posRange = [pos, pos+width-1];
+    pos += width;
+    return { ...op, posRange };
+  });
+}
+// Starting at ops[i] (the first position of one of its repeat group's
+// iterations), counts how many WHOLE consecutive iterations of that same
+// group follow with no gaps, label, or type mismatch — i.e. how many times
+// the color map left that cycle fully intact and fully within this same
+// color run. Returns 0 if ops[i] isn't cleanly "iteration N, position 0" of
+// a repeat group at all.
+function cmCountWholeIterations(ops, i){
+  const rep = ops[i] && ops[i].cmRep;
+  if(!rep || rep.posInIter !== 0) return 0;
+  const template = ops.slice(i, i+rep.len).map(o=>o && o.type);
+  let n = 0, j = i;
+  while(j + rep.len <= ops.length){
+    let ok = true;
+    for(let k=0; k<rep.len; k++){
+      const o = ops[j+k];
+      if(!o || o.label || o.type !== template[k] || !o.cmRep ||
+         o.cmRep.id !== rep.id || o.cmRep.iter !== rep.iter+n || o.cmRep.posInIter !== k){
+        ok = false; break;
+      }
+    }
+    if(!ok) break;
+    n++; j += rep.len;
+  }
+  return n;
+}
+
+// Renders a run of same-color ops as instruction clauses. Where the color
+// map left a "[…] x N" repeat group's cycle fully untouched for two or more
+// consecutive iterations, that stretch is rendered back as "[…]xN" instead
+// of spelling every iteration out — mirroring how the source pattern itself
+// would write it. Any op a color change split off from its cycle (see
+// cmColorRuns) simply carries no repeat tag, so it always falls through to
+// the plain same-type collapsing below.
+function cmRenderOpsAsClauses(ops){
+  const clauses = [];
+  let i = 0;
+  while(i < ops.length){
+    const op = ops[i];
+    if(op.label){ clauses.push(op.label); i++; continue; }
+    const n = cmCountWholeIterations(ops, i);
+    if(n >= 2){
+      const rep = op.cmRep;
+      const cycleOps = ops.slice(i, i+rep.len).map(o=>({type:o.type}));
+      clauses.push(`[${cmRenderOpsAsClauses(cycleOps)}]x${n}`);
+      i += rep.len*n;
+      continue;
+    }
+    let j = i;
+    while(j < ops.length && ops[j].type===op.type && !ops[j].label) j++;
+    const n2 = j - i;
+    clauses.push(n2===1 ? CM_VERB_WORD[op.type] : `${n2} ${CM_VERB_WORD[op.type]}`);
+    i = j;
+  }
+  return clauses.join(', ');
+}
+// Groups ops into runs of consecutive same-color stitches. colorIdxPerStitch
+// has one entry per FINAL stitch of the round; an `inc` op spans two of
+// those entries, so a color boundary landing between them decomposes that
+// one inc into the two single stitches it actually produces.
+function cmColorRuns(ops, colorIdxPerStitch){
+  const expanded = [];
+  cmOpsToPositions(ops).forEach(op=>{
+    const [a,b] = op.posRange;
+    if(a===b){ expanded.push({type:op.type, color:colorIdxPerStitch[a], label:op.label, cmRep:op.cmRep}); return; }
+    const c0 = colorIdxPerStitch[a], c1 = colorIdxPerStitch[b];
+    if(c0===c1){ expanded.push({type:'inc', color:c0, label:op.label, cmRep:op.cmRep}); return; }
+    // A color boundary landing inside this inc splits it into the two
+    // single stitches it actually produces — that stitch is no longer a
+    // whole, untouched iteration of whatever repeat group it came from, so
+    // it's deliberately left untagged rather than carrying op.cmRep forward.
+    expanded.push({type:'sc', color:c0, label:op.label});
+    expanded.push({type:'sc', color:c1, label:'sc in the same st'});
+  });
+  const runs = [];
+  expanded.forEach(op=>{
+    const last = runs[runs.length-1];
+    if(last && last.color===op.color) last.ops.push(op);
+    else runs.push({ color: op.color, ops:[op] });
+  });
+  return runs;
+}
+// Renders one round's colored instruction text. `leadColor` is whatever
+// color the piece was already working in — a run only gets a
+// "(…yarn)"/"(switch to …yarn)" call-out when its color actually differs
+// from that, so a round that continues the established color reads exactly
+// like it would with no custom map at all.
+function renderColoredRow(parsed, colorIdxPerStitch, colorNames, leadColor){
+  const runs = cmColorRuns(parsed.ops, colorIdxPerStitch);
+  const pieces = runs.map((run, ri)=>{
+    let clauseText = cmRenderOpsAsClauses(run.ops);
+    if(ri===0 && parsed.magicLoopStart) clauseText = `start ${clauseText} in a magic loop`;
+    const needsCallout = ri > 0 || (leadColor !== CM_SKIP_LEAD && leadColor !== run.color);
+    if(!needsCallout) return clauseText;
+    const label = colorNames[run.color].toLowerCase();
+    const callout = (ri===0 && leadColor==null) ? `(${label} yarn)` : `(switch to ${label} yarn)`;
+    return `${callout} ${clauseText}`;
+  });
+  const endColor = runs.length ? runs[runs.length-1].color : leadColor;
+  return { text: pieces.join(', ') + (parsed.suffix || ''), endColor };
+}
+
+function cmExpandRoundLabel(label){
+  const m = String(label).match(/^(\d+)[–-](\d+)$/);
+  if(!m) return [parseInt(label,10)];
+  const out = [];
+  for(let n=parseInt(m[1],10); n<=parseInt(m[2],10); n++) out.push(n);
+  return out;
+}
+
+// Flattens a body's `rounds` blocks into one entry per individual round (in
+// body order, expanding merged ranges like '7–10'), giving each a stable
+// `index` — this is what both the embedded Color Mapper's 3D round list and
+// a saved custom color map (keyed by that same index) are built against,
+// instead of a hand-maintained duplicate of each body's round counts.
+function bodyRoundSpec(body){
+  const list = [];
+  const byNum = {};
+  let pendingAfterJoin = false;
+  body.blocks.forEach(block=>{
+    if(block.type==='join'){ pendingAfterJoin = true; return; }
+    if(block.type!=='rounds') return;
+    block.rows.forEach((r, rowIdx)=>{
+      cmExpandRoundLabel(r[0]).forEach((n, i)=>{
+        const isFirst = rowIdx===0 && i===0 && pendingAfterJoin;
+        const entry = { num:n, index:list.length, count:parseInt(r[2],10), baseText:r[1], afterJoin:isFirst };
+        list.push(entry);
+        byNum[n] = entry;
+        if(isFirst) pendingAfterJoin = false;
+      });
+    });
+  });
+  return { list, byNum };
+}
+
+function cmDistinctColorsUsed(customMap){
+  const seen = new Set();
+  const colors = [];
+  customMap.rounds.forEach(roundColors => roundColors.forEach(idx=>{
+    if(idx!=null && !seen.has(idx)){ seen.add(idx); colors.push(COLORS[idx]); }
+  }));
+  return colors;
+}
+
+function formatColorNameList(names){
+  if(names.length <= 2) return names.join(' and ');
+  return `${names.slice(0,-1).join(', ')}, and ${names[names.length-1]}`;
+}
+
+// Rewrites a body's `rounds` blocks with a custom per-stitch color map
+// spliced in, in place of the ordinary single/dual-swatch token
+// substitution compilePieceBlocks performs. Only a round whose coloring
+// actually changes gets rewritten — one that simply continues in the color
+// already established is left exactly as written today, brackets and all.
+function compileBodySegmentsWithCustomColors(body, customMap){
+  const spec = bodyRoundSpec(body);
+  const colorNames = COLORS.map(c=>c.name);
+  const colorState = { leadColor: null };
+  const segments = [];
+
+  body.blocks.forEach(block=>{
+    if(block.type==='rounds'){
+      const rows = [];
+      block.rows.forEach(r=>{
+        const nums = cmExpandRoundLabel(r[0]);
+        const hasColorToken = /__COLOR/.test(r[1]);
+        const perRoundColors = nums.map(n => customMap.rounds[spec.byNum[n].index]);
+        const allMatchLead = perRoundColors.every(cols => cols.every(c=>c===cols[0]) && cols[0]===colorState.leadColor);
+        if(allMatchLead && !hasColorToken){
+          rows.push([r[0], r[1], r[2]]);
+          return;
+        }
+        nums.forEach(n=>{
+          const entry = spec.byNum[n];
+          const stitchColors = customMap.rounds[entry.index];
+          const parsed = parseRowOps(entry.baseText);
+          const lead = entry.afterJoin ? CM_SKIP_LEAD : colorState.leadColor;
+          const { text, endColor } = renderColoredRow(parsed, stitchColors, colorNames, lead);
+          rows.push([String(n), text, String(stitchColors.length)]);
+          colorState.leadColor = endColor;
+        });
+      });
+      segments.push({kind:'table', rows});
+    } else if(block.type==='join'){
+      let toColorIdx = null;
+      const blockIdx = body.blocks.indexOf(block);
+      for(let i=blockIdx+1; i<body.blocks.length; i++){
+        const nb = body.blocks[i];
+        if(nb.type==='rounds'){
+          const firstNum = cmExpandRoundLabel(nb.rows[0][0])[0];
+          toColorIdx = customMap.rounds[spec.byNum[firstNum].index][0];
+          break;
+        }
+      }
+      const toName = toColorIdx==null ? colorNames[0] : colorNames[toColorIdx];
+      segments.push({kind:'note', text:`Invisible fasten off. Make a slip knot with your ${toName.toLowerCase()} yarn and sl st join to the stitch where you fastened off.`});
+    } else if(block.type==='note'){
+      if(block.whenColorsDiffer && cmDistinctColorsUsed(customMap).length < 2) return;
+      segments.push({kind:'note', text: block.text});
+    }
+  });
+  return segments;
+}
+
+// Custom map can go stale if a body's own round structure ever changes
+// (round count, or a round's stitch count) after the map was saved.
+function customColorMapMatchesBody(body, customMap){
+  if(!customMap || !Array.isArray(customMap.rounds)) return false;
+  const spec = bodyRoundSpec(body);
+  if(customMap.rounds.length !== spec.list.length) return false;
+  return spec.list.every(entry => (customMap.rounds[entry.index]||[]).length === entry.count);
+}
+
+// compilePieceBlocks with a custom color map spliced in for the body, when
+// one exists and still matches that body's current round structure.
+function compileBody(body, bodyStore){
+  const customMap = state.customColorMaps[body.id];
+  if(customMap && customColorMapMatchesBody(body, customMap)){
+    return { colors: cmDistinctColorsUsed(customMap), segments: compileBodySegmentsWithCustomColors(body, customMap) };
+  }
+  return compilePieceBlocks(body, bodyStore);
+}
+
 function ensureBodyDefaults(body){
   const store = ensureStore(state.colors, body.id);
   body.colorParts.forEach(part=>{
@@ -1690,7 +2012,7 @@ function slugify(text){
 
 function buildPatternText(body){
   const bodyStore = ensureBodyDefaults(body);
-  const { colors, segments } = compilePieceBlocks(body, bodyStore);
+  const { colors, segments } = compileBody(body, bodyStore);
 
   const activeAddons = ADDONS.map(addon=>{
     const addonState = ensureAddonState(addon.key);
@@ -1710,10 +2032,7 @@ function buildPatternText(body){
   const addUsedColor = c => { if(!seenColorHexes.has(c.hex)){ seenColorHexes.add(c.hex); usedColors.push(c); } };
   colors.forEach(addUsedColor);
   activeAddons.forEach(a => a.colors.forEach(addUsedColor));
-  const colorNames = usedColors.map(c=>c.name);
-  const colorList = colorNames.length <= 2
-    ? colorNames.join(' and ')
-    : `${colorNames.slice(0,-1).join(', ')}, and ${colorNames[colorNames.length-1]}`;
+  const colorList = formatColorNameList(usedColors.map(c=>c.name));
   lines.push(`- Beginner Yarn in ${colorList}`);
   lines.push('');
   lines.push('* Cuddle Craft Tube Yarn by Loops & Threads');
@@ -1727,7 +2046,7 @@ function buildPatternText(body){
   lines.push('- Yarn needle');
   lines.push('');
   lines.push('HEAD & BODY');
-  lines.push(`With ${colors.map(c=>c.name.toLowerCase()).join(' and ')} yarn.`);
+  lines.push(`With ${formatColorNameList(colors.map(c=>c.name.toLowerCase()))} yarn.`);
   lines.push('');
   segments.forEach(seg=>{
     if(seg.kind==='table'){
@@ -1829,7 +2148,7 @@ function buildPatternDocHeaderHtml(title){
 
 function buildPatternDocPieceHtml(heading, makeCount, colors, segments){
   const makeSuffix = makeCount && makeCount > 1 ? ` (make ${makeCount})` : '';
-  const colorNames = colors.map(c=>c.name).join(' and ');
+  const colorNames = formatColorNameList(colors.map(c=>c.name));
   let html = `<h2 style="font-family:Nunito, Arial, sans-serif;font-size:18px;font-weight:800;color:#2B2130;margin:22px 0 8px 0;">${escapeHtml(heading)}${escapeHtml(makeSuffix)}</h2>`;
   html += `<p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 10px 0;">📷&nbsp;&nbsp;With <b>${escapeHtml(colorNames)}</b> yarn.</p>`;
   segments.forEach(seg=>{
@@ -1852,7 +2171,7 @@ function buildPatternDocPieceHtml(heading, makeCount, colors, segments){
 
 function buildPatternDocHtml(body){
   const bodyStore = ensureBodyDefaults(body);
-  const { colors: bodyColors, segments } = compilePieceBlocks(body, bodyStore);
+  const { colors: bodyColors, segments } = compileBody(body, bodyStore);
 
   const activeAddons = ADDONS.map(addon=>{
     const addonState = ensureAddonState(addon.key);
@@ -1867,7 +2186,7 @@ function buildPatternDocHtml(body){
   html += buildPatternDocHeaderHtml(buildPatternTitle(body));
   html += buildPatternDocPieceHtml('Head & Body', 1, bodyColors, segments);
   activeAddons.forEach(a=>{
-    html += buildPatternDocPieceHtml(a.style.name, a.style.makeCount, a.colors, a.segments);
+    html += buildPatternDocPieceHtml(a.style.docName || a.style.name, a.style.makeCount, a.colors, a.segments);
   });
   html += '</div>';
   return html;
@@ -1950,6 +2269,15 @@ function render(){
       buildSwatchRow(document.getElementById(`bodySwatch_${pi}`), idx, (i)=>{ bodyStore[part.key] = i; });
       document.getElementById(`bodyColorName_${pi}`).textContent = COLORS[idx].name;
     });
+
+    const launchColorMapperBtn = document.getElementById('launchColorMapperBtn');
+    const clearColorMapperBtn = document.getElementById('clearColorMapperBtn');
+    const existingMap = state.customColorMaps[body.id];
+    const hasCustomMap = existingMap && customColorMapMatchesBody(body, existingMap);
+    launchColorMapperBtn.textContent = hasCustomMap ? 'Edit custom colors in Color Mapper' : 'Launch Color Mapper';
+    launchColorMapperBtn.onclick = ()=> ColorMapper.open(body, hasCustomMap ? existingMap : null);
+    clearColorMapperBtn.hidden = !hasCustomMap;
+    clearColorMapperBtn.onclick = ()=> clearCustomColorMap(body.id);
   } else {
     bodyColorCard.hidden = true;
   }
@@ -1999,7 +2327,7 @@ function render(){
   }
 
   const bodyStore = ensureBodyDefaults(body);
-  const { colors: bodyColors, segments } = compilePieceBlocks(body, bodyStore);
+  const { colors: bodyColors, segments } = compileBody(body, bodyStore);
 
   const activeAddons = ADDONS.map(addon=>{
     const addonState = ensureAddonState(addon.key);
@@ -2044,7 +2372,7 @@ function render(){
   meta.innerHTML = uniqueColors.map(c=>`<span><span class="meta-dot" style="background:${c.hex}"></span>${c.name}</span>`).join('');
 
   let html = '';
-  html += `<div class="p-section"><h3>Head &amp; Body</h3><div class="p-hint" style="background:transparent;padding:0 0 8px;">With ${bodyColors.map(c=>c.name.toLowerCase()).join(' and ')} yarn.</div>`;
+  html += `<div class="p-section"><h3>Head &amp; Body</h3><div class="p-hint" style="background:transparent;padding:0 0 8px;">With ${formatColorNameList(bodyColors.map(c=>c.name.toLowerCase()))} yarn.</div>`;
   segments.forEach(seg=>{
     if(seg.kind==='table'){
       html += `<table class="rounds">`;
@@ -2136,6 +2464,582 @@ function showToast(msg){
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+// ---------- Embedded Color Mapper modal ----------
+// A trimmed, in-page copy of the standalone color-mapper.html's 3D paint
+// engine, bound to whichever body is already selected: its round list is
+// fixed to that body's real construction (from bodyRoundSpec) instead of
+// freely editable, and "Apply Colors" hands the painted result straight to
+// applyCustomColorMap below instead of just displaying a summary. The 3D
+// scene/mesh-building/raycasting code mirrors color-mapper.html's own —
+// there's no shared build step between the two HTML outputs in this
+// project, so keep them in sync by hand if that engine ever changes.
+const ColorMapper = (function(){
+  const SHAPE_PRESETS = {
+    chick:   {equator:0.50, pTop:2.0, pBottom:2.0, aspect:1.00},
+    penguin: {equator:0.60, pTop:2.0, pBottom:2.2, aspect:1.20},
+    peanut:  {equator:0.50, pTop:2.2, pBottom:2.2, aspect:1.35},
+    pebble:  {equator:0.62, pTop:2.0, pBottom:2.8, aspect:0.70},
+    horse:   {equator:0.58, pTop:1.6, pBottom:1.6, aspect:1.40},
+    dome:    {equator:0.45, pTop:2.6, pBottom:1.8, aspect:0.85},
+    snowman: {equator:0.50, pTop:1.7, pBottom:2.0, aspect:1.25},
+    thimble: {equator:0.60, pTop:2.2, pBottom:3.5, aspect:1.30},
+    dino:    {equator:0.50, pTop:1.9, pBottom:1.4, aspect:1.90},
+  };
+  const SEAM_ANGLE = 0;
+  const STITCH_UNIT = 1;
+  const HILITE_OFFSET = 0.035;
+  const PROFILE_SUBSTEPS = 3;
+  const CLICK_MOVE_THRESHOLD = 6;
+
+  let body = null, spec = null, rounds = [], shape = null, selected = null;
+  let activeTool = 'pencil'; // 'pencil' | 'rect' | 'circle' — the fill bucket is a one-shot action, not a persistent tool
+  let scene, camera, renderer, controls, raycaster, mouse, initialized = false, staticWired = false;
+  let bodyMesh=null, lineMesh=null, seamMesh=null, markerGroup=null, highlightMesh=null;
+  let triToBlock=[], blockVertexOffset=[], blockCorners=[];
+  let unsetColor=null, seamColor=null, startColor=null;
+  let pointerDownPos = null, shapeDragStart = null;
+
+  function makeRoundsFromSpec(existingMap){
+    return spec.list.map(entry=>{
+      const saved = existingMap && existingMap.rounds[entry.index];
+      return { count: entry.count, colors: saved ? saved.slice() : Array(entry.count).fill(null) };
+    });
+  }
+
+  function radiusFor(count){ return count * STITCH_UNIT / (2*Math.PI); }
+  function profileRadius(v){
+    const {equator, pTop, pBottom} = shape;
+    if(v <= equator){
+      const u = v/equator;
+      return Math.pow(1 - Math.pow(1-u, pTop), 1/pTop);
+    }
+    const u = (v-equator)/(1-equator);
+    return Math.pow(1 - Math.pow(u, pBottom), 1/pBottom);
+  }
+  function computeProfile(){
+    let maxCount = 0;
+    rounds.forEach(r=>{ if(r.count>maxCount) maxCount=r.count; });
+    const maxR = radiusFor(maxCount);
+    return { N: rounds.length, maxR, totalHeight: maxR*2*shape.aspect };
+  }
+  function blockColor(val){ return val==null ? unsetColor : new THREE.Color(COLORS[val].hex); }
+
+  function initThree(){
+    const canvas = document.getElementById('cmThreeCanvas');
+    renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(38, 1, 0.05, 200);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x9a8f96, 0.95));
+    const dir = new THREE.DirectionalLight(0xffffff, 0.55);
+    dir.position.set(3,5,2);
+    scene.add(dir);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.enablePan = false;
+    controls.minDistance = 1;
+    controls.maxDistance = 80;
+    controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: null };
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
+
+    const bodyStyle = getComputedStyle(document.body);
+    unsetColor = new THREE.Color(bodyStyle.getPropertyValue('--locked').trim() || '#C9C0C6');
+    seamColor = new THREE.Color(bodyStyle.getPropertyValue('--hot-pink').trim() || '#E63888');
+    startColor = new THREE.Color(bodyStyle.getPropertyValue('--gold').trim() || '#E3A62B');
+
+    resizeThree();
+    window.addEventListener('resize', resizeThree);
+    renderer.domElement.addEventListener('pointerdown', onPointerDown);
+    renderer.domElement.addEventListener('pointerup', onPointerUp);
+    renderer.domElement.addEventListener('contextmenu', e=>e.preventDefault());
+    renderer.domElement.addEventListener('pointermove', onCanvasHover);
+    renderer.domElement.addEventListener('pointerleave', ()=>setHover(null));
+    document.getElementById('cmResetViewBtn').addEventListener('click', ()=>fitCamera(true));
+    document.getElementById('cmResetFrontBtn').addEventListener('click', resetToFront);
+    animate();
+    initialized = true;
+  }
+  function resizeThree(){
+    const wrap = document.getElementById('cmThreeWrap');
+    const size = wrap.clientWidth || 1;
+    renderer.setSize(size, size, false);
+    camera.aspect = 1;
+    camera.updateProjectionMatrix();
+  }
+  function animate(){
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  function resetToFront(){
+    const camAngle = SEAM_ANGLE + Math.PI;
+    const dx = camera.position.x - controls.target.x;
+    const dz = camera.position.z - controls.target.z;
+    const horiz = Math.hypot(dx, dz);
+    camera.position.x = controls.target.x + horiz*Math.cos(camAngle);
+    camera.position.z = controls.target.z + horiz*Math.sin(camAngle);
+    controls.update();
+  }
+  function disposeMesh(){
+    if(bodyMesh){ scene.remove(bodyMesh); bodyMesh.geometry.dispose(); bodyMesh.material.dispose(); bodyMesh=null; }
+    if(lineMesh){ scene.remove(lineMesh); lineMesh.geometry.dispose(); lineMesh.material.dispose(); lineMesh=null; }
+    if(seamMesh){ scene.remove(seamMesh); seamMesh.geometry.dispose(); seamMesh.material.dispose(); seamMesh=null; }
+    if(markerGroup){
+      scene.remove(markerGroup);
+      const seen = new Set();
+      markerGroup.traverse(o=>{
+        if(o.geometry && !seen.has(o.geometry)){ o.geometry.dispose(); seen.add(o.geometry); }
+        if(o.material && !seen.has(o.material)){ o.material.dispose(); seen.add(o.material); }
+      });
+      markerGroup = null;
+    }
+  }
+  function buildMesh(opts){
+    disposeMesh();
+    triToBlock = [];
+    blockVertexOffset = rounds.map(()=>[]);
+    blockCorners = rounds.map(()=>[]);
+    if(rounds.length===0){ if(opts&&opts.refit) fitCamera(true); return; }
+
+    const {N, maxR, totalHeight} = computeProfile();
+    const height = v => totalHeight * (1-v);
+    const radius = v => maxR * profileRadius(v);
+    const positions = [], colors = [], linePts = [];
+
+    for(let ri=0; ri<N; ri++){
+      const rnd = rounds[ri];
+      const step = (Math.PI*2)/rnd.count;
+      for(let bi=0; bi<rnd.count; bi++){
+        const a0 = SEAM_ANGLE + bi*step;
+        const a1 = SEAM_ANGLE + (bi+1)*step;
+        const col = blockColor(rnd.colors[bi]);
+        const vOffset = positions.length/3;
+        for(let s=0; s<PROFILE_SUBSTEPS; s++){
+          const v0 = (ri+s/PROFILE_SUBSTEPS)/N, v1 = (ri+(s+1)/PROFILE_SUBSTEPS)/N;
+          const r0=radius(v0), r1=radius(v1), h0=height(v0), h1=height(v1);
+          const bl=[r0*Math.cos(a0),h0,r0*Math.sin(a0)];
+          const br=[r0*Math.cos(a1),h0,r0*Math.sin(a1)];
+          const tr=[r1*Math.cos(a1),h1,r1*Math.sin(a1)];
+          const tl=[r1*Math.cos(a0),h1,r1*Math.sin(a0)];
+          positions.push(...bl,...br,...tr, ...bl,...tr,...tl);
+          for(let k=0;k<6;k++) colors.push(col.r,col.g,col.b);
+          triToBlock.push({ri,bi},{ri,bi});
+          linePts.push(...bl,...tl);
+          linePts.push(...tl,...tr);
+        }
+        blockVertexOffset[ri][bi] = {offset:vOffset, count:PROFILE_SUBSTEPS*6};
+        const vLo=ri/N, vHi=(ri+1)/N;
+        const rLo=radius(vLo), rHi=radius(vHi), hLo=height(vLo), hHi=height(vHi);
+        blockCorners[ri][bi] = [
+          [rLo*Math.cos(a0),hLo,rLo*Math.sin(a0)],
+          [rLo*Math.cos(a1),hLo,rLo*Math.sin(a1)],
+          [rHi*Math.cos(a1),hHi,rHi*Math.sin(a1)],
+          [rHi*Math.cos(a0),hHi,rHi*Math.sin(a0)],
+        ];
+      }
+    }
+
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
+    geom.setAttribute('color', new THREE.Float32BufferAttribute(colors,3));
+    geom.computeVertexNormals();
+    const mat = new THREE.MeshStandardMaterial({vertexColors:true, side:THREE.DoubleSide, roughness:0.9, metalness:0});
+    bodyMesh = new THREE.Mesh(geom, mat);
+    scene.add(bodyMesh);
+
+    const lineGeom = new THREE.BufferGeometry();
+    lineGeom.setAttribute('position', new THREE.Float32BufferAttribute(linePts,3));
+    const lineMat = new THREE.LineBasicMaterial({color:0x2b2130, transparent:true, opacity:0.22});
+    lineMesh = new THREE.LineSegments(lineGeom, lineMat);
+    scene.add(lineMesh);
+
+    buildSeamMarker(N, height, radius);
+    if(opts && opts.refit) fitCamera(true, maxR, totalHeight);
+  }
+  function buildSeamMarker(N, height, radius){
+    const totalSamples = N*PROFILE_SUBSTEPS;
+    const pts = [];
+    for(let k=0;k<=totalSamples;k++){
+      const v = k/(N*PROFILE_SUBSTEPS);
+      const r = radius(v), h = height(v);
+      const [x,y,z] = pushOut([r*Math.cos(SEAM_ANGLE), h, r*Math.sin(SEAM_ANGLE)]);
+      pts.push(new THREE.Vector3(x,y,z));
+    }
+    if(pts.length<2) return;
+    const path = new THREE.CurvePath();
+    for(let i=0;i<pts.length-1;i++) path.add(new THREE.LineCurve3(pts[i], pts[i+1]));
+    const tubeGeom = new THREE.TubeGeometry(path, totalSamples, STITCH_UNIT*0.035, 6, false);
+    seamMesh = new THREE.Mesh(tubeGeom, new THREE.MeshBasicMaterial({color:seamColor}));
+    scene.add(seamMesh);
+    const dotGeom = new THREE.SphereGeometry(STITCH_UNIT*0.09, 10, 8);
+    const dotMat = new THREE.MeshBasicMaterial({color:seamColor});
+    const startMat = new THREE.MeshBasicMaterial({color:startColor});
+    markerGroup = new THREE.Group();
+    for(let ri=0; ri<=N; ri++){
+      const dot = new THREE.Mesh(dotGeom, ri===0 ? startMat : dotMat);
+      dot.position.copy(pts[ri*PROFILE_SUBSTEPS]);
+      if(ri===0) dot.scale.setScalar(1.7);
+      markerGroup.add(dot);
+    }
+    scene.add(markerGroup);
+  }
+  function fitCamera(animateReset, maxR, totalHeight){
+    if(maxR===undefined || totalHeight===undefined){
+      const p = computeProfile();
+      maxR = p.maxR; totalHeight = p.totalHeight;
+    }
+    const dist = Math.max(maxR*3.3, totalHeight*1.7, 3);
+    const midH = totalHeight*0.5;
+    const camAngle = SEAM_ANGLE + Math.PI;
+    camera.position.set(dist*Math.cos(camAngle), midH, dist*Math.sin(camAngle));
+    controls.target.set(0, midH, 0);
+    camera.near = Math.max(dist/200, 0.01);
+    camera.far = dist*20;
+    camera.updateProjectionMatrix();
+    controls.update();
+  }
+  function updateBlockColor(ri, bi){
+    if(!bodyMesh) return;
+    const info = blockVertexOffset[ri] && blockVertexOffset[ri][bi];
+    if(!info) return;
+    const col = blockColor(rounds[ri].colors[bi]);
+    const attr = bodyMesh.geometry.attributes.color;
+    for(let k=0;k<info.count;k++) attr.setXYZ(info.offset+k, col.r, col.g, col.b);
+    attr.needsUpdate = true;
+  }
+  function pushOut(c){
+    const len = Math.hypot(c[0],c[2]);
+    if(len<1e-6) return c.slice();
+    const k = HILITE_OFFSET/len;
+    return [c[0]+c[0]*k, c[1], c[2]+c[2]*k];
+  }
+  function ensureHighlight(){
+    if(highlightMesh) return;
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(18),3));
+    const mat = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.4, side:THREE.DoubleSide, depthTest:false});
+    highlightMesh = new THREE.Mesh(geom, mat);
+    highlightMesh.renderOrder = 999;
+    highlightMesh.visible = false;
+    scene.add(highlightMesh);
+  }
+  function setHover(hit){
+    ensureHighlight();
+    const info = document.getElementById('cmHoverInfo');
+    if(!hit || !blockCorners[hit.ri] || !blockCorners[hit.ri][hit.bi]){
+      highlightMesh.visible = false;
+      info.textContent = '';
+      return;
+    }
+    const {ri,bi} = hit;
+    const [bl,br,tr,tl] = blockCorners[ri][bi].map(pushOut);
+    const arr = [...bl,...br,...tr, ...bl,...tr,...tl];
+    highlightMesh.geometry.setAttribute('position', new THREE.Float32BufferAttribute(arr,3));
+    highlightMesh.geometry.attributes.position.needsUpdate = true;
+    highlightMesh.visible = true;
+    const rnd = rounds[ri];
+    const colName = rnd.colors[bi]==null ? 'unpainted' : COLORS[rnd.colors[bi]].name;
+    info.textContent = `Round ${spec.list[ri].num} · stitch ${bi+1} of ${rnd.count} — ${colName}`;
+  }
+  function pickBlock(e){
+    if(!bodyMesh) return null;
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX-rect.left)/rect.width)*2-1;
+    mouse.y = -((e.clientY-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObject(bodyMesh);
+    if(!hits.length) return null;
+    return triToBlock[hits[0].faceIndex] || null;
+  }
+  function currentPaintValue(){
+    if(selected===null) return undefined;
+    return selected==='erase' ? null : selected;
+  }
+
+  // Center point of a stitch's whole-stitch corners (blockCorners), used by
+  // the circle tool to measure real 3D distance across the curved surface.
+  function blockCenter(ri, bi){
+    const c = blockCorners[ri] && blockCorners[ri][bi];
+    if(!c) return null;
+    const [bl, br, tr, tl] = c;
+    return [
+      (bl[0]+br[0]+tr[0]+tl[0])/4,
+      (bl[1]+br[1]+tr[1]+tl[1])/4,
+      (bl[2]+br[2]+tr[2]+tl[2])/4,
+    ];
+  }
+  function dist3(a, b){
+    return Math.hypot(a[0]-b[0], a[1]-b[1], a[2]-b[2]);
+  }
+
+  // Fills every stitch whose round falls between the two dragged rounds and
+  // whose position-around-the-round (as a fraction, since round stitch
+  // counts differ) falls between the two dragged fractions — a rectangle in
+  // the unrolled round/stitch grid, which is the grid a crochet pattern is
+  // actually written in.
+  function fillRect(start, end){
+    const val = currentPaintValue();
+    if(val===undefined){ showToast('Pick a color first'); return; }
+    const riLo = Math.min(start.ri, end.ri), riHi = Math.max(start.ri, end.ri);
+    const fracA = start.bi / rounds[start.ri].count;
+    const fracB = end.bi / rounds[end.ri].count;
+    const fLo = Math.min(fracA, fracB), fHi = Math.max(fracA, fracB);
+    for(let ri=riLo; ri<=riHi; ri++){
+      const rnd = rounds[ri];
+      for(let bi=0; bi<rnd.count; bi++){
+        const frac = bi / rnd.count;
+        if(frac >= fLo && frac <= fHi) rnd.colors[bi] = val;
+      }
+    }
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+
+  // Fills every stitch within the real 3D distance (across the curved
+  // surface) between the drag's start and end stitches.
+  function fillCircle(start, end){
+    const val = currentPaintValue();
+    if(val===undefined){ showToast('Pick a color first'); return; }
+    const center = blockCenter(start.ri, start.bi);
+    const edge = blockCenter(end.ri, end.bi);
+    if(!center || !edge) return;
+    const radius = dist3(center, edge);
+    for(let ri=0; ri<rounds.length; ri++){
+      const rnd = rounds[ri];
+      for(let bi=0; bi<rnd.count; bi++){
+        const c = blockCenter(ri, bi);
+        if(c && dist3(c, center) <= radius) rnd.colors[bi] = val;
+      }
+    }
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+
+  // Orbit-rotate on left-drag is switched off (in favor of drawing) whenever
+  // the rect/circle tool is active — those two tools have no other use for
+  // a left-drag.
+  function updateCanvasInteractionMode(){
+    const dragToDraw = activeTool==='rect' || activeTool==='circle';
+    controls.mouseButtons.LEFT = dragToDraw ? null : THREE.MOUSE.ROTATE;
+  }
+  function setActiveTool(tool){
+    activeTool = tool;
+    document.querySelectorAll('#cmToolRow .cm-tool-btn[data-tool]').forEach(b=>{
+      b.classList.toggle('selected', b.dataset.tool===tool);
+    });
+    updateCanvasInteractionMode();
+  }
+
+  function onPointerDown(e){
+    pointerDownPos = {x:e.clientX, y:e.clientY};
+    if(activeTool==='rect' || activeTool==='circle'){
+      if(e.button===0) shapeDragStart = pickBlock(e);
+    }
+  }
+  function onPointerUp(e){
+    if(activeTool==='rect' || activeTool==='circle'){
+      const start = shapeDragStart;
+      shapeDragStart = null;
+      pointerDownPos = null;
+      if(!start) return;
+      const end = pickBlock(e) || start;
+      if(activeTool==='rect') fillRect(start, end);
+      else fillCircle(start, end);
+      return;
+    }
+    if(!pointerDownPos) return;
+    const moved = Math.hypot(e.clientX-pointerDownPos.x, e.clientY-pointerDownPos.y);
+    pointerDownPos = null;
+    if(moved > CLICK_MOVE_THRESHOLD) return;
+    if(e.button===2){
+      const hit = pickBlock(e);
+      if(hit) paintBlock(hit.ri, hit.bi, null);
+      return;
+    }
+    if(e.button!==0) return;
+    const val = currentPaintValue();
+    if(val===undefined){ showToast('Pick a color first'); return; }
+    const hit = pickBlock(e);
+    if(hit) paintBlock(hit.ri, hit.bi, val);
+  }
+  function onCanvasHover(e){ setHover(pickBlock(e)); }
+  function paintBlock(ri, bi, val){
+    rounds[ri].colors[bi] = val;
+    updateBlockColor(ri, bi);
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+  function fillRound(ri){
+    if(selected===null){ showToast('Pick a color first'); return; }
+    const val = selected==='erase' ? null : selected;
+    rounds[ri].colors = Array(rounds[ri].count).fill(val);
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+  function clearRound(ri){
+    rounds[ri].colors = Array(rounds[ri].count).fill(null);
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+  function fillAll(){
+    if(selected===null){ showToast('Pick a color first'); return; }
+    const val = selected==='erase' ? null : selected;
+    rounds.forEach(r=>{ r.colors = Array(r.count).fill(val); });
+    buildMesh({refit:false});
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+  }
+
+  function renderPalette(){
+    const wrap = document.getElementById('cmPaletteGrid');
+    let html = `<div class="cm-swatch cm-eraser${selected==='erase'?' selected':''}" data-pick="erase" title="Eraser">&empty;</div>`;
+    html += COLORS.map((c,i)=>`<div class="cm-swatch${selected===i?' selected':''}" data-pick="${i}" style="background:${c.hex}" title="${c.name}"></div>`).join('');
+    wrap.innerHTML = html;
+    const label = document.getElementById('cmSelectedLabel');
+    if(selected===null) label.textContent = 'Pick a color, then paint stitches.';
+    else if(selected==='erase') label.innerHTML = 'Selected: <b>Eraser</b>';
+    else label.innerHTML = `Selected: <b>${COLORS[selected].name}</b>`;
+  }
+  function renderRoundsList(){
+    const wrap = document.getElementById('cmRoundsList');
+    wrap.innerHTML = rounds.map((rnd, ri)=>{
+      const num = spec.list[ri].num;
+      const unpainted = rnd.colors.filter(c=>c==null).length;
+      return `
+        <div class="cm-round-row">
+          <span class="cm-round-num">R${num}</span>
+          <span class="cm-round-count">${rnd.count} sts${unpainted ? ` &middot; ${unpainted} unpainted` : ''}</span>
+          <div class="cm-round-actions">
+            <button type="button" class="cm-icon-btn" data-fill="${ri}" title="Fill round with selected color">&#9638;</button>
+            <button type="button" class="cm-icon-btn" data-clear="${ri}" title="Clear round">&empty;</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+  function renderLegend(){
+    const counts = new Map();
+    rounds.forEach(r=>r.colors.forEach(c=>{ if(c!=null) counts.set(c, (counts.get(c)||0)+1); }));
+    const used = COLORS.map((c,i)=>({...c, idx:i, n:counts.get(i)||0})).filter(c=>c.n>0);
+    document.getElementById('cmLegend').innerHTML = used.length
+      ? used.map(c=>`<div class="cm-legend-chip"><span class="cm-dot" style="background:${c.hex}"></span>${c.name}<span class="cm-n">${c.n}</span></div>`).join('')
+      : '<span class="cm-legend-empty">No stitches painted yet.</span>';
+  }
+  function unpaintedCount(){
+    return rounds.reduce((s,r)=> s + r.colors.filter(c=>c==null).length, 0);
+  }
+  function renderPreview(){
+    const warn = document.getElementById('cmWarnings');
+    const pre = document.getElementById('cmPatternPreview');
+    const applyBtn = document.getElementById('cmApplyBtn');
+    const unpainted = unpaintedCount();
+    if(unpainted > 0){
+      warn.textContent = `${unpainted} stitch${unpainted===1?'':'es'} still unpainted — pick a color and paint them in before applying.`;
+      warn.classList.add('show');
+      pre.textContent = '';
+      applyBtn.disabled = true;
+      return;
+    }
+    warn.classList.remove('show');
+    applyBtn.disabled = false;
+    const customMap = { rounds: rounds.map(r=>r.colors.slice()) };
+    const segments = compileBodySegmentsWithCustomColors(body, customMap);
+    const lines = [];
+    // Only the stitch-by-stitch rounds matter while painting — a body's
+    // finishing notes (eye placement, fasten off, join instructions) belong
+    // in the real generated pattern, not in this in-progress preview.
+    segments.forEach(seg=>{
+      if(seg.kind!=='table') return;
+      seg.rows.forEach(r=> lines.push(`Rnd ${r[0]}.  ${r[1]}${r[2] ? `  (${r[2]})` : ''}`));
+    });
+    pre.textContent = lines.join('\n');
+  }
+
+  function wireStaticControlsOnce(){
+    document.getElementById('cmPaletteGrid').addEventListener('click', e=>{
+      const el = e.target.closest('[data-pick]');
+      if(!el) return;
+      selected = el.dataset.pick==='erase' ? 'erase' : parseInt(el.dataset.pick,10);
+      renderPalette();
+    });
+    document.getElementById('cmToolRow').addEventListener('click', e=>{
+      const btn = e.target.closest('[data-tool]');
+      if(!btn) return;
+      if(btn.dataset.tool==='bucket') fillAll();
+      else setActiveTool(btn.dataset.tool);
+    });
+    document.getElementById('cmRoundsList').addEventListener('click', e=>{
+      if(e.target.dataset.fill!==undefined) fillRound(parseInt(e.target.dataset.fill,10));
+      else if(e.target.dataset.clear!==undefined) clearRound(parseInt(e.target.dataset.clear,10));
+    });
+    document.getElementById('cmCloseBtn').addEventListener('click', close);
+    document.getElementById('cmCancelBtn').addEventListener('click', close);
+    document.getElementById('cmBackdrop').addEventListener('click', close);
+    document.getElementById('cmApplyBtn').addEventListener('click', apply);
+    document.addEventListener('keydown', e=>{
+      if(e.key==='Escape' && !document.getElementById('colorMapperModal').hidden) close();
+    });
+  }
+
+  function open(bodyArg, existingMap){
+    body = bodyArg;
+    spec = bodyRoundSpec(body);
+    rounds = makeRoundsFromSpec(existingMap);
+    shape = {...(SHAPE_PRESETS[body.id] || {equator:0.5, pTop:2, pBottom:2, aspect:1})};
+    selected = null;
+    activeTool = 'pencil';
+
+    document.getElementById('colorMapperModal').hidden = false;
+    document.getElementById('cmTitle').textContent = `Color Mapper — ${body.name}`;
+    if(!staticWired){ wireStaticControlsOnce(); staticWired = true; }
+    if(!initialized) initThree();
+    document.querySelectorAll('#cmToolRow .cm-tool-btn[data-tool]').forEach(b=>{
+      b.classList.toggle('selected', b.dataset.tool===activeTool);
+    });
+    if(initialized) updateCanvasInteractionMode();
+    renderPalette();
+    renderRoundsList();
+    renderLegend();
+    renderPreview();
+    buildMesh({refit:true});
+    requestAnimationFrame(resizeThree);
+  }
+  function close(){
+    document.getElementById('colorMapperModal').hidden = true;
+  }
+  function apply(){
+    if(unpaintedCount() > 0) return;
+    applyCustomColorMap(body.id, { rounds: rounds.map(r=>r.colors.slice()) });
+    close();
+  }
+
+  return { open };
+})();
+
+function applyCustomColorMap(bodyId, customMap){
+  state.customColorMaps[bodyId] = customMap;
+  saveState();
+  render();
+  showToast('Custom colors applied');
+}
+function clearCustomColorMap(bodyId){
+  delete state.customColorMaps[bodyId];
+  saveState();
+  render();
+  showToast('Custom colors cleared');
 }
 
 function initPatternTitle(){
