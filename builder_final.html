@@ -3150,6 +3150,7 @@ const ColorMapper = (function(){
   const HILITE_OFFSET = 0.035;
   const PROFILE_SUBSTEPS = 3;
   const CLICK_MOVE_THRESHOLD = 6;
+  const ARC_SAMPLES = 400;
 
   let body = null, spec = null, rounds = [], shape = null, selected = null;
   let activeTool = 'pencil'; // 'pencil' | 'rect' | 'circle' — the fill bucket is a one-shot action, not a persistent tool
@@ -3183,6 +3184,54 @@ const ColorMapper = (function(){
     return { N: rounds.length, maxR, totalHeight: maxR*2*shape.aspect };
   }
   function blockColor(val){ return val==null ? unsetColor : new THREE.Color(COLORS[val].hex); }
+
+  // Samples the continuous profile curve (radius, height) finely across its
+  // whole silhouette — this is the shape itself, built independent of how
+  // many rounds will be laid onto it — then walks it to get cumulative
+  // surface arc length at each sample.
+  function buildArcLengthTable(maxR, totalHeight){
+    const vs = [0], arc = [0];
+    let prevR = maxR*profileRadius(0), prevH = totalHeight;
+    for(let i=1;i<=ARC_SAMPLES;i++){
+      const v = i/ARC_SAMPLES;
+      const r = maxR*profileRadius(v), h = totalHeight*(1-v);
+      arc.push(arc[i-1] + Math.hypot(r-prevR, h-prevH));
+      vs.push(v);
+      prevR = r; prevH = h;
+    }
+    return {vs, arc};
+  }
+  // Inverts the arc-length table to find the v whose cumulative arc length
+  // equals `target`, via binary search over the monotonic arc[] samples.
+  function vAtArcLength(table, target){
+    const {vs, arc} = table;
+    const total = arc[arc.length-1];
+    if(total<=0) return 0;
+    const t = Math.max(0, Math.min(total, target));
+    let lo=0, hi=arc.length-1;
+    while(lo<hi-1){
+      const mid=(lo+hi)>>1;
+      if(arc[mid]<t) lo=mid; else hi=mid;
+    }
+    const span = arc[hi]-arc[lo];
+    const frac = span>0 ? (t-arc[lo])/span : 0;
+    return vs[lo] + (vs[hi]-vs[lo])*frac;
+  }
+  // Wraps the mesh around the shape built above: gives every round an equal
+  // share of the profile's total arc length, so each round's stitch quads
+  // span the same real surface distance (equal stitch height) instead of an
+  // equal raw v range. Equal-v rounds used to bunch extra arc length into
+  // the rounds nearest the poles, where the profile curve's radius changes
+  // fastest per unit v, making those rounds look taller than the rounds
+  // near the equator.
+  function computeRoundBoundaries(N, maxR, totalHeight){
+    const table = buildArcLengthTable(maxR, totalHeight);
+    const total = table.arc[table.arc.length-1];
+    const bounds = [0];
+    for(let i=1;i<N;i++) bounds.push(vAtArcLength(table, (i/N)*total));
+    bounds.push(1);
+    return bounds;
+  }
 
   function initThree(){
     const canvas = document.getElementById('cmThreeCanvas');
@@ -3264,6 +3313,7 @@ const ColorMapper = (function(){
     if(rounds.length===0){ if(opts&&opts.refit) fitCamera(true); return; }
 
     const {N, maxR, totalHeight} = computeProfile();
+    const bounds = computeRoundBoundaries(N, maxR, totalHeight);
     const height = v => totalHeight * (1-v);
     const radius = v => maxR * profileRadius(v);
     const positions = [], colors = [], linePts = [];
@@ -3271,13 +3321,14 @@ const ColorMapper = (function(){
     for(let ri=0; ri<N; ri++){
       const rnd = rounds[ri];
       const step = (Math.PI*2)/rnd.count;
+      const vLo=bounds[ri], vHi=bounds[ri+1];
       for(let bi=0; bi<rnd.count; bi++){
         const a0 = SEAM_ANGLE + bi*step;
         const a1 = SEAM_ANGLE + (bi+1)*step;
         const col = blockColor(rnd.colors[bi]);
         const vOffset = positions.length/3;
         for(let s=0; s<PROFILE_SUBSTEPS; s++){
-          const v0 = (ri+s/PROFILE_SUBSTEPS)/N, v1 = (ri+(s+1)/PROFILE_SUBSTEPS)/N;
+          const v0 = vLo+(vHi-vLo)*s/PROFILE_SUBSTEPS, v1 = vLo+(vHi-vLo)*(s+1)/PROFILE_SUBSTEPS;
           const r0=radius(v0), r1=radius(v1), h0=height(v0), h1=height(v1);
           const bl=[r0*Math.cos(a0),h0,r0*Math.sin(a0)];
           const br=[r0*Math.cos(a1),h0,r0*Math.sin(a1)];
@@ -3290,7 +3341,6 @@ const ColorMapper = (function(){
           linePts.push(...tl,...tr);
         }
         blockVertexOffset[ri][bi] = {offset:vOffset, count:PROFILE_SUBSTEPS*6};
-        const vLo=ri/N, vHi=(ri+1)/N;
         const rLo=radius(vLo), rHi=radius(vHi), hLo=height(vLo), hHi=height(vHi);
         blockCorners[ri][bi] = [
           [rLo*Math.cos(a0),hLo,rLo*Math.sin(a0)],
@@ -3315,14 +3365,16 @@ const ColorMapper = (function(){
     lineMesh = new THREE.LineSegments(lineGeom, lineMat);
     scene.add(lineMesh);
 
-    buildSeamMarker(N, height, radius);
+    buildSeamMarker(N, height, radius, bounds);
     if(opts && opts.refit) fitCamera(true, maxR, totalHeight);
   }
-  function buildSeamMarker(N, height, radius){
+  function buildSeamMarker(N, height, radius, bounds){
     const totalSamples = N*PROFILE_SUBSTEPS;
     const pts = [];
     for(let k=0;k<=totalSamples;k++){
-      const v = k/(N*PROFILE_SUBSTEPS);
+      const ri = Math.min(N-1, Math.floor(k/PROFILE_SUBSTEPS));
+      const frac = k/PROFILE_SUBSTEPS - ri;
+      const v = bounds[ri] + (bounds[ri+1]-bounds[ri])*frac;
       const r = radius(v), h = height(v);
       const [x,y,z] = pushOut([r*Math.cos(SEAM_ANGLE), h, r*Math.sin(SEAM_ANGLE)]);
       pts.push(new THREE.Vector3(x,y,z));
