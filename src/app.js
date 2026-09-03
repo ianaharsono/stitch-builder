@@ -2612,7 +2612,6 @@ const ColorMapper = (function(){
     renderer.domElement.addEventListener('pointermove', onCanvasHover);
     renderer.domElement.addEventListener('pointerleave', ()=>{ setHover(null); clearShapePreview(); });
     document.getElementById('cmResetViewBtn').addEventListener('click', ()=>fitCamera(true));
-    document.getElementById('cmResetFrontBtn').addEventListener('click', resetToFront);
     animate();
     initialized = true;
   }
@@ -2627,15 +2626,6 @@ const ColorMapper = (function(){
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
-  }
-  function resetToFront(){
-    const camAngle = SEAM_ANGLE + Math.PI;
-    const dx = camera.position.x - controls.target.x;
-    const dz = camera.position.z - controls.target.z;
-    const horiz = Math.hypot(dx, dz);
-    camera.position.x = controls.target.x + horiz*Math.cos(camAngle);
-    camera.position.z = controls.target.z + horiz*Math.sin(camAngle);
-    controls.update();
   }
   function disposeMesh(){
     if(bodyMesh){ scene.remove(bodyMesh); bodyMesh.geometry.dispose(); bodyMesh.material.dispose(); bodyMesh=null; }

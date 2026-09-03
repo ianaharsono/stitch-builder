@@ -406,8 +406,7 @@
     display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
     padding:20px 22px 12px; border-bottom:1px solid var(--line); flex-shrink:0;
   }
-  .cm-modal-head h2{ font-family:'Fraunces', serif; font-size:1.2rem; font-weight:700; margin:0 0 4px; }
-  .cm-hint{ font-size:0.8rem; color:var(--ink-soft); margin:0; max-width:640px; line-height:1.5; }
+  .cm-modal-head h2{ font-family:'Fraunces', serif; font-size:1.2rem; font-weight:700; margin:0; }
   .cm-close{
     background:none; border:none; cursor:pointer; font-size:1.4rem; line-height:1; color:var(--ink-soft);
     width:32px; height:32px; border-radius:50%; flex-shrink:0;
@@ -461,8 +460,7 @@
   .cm-icon-btn:hover{ border-color:var(--teal); color:var(--teal-ink); }
 
   .cm-canvas-area{ display:flex; flex-direction:column; gap:12px; min-width:0; }
-  .cm-view-controls{ display:flex; align-items:center; gap:8px; }
-  .cm-spacer{ flex:1; }
+  .cm-view-controls{ display:flex; align-items:center; justify-content:flex-end; gap:8px; }
   .cm-hover-info{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); }
   .cm-three-wrap{
     position:relative; width:100%; aspect-ratio:1; border-radius:12px; overflow:hidden;
@@ -471,6 +469,10 @@
   }
   .cm-three-wrap:active{ cursor:grabbing; }
   #cmThreeCanvas{ display:block; width:100%; height:100%; }
+  .cm-reset-view-btn{
+    position:absolute; top:10px; left:10px; z-index:2;
+    background:var(--paper); box-shadow:var(--shadow);
+  }
 
   .cm-legend{ display:flex; flex-wrap:wrap; gap:8px; }
   .cm-legend-chip{
@@ -493,8 +495,8 @@
     flex:1; min-height:200px; max-height:460px; overflow-y:auto; margin:0;
   }
 
-  .cm-modal-actions{
-    display:flex; justify-content:flex-end; gap:10px; padding:14px 22px; border-top:1px solid var(--line); flex-shrink:0;
+  .cm-output-actions{
+    display:flex; justify-content:flex-end; gap:10px; padding-top:12px; flex-shrink:0;
     /* .cm-modal-panel (not the page) is the scroll container here, so pinning
        this to its bottom keeps Apply reachable without scrolling the modal's
        full height first, even when the 3-column layout above runs tall. */
@@ -602,7 +604,6 @@
     <div class="cm-modal-head">
       <div>
         <h2 id="cmTitle">Color Mapper</h2>
-        <p class="cm-hint">Hand drags to rotate the view, scroll to zoom. Pencil paints stitches — drag to paint a line (right-click erases); fill bucket paints the whole piece when you click it on the shape; rectangle and circle drag across the shape to fill an area, with a dashed outline showing where the color will land.</p>
       </div>
       <button type="button" class="cm-close" id="cmCloseBtn" aria-label="Close">&times;</button>
     </div>
@@ -633,12 +634,10 @@
       </aside>
       <main class="cm-canvas-area">
         <div class="cm-view-controls">
-          <button type="button" class="btn btn-ghost" id="cmResetViewBtn">Reset view</button>
-          <button type="button" class="btn btn-ghost" id="cmResetFrontBtn">Reset to front</button>
-          <span class="cm-spacer"></span>
           <span id="cmHoverInfo" class="cm-hover-info"></span>
         </div>
         <div id="cmThreeWrap" class="cm-three-wrap">
+          <button type="button" class="btn btn-ghost cm-reset-view-btn" id="cmResetViewBtn">Reset view</button>
           <canvas id="cmThreeCanvas"></canvas>
         </div>
         <div id="cmLegend" class="cm-legend"></div>
@@ -647,11 +646,11 @@
         <h3>Pattern preview</h3>
         <div id="cmWarnings" class="cm-warnings"></div>
         <pre id="cmPatternPreview" class="cm-pattern-preview"></pre>
+        <div class="cm-output-actions">
+          <button type="button" class="btn btn-ghost" id="cmCancelBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="cmApplyBtn">Apply Colors</button>
+        </div>
       </aside>
-    </div>
-    <div class="cm-modal-actions">
-      <button type="button" class="btn btn-ghost" id="cmCancelBtn">Cancel</button>
-      <button type="button" class="btn btn-primary" id="cmApplyBtn">Apply Colors</button>
     </div>
   </div>
 </div>
@@ -3274,7 +3273,6 @@ const ColorMapper = (function(){
     renderer.domElement.addEventListener('pointermove', onCanvasHover);
     renderer.domElement.addEventListener('pointerleave', ()=>{ setHover(null); clearShapePreview(); });
     document.getElementById('cmResetViewBtn').addEventListener('click', ()=>fitCamera(true));
-    document.getElementById('cmResetFrontBtn').addEventListener('click', resetToFront);
     animate();
     initialized = true;
   }
@@ -3289,15 +3287,6 @@ const ColorMapper = (function(){
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
-  }
-  function resetToFront(){
-    const camAngle = SEAM_ANGLE + Math.PI;
-    const dx = camera.position.x - controls.target.x;
-    const dz = camera.position.z - controls.target.z;
-    const horiz = Math.hypot(dx, dz);
-    camera.position.x = controls.target.x + horiz*Math.cos(camAngle);
-    camera.position.z = controls.target.z + horiz*Math.sin(camAngle);
-    controls.update();
   }
   function disposeMesh(){
     if(bodyMesh){ scene.remove(bodyMesh); bodyMesh.geometry.dispose(); bodyMesh.material.dispose(); bodyMesh=null; }

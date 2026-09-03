@@ -99,7 +99,6 @@
     <div class="cm-modal-head">
       <div>
         <h2 id="cmTitle">Color Mapper</h2>
-        <p class="cm-hint">Hand drags to rotate the view, scroll to zoom. Pencil paints stitches — drag to paint a line (right-click erases); fill bucket paints the whole piece when you click it on the shape; rectangle and circle drag across the shape to fill an area, with a dashed outline showing where the color will land.</p>
       </div>
       <button type="button" class="cm-close" id="cmCloseBtn" aria-label="Close">&times;</button>
     </div>
@@ -130,12 +129,10 @@
       </aside>
       <main class="cm-canvas-area">
         <div class="cm-view-controls">
-          <button type="button" class="btn btn-ghost" id="cmResetViewBtn">Reset view</button>
-          <button type="button" class="btn btn-ghost" id="cmResetFrontBtn">Reset to front</button>
-          <span class="cm-spacer"></span>
           <span id="cmHoverInfo" class="cm-hover-info"></span>
         </div>
         <div id="cmThreeWrap" class="cm-three-wrap">
+          <button type="button" class="btn btn-ghost cm-reset-view-btn" id="cmResetViewBtn">Reset view</button>
           <canvas id="cmThreeCanvas"></canvas>
         </div>
         <div id="cmLegend" class="cm-legend"></div>
@@ -144,11 +141,11 @@
         <h3>Pattern preview</h3>
         <div id="cmWarnings" class="cm-warnings"></div>
         <pre id="cmPatternPreview" class="cm-pattern-preview"></pre>
+        <div class="cm-output-actions">
+          <button type="button" class="btn btn-ghost" id="cmCancelBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="cmApplyBtn">Apply Colors</button>
+        </div>
       </aside>
-    </div>
-    <div class="cm-modal-actions">
-      <button type="button" class="btn btn-ghost" id="cmCancelBtn">Cancel</button>
-      <button type="button" class="btn btn-primary" id="cmApplyBtn">Apply Colors</button>
     </div>
   </div>
 </div>
