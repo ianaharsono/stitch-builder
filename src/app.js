@@ -588,7 +588,7 @@ const HEAD_STYLES = [
     id:'bug',
     name:'Bug head',
     subtitle:'Small rounded head, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_bug}}',
+    photo:'data:image/webp;base64,{{PHOTO_HEAD_STYLES_bug}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -612,7 +612,7 @@ const MOUTH_STYLES = [
     id:'classic',
     name:'Round beak',
     subtitle:'Small pointed beak, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_classic}}',
+    photo:'data:image/webp;base64,{{PHOTO_MOUTH_STYLES_classic}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -630,7 +630,7 @@ const MOUTH_STYLES = [
     id:'flattened',
     name:'Flat beak',
     subtitle:'Small flattened beak, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_flattened}}',
+    photo:'data:image/webp;base64,{{PHOTO_MOUTH_STYLES_flattened}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -648,7 +648,7 @@ const MOUTH_STYLES = [
     id:'oval',
     name:'Large snout',
     subtitle:'Large oval snout, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_oval}}',
+    photo:'data:image/webp;base64,{{PHOTO_MOUTH_STYLES_oval}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -669,7 +669,7 @@ const MOUTH_STYLES = [
     id:'round',
     name:'Medium snout',
     subtitle:'Medium round snout, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_round}}',
+    photo:'data:image/webp;base64,{{PHOTO_MOUTH_STYLES_round}}',
     cutout:true,
     makeCount:1,
     colorParts:[
@@ -692,7 +692,7 @@ const FACE_STYLES = [
     id:'oval_eyes',
     name:'Oval eyes',
     subtitle:'Paired oval eyes, single color',
-    photo:'data:image/webp;base64,{{PHOTO_BEAK_STYLES_oval_eyes}}',
+    photo:'data:image/webp;base64,{{PHOTO_FACE_STYLES_oval_eyes}}',
     cutout:true,
     makeCount:2,
     colorParts:[
