@@ -2505,6 +2505,7 @@ const ColorMapper = (function(){
   let triToBlock=[], blockVertexOffset=[], blockCorners=[];
   let unsetColor=null, seamColor=null, startColor=null;
   let pointerDownPos = null, shapeDragStart = null, isPainting = false, paintValue = null;
+  let savedPresetNames = []; // kept in sync with the rendered chip list, so click handlers can address a preset by index instead of re-escaping its name into the DOM
 
   function makeRoundsFromSpec(existingMap){
     return spec.list.map(entry=>{
@@ -2857,13 +2858,17 @@ const ColorMapper = (function(){
     });
   }
 
-  // Every stitch within the real 3D distance (across the curved surface)
-  // between the drag's start and end stitches.
+  // Every stitch within the real 3D distance (across the curved surface) of
+  // the circle whose diameter spans the drag's start and end stitches — the
+  // two dragged points are opposite corners of that circle's bounding box,
+  // the same corner-to-corner gesture the rectangle tool uses, rather than a
+  // center-and-edge drag.
   function circleIncluded(start, end){
-    const center = blockCenter(start.ri, start.bi);
-    const edge = blockCenter(end.ri, end.bi);
-    if(!center || !edge) return null;
-    const radius = dist3(center, edge);
+    const a = blockCenter(start.ri, start.bi);
+    const b = blockCenter(end.ri, end.bi);
+    if(!a || !b) return null;
+    const center = [(a[0]+b[0])/2, (a[1]+b[1])/2, (a[2]+b[2])/2];
+    const radius = dist3(a, b) / 2;
     return rounds.map((rnd, ri)=> Array.from({length:rnd.count}, (_,bi)=>{
       const c = blockCenter(ri, bi);
       return !!(c && dist3(c, center) <= radius);
@@ -2877,7 +2882,6 @@ const ColorMapper = (function(){
       row.forEach((inc, bi)=>{ if(inc) rnd.colors[bi] = val; });
     });
     buildMesh({refit:false});
-    renderRoundsList();
     renderLegend();
     renderPreview();
   }
@@ -2959,6 +2963,7 @@ const ColorMapper = (function(){
     document.querySelectorAll('#cmToolRow .cm-tool-btn[data-tool]').forEach(b=>{
       b.classList.toggle('selected', b.dataset.tool===tool);
     });
+    document.getElementById('cmThreeWrap').dataset.tool = tool;
     updateCanvasInteractionMode();
   }
 
@@ -3018,23 +3023,6 @@ const ColorMapper = (function(){
   function paintBlock(ri, bi, val){
     rounds[ri].colors[bi] = val;
     updateBlockColor(ri, bi);
-    renderRoundsList();
-    renderLegend();
-    renderPreview();
-  }
-  function fillRound(ri){
-    if(selected===null){ showToast('Pick a color first'); return; }
-    const val = selected==='erase' ? null : selected;
-    rounds[ri].colors = Array(rounds[ri].count).fill(val);
-    buildMesh({refit:false});
-    renderRoundsList();
-    renderLegend();
-    renderPreview();
-  }
-  function clearRound(ri){
-    rounds[ri].colors = Array(rounds[ri].count).fill(null);
-    buildMesh({refit:false});
-    renderRoundsList();
     renderLegend();
     renderPreview();
   }
@@ -3043,7 +3031,6 @@ const ColorMapper = (function(){
     const val = selected==='erase' ? null : selected;
     rounds.forEach(r=>{ r.colors = Array(r.count).fill(val); });
     buildMesh({refit:false});
-    renderRoundsList();
     renderLegend();
     renderPreview();
   }
@@ -3058,21 +3045,63 @@ const ColorMapper = (function(){
     else if(selected==='erase') label.innerHTML = 'Selected: <b>Eraser</b>';
     else label.innerHTML = `Selected: <b>${COLORS[selected].name}</b>`;
   }
-  function renderRoundsList(){
-    const wrap = document.getElementById('cmRoundsList');
-    wrap.innerHTML = rounds.map((rnd, ri)=>{
-      const num = spec.list[ri].num;
-      const unpainted = rnd.colors.filter(c=>c==null).length;
-      return `
-        <div class="cm-round-row">
-          <span class="cm-round-num">R${num}</span>
-          <span class="cm-round-count">${rnd.count} sts${unpainted ? ` &middot; ${unpainted} unpainted` : ''}</span>
-          <div class="cm-round-actions">
-            <button type="button" class="cm-icon-btn" data-fill="${ri}" title="Fill round with selected color">&#9638;</button>
-            <button type="button" class="cm-icon-btn" data-clear="${ri}" title="Clear round">&empty;</button>
-          </div>
-        </div>`;
-    }).join('');
+  // Saved color presets — a preset is just a snapshot of every round's
+  // colors for one body, persisted in localStorage so it survives closing
+  // the modal or reloading the page. Scoped per body.id since a preset's
+  // colors line up with that body's own round/stitch counts.
+  const PRESET_STORAGE_KEY = 'colorMapper.presets';
+  function loadPresetStore(){
+    try{ return JSON.parse(localStorage.getItem(PRESET_STORAGE_KEY) || '{}'); }
+    catch{ return {}; }
+  }
+  function writePresetStore(store){
+    localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(store));
+  }
+  function saveCurrentPreset(){
+    const name = prompt('Name this color preset:');
+    if(name===null) return;
+    const trimmed = name.trim();
+    if(!trimmed){ showToast('Preset name cannot be empty'); return; }
+    const store = loadPresetStore();
+    if(!store[body.id]) store[body.id] = {};
+    if(store[body.id][trimmed] && !confirm(`Overwrite existing preset "${trimmed}"?`)) return;
+    store[body.id][trimmed] = { colors: rounds.map(r=>r.colors.slice()) };
+    writePresetStore(store);
+    renderSavedPresets();
+    showToast(`Saved preset "${trimmed}"`);
+  }
+  function loadSavedPreset(name){
+    const store = loadPresetStore();
+    const preset = store[body.id] && store[body.id][name];
+    if(!preset) return;
+    preset.colors.forEach((colors, ri)=>{
+      if(!rounds[ri]) return;
+      const count = rounds[ri].count;
+      rounds[ri].colors = Array.from({length:count}, (_,bi)=> bi<colors.length ? colors[bi] : null);
+    });
+    buildMesh({refit:false});
+    renderLegend();
+    renderPreview();
+    showToast(`Loaded preset "${name}"`);
+  }
+  function deleteSavedPreset(name){
+    if(!confirm(`Delete preset "${name}"?`)) return;
+    const store = loadPresetStore();
+    if(store[body.id]) delete store[body.id][name];
+    writePresetStore(store);
+    renderSavedPresets();
+  }
+  function renderSavedPresets(){
+    const wrap = document.getElementById('cmPresetList');
+    const store = loadPresetStore();
+    savedPresetNames = Object.keys(store[body.id] || {}).sort((a,b)=>a.localeCompare(b));
+    wrap.innerHTML = savedPresetNames.length
+      ? savedPresetNames.map((name, idx)=>`
+        <div class="cm-preset-chip">
+          <button type="button" class="cm-preset-chip-load" data-load-preset="${idx}">${name}</button>
+          <button type="button" class="cm-preset-chip-delete" data-delete-preset="${idx}" title="Delete preset">&times;</button>
+        </div>`).join('')
+      : '<span class="cm-preset-empty">No saved presets yet.</span>';
   }
   function renderLegend(){
     const counts = new Map();
@@ -3124,9 +3153,12 @@ const ColorMapper = (function(){
       if(!btn) return;
       setActiveTool(btn.dataset.tool);
     });
-    document.getElementById('cmRoundsList').addEventListener('click', e=>{
-      if(e.target.dataset.fill!==undefined) fillRound(parseInt(e.target.dataset.fill,10));
-      else if(e.target.dataset.clear!==undefined) clearRound(parseInt(e.target.dataset.clear,10));
+    document.getElementById('cmSavePresetBtn').addEventListener('click', saveCurrentPreset);
+    document.getElementById('cmPresetList').addEventListener('click', e=>{
+      const loadBtn = e.target.closest('[data-load-preset]');
+      const delBtn = e.target.closest('[data-delete-preset]');
+      if(loadBtn) loadSavedPreset(savedPresetNames[parseInt(loadBtn.dataset.loadPreset,10)]);
+      else if(delBtn) deleteSavedPreset(savedPresetNames[parseInt(delBtn.dataset.deletePreset,10)]);
     });
     document.getElementById('cmCloseBtn').addEventListener('click', close);
     document.getElementById('cmCancelBtn').addEventListener('click', close);
@@ -3143,18 +3175,14 @@ const ColorMapper = (function(){
     rounds = makeRoundsFromSpec(existingMap);
     shape = {...(SHAPE_PRESETS[body.id] || {equator:0.5, pTop:2, pBottom:2, aspect:1})};
     selected = null;
-    activeTool = 'pencil';
 
     document.getElementById('colorMapperModal').hidden = false;
     document.getElementById('cmTitle').textContent = `Color Mapper — ${body.name}`;
     if(!staticWired){ wireStaticControlsOnce(); staticWired = true; }
     if(!initialized) initThree();
-    document.querySelectorAll('#cmToolRow .cm-tool-btn[data-tool]').forEach(b=>{
-      b.classList.toggle('selected', b.dataset.tool===activeTool);
-    });
-    if(initialized) updateCanvasInteractionMode();
+    setActiveTool('pencil');
     renderPalette();
-    renderRoundsList();
+    renderSavedPresets();
     renderLegend();
     renderPreview();
     buildMesh({refit:true});

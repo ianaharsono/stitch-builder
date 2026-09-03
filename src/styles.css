@@ -417,7 +417,7 @@
 
   .cm-palette{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
   .cm-swatch{
-    aspect-ratio:1; border-radius:7px; border:2px solid transparent; cursor:pointer; position:relative;
+    aspect-ratio:1; border-radius:50%; border:2px solid transparent; cursor:pointer; position:relative;
     box-shadow:inset 0 0 0 1px rgba(0,0,0,0.12);
   }
   .cm-swatch.selected{ border-color:var(--teal); box-shadow:0 0 0 2px var(--teal-wash), inset 0 0 0 1px rgba(0,0,0,0.12); }
@@ -428,6 +428,7 @@
   .cm-selected-label{ margin-top:10px; font-size:0.78rem; color:var(--ink-soft); }
   .cm-selected-label b{ color:var(--ink); }
 
+  .cm-toolbar-head{ margin-top:18px; }
   .cm-tool-row{ display:flex; gap:8px; margin-top:10px; }
   .cm-tool-btn{
     width:36px; height:36px; flex-shrink:0; border-radius:8px;
@@ -439,21 +440,22 @@
   .cm-tool-btn:hover{ border-color:var(--teal); color:var(--teal-ink); }
   .cm-tool-btn.selected{ border-color:var(--teal); background:var(--teal-wash); color:var(--teal-ink); }
 
-  .cm-rounds-head{ margin-top:18px; }
-  .cm-rounds-list{ display:flex; flex-direction:column; gap:5px; max-height:260px; overflow-y:auto; padding-right:2px; }
-  .cm-round-row{
-    display:flex; align-items:center; gap:8px; padding:5px 7px; border-radius:7px;
-    border:1px solid var(--line); background:var(--paper-raised); font-size:0.76rem;
+  .cm-preset-list{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .cm-preset-empty{ font-size:0.76rem; color:var(--ink-soft); }
+  .cm-preset-chip{
+    display:flex; align-items:center; gap:2px; border:1px solid var(--line); border-radius:20px;
+    background:var(--paper-raised); font-size:0.76rem; padding-left:2px;
   }
-  .cm-round-num{ font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--hot-pink-ink); flex-shrink:0; }
-  .cm-round-count{ color:var(--ink-soft); }
-  .cm-round-actions{ display:flex; gap:4px; margin-left:auto; }
-  .cm-icon-btn{
-    border:1px solid var(--line); background:var(--paper); color:var(--ink-soft);
-    border-radius:6px; width:22px; height:22px; font-size:11px; cursor:pointer; line-height:1;
-    display:flex; align-items:center; justify-content:center;
+  .cm-preset-chip-load{
+    background:none; border:none; padding:5px 4px 5px 8px; cursor:pointer; color:var(--ink);
+    font-family:inherit; font-size:inherit;
   }
-  .cm-icon-btn:hover{ border-color:var(--teal); color:var(--teal-ink); }
+  .cm-preset-chip-load:hover{ color:var(--teal-ink); }
+  .cm-preset-chip-delete{
+    background:none; border:none; padding:5px 8px 5px 2px; cursor:pointer; color:var(--ink-soft);
+    font-size:0.9rem; line-height:1;
+  }
+  .cm-preset-chip-delete:hover{ color:var(--hot-pink-ink); }
 
   .cm-canvas-area{ display:flex; flex-direction:column; gap:12px; min-width:0; }
   .cm-view-controls{ display:flex; align-items:center; justify-content:flex-end; gap:8px; }
@@ -461,9 +463,23 @@
   .cm-three-wrap{
     position:relative; width:100%; aspect-ratio:1; border-radius:12px; overflow:hidden;
     background:radial-gradient(circle at 50% 38%, var(--paper) 0%, var(--paper-raised) 72%);
-    border:1px solid var(--line); touch-action:none; cursor:grab;
+    border:1px solid var(--line); touch-action:none; cursor:default;
   }
-  .cm-three-wrap:active{ cursor:grabbing; }
+  /* Each tool gets a cursor that matches how it acts on the canvas: hand
+     grabs to orbit, pencil/bucket carry a custom glyph (drawn once here as a
+     white-halo-plus-dark-line data URI so the tool reads on any background),
+     and rect/circle share the native crosshair since both paint by dragging
+     a bounding box. */
+  .cm-three-wrap[data-tool="hand"]{ cursor:grab; }
+  .cm-three-wrap[data-tool="hand"]:active{ cursor:grabbing; }
+  .cm-three-wrap[data-tool="pencil"]{
+    cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 18 18'%3E%3Cpath d='M3 15l.8-3.4L11.6 3.8a1.3 1.3 0 0 1 1.8 0l.8.8a1.3 1.3 0 0 1 0 1.8L6.4 14.2 3 15z M10.2 5.4l2.4 2.4' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M3 15l.8-3.4L11.6 3.8a1.3 1.3 0 0 1 1.8 0l.8.8a1.3 1.3 0 0 1 0 1.8L6.4 14.2 3 15z M10.2 5.4l2.4 2.4' fill='none' stroke='%232b2622' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 4 20, auto;
+  }
+  .cm-three-wrap[data-tool="bucket"]{
+    cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='-3 -3 30 30'%3E%3Cg fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 7 6 2'/%3E%3Cpath d='M18.992 12H2.041'/%3E%3Cpath d='M21.145 18.38A3.34 3.34 0 0 1 20 16.5a3.3 3.3 0 0 1-1.145 1.88c-.575.46-.855 1.02-.855 1.595A2 2 0 0 0 20 22a2 2 0 0 0 2-2.025c0-.58-.285-1.13-.855-1.595'/%3E%3Cpath d='m8.5 4.5 2.148-2.148a1.205 1.205 0 0 1 1.704 0l7.296 7.296a1.205 1.205 0 0 1 0 1.704l-7.592 7.592a3.615 3.615 0 0 1-5.112 0l-3.888-3.888a3.615 3.615 0 0 1 0-5.112L5.67 7.33'/%3E%3C/g%3E%3Cg fill='none' stroke='%232b2622' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 7 6 2'/%3E%3Cpath d='M18.992 12H2.041'/%3E%3Cpath d='M21.145 18.38A3.34 3.34 0 0 1 20 16.5a3.3 3.3 0 0 1-1.145 1.88c-.575.46-.855 1.02-.855 1.595A2 2 0 0 0 20 22a2 2 0 0 0 2-2.025c0-.58-.285-1.13-.855-1.595'/%3E%3Cpath d='m8.5 4.5 2.148-2.148a1.205 1.205 0 0 1 1.704 0l7.296 7.296a1.205 1.205 0 0 1 0 1.704l-7.592 7.592a3.615 3.615 0 0 1-5.112 0l-3.888-3.888a3.615 3.615 0 0 1 0-5.112L5.67 7.33'/%3E%3C/g%3E%3C/svg%3E") 9 5, auto;
+  }
+  .cm-three-wrap[data-tool="rect"],
+  .cm-three-wrap[data-tool="circle"]{ cursor:crosshair; }
   #cmThreeCanvas{ display:block; width:100%; height:100%; }
   .cm-reset-view-btn{
     position:absolute; top:10px; left:10px; z-index:2;
