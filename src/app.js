@@ -416,45 +416,6 @@ const WING_STYLES = [
     ],
   },
   {
-    id:'round',
-    name:'Round arms',
-    subtitle:'Small round arms, single color',
-    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_round}}',
-    cutout:true,
-    makeCount:2,
-    colorParts:[
-      {key:'main', label:'Yarn color for arms', materialsLabel:'the arms', defaultColorIdx:13},
-    ],
-    blocks:[
-      {type:'rounds', part:0, rows:[
-        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
-        ['2','[2 sc, inc] x 2','8'],
-        ['3','8 sc','8'],
-      ]},
-      {type:'note', text:'Flatten the arm and insert the hook under the first two stitches across from each other so there are five loops on the hook. Sc both sides together, then continue to sc together the next three pairs of stitches. Fasten off leaving a long tail.'},
-      {type:'note', text:'Thread a needle with the tail and use it to sew the arms to either side of the body, three stitches back from the eyes, between rounds 10 and 11. Hide the yarn tail in the body.'},
-    ],
-  },
-  {
-    id:'tiny',
-    name:'Tiny arms',
-    subtitle:'Extra small arms, worked directly into the body, single color',
-    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_tiny}}',
-    cutout:true,
-    makeCount:2,
-    colorParts:[
-      {key:'main', label:'Yarn color for arms', materialsLabel:'the arms', defaultColorIdx:2},
-    ],
-    blocks:[
-      {type:'note', text:'Repeat the following on each side to create two arms:'},
-      {type:'note', text:'Step 1. Sl st join the yarn to one side of the body between rounds 12 and 13, aligned roughly with the eyes. Insert the hook into the body from the back to the front.'},
-      {type:'note', text:'Step 2. Ch 3.'},
-      {type:'note', text:'Step 3. Sc into the second ch from the hook, sc.'},
-      {type:'note', text:'Step 4. Sl st in the stitch where you made the sl st join, from the front to the back of the body. Both yarn tails should be coming out of the same hole.'},
-      {type:'note', text:'Step 5. Fasten off. Tie the yarn tails together and hide them.'},
-    ],
-  },
-  {
     id:'bat',
     name:'Bat wings',
     subtitle:'Flat, notched wing shape, single color',
@@ -504,24 +465,6 @@ const WING_STYLES = [
     ],
   },
   {
-    id:'stub',
-    name:'Stub arms',
-    subtitle:'Small round stub arms, single color',
-    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_stub}}',
-    cutout:true,
-    makeCount:2,
-    colorParts:[
-      {key:'main', label:'Yarn color for the arms', materialsLabel:'the arms', defaultColorIdx:6},
-    ],
-    blocks:[
-      {type:'rounds', part:0, rows:[
-        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
-        ['2','[2 sc, inc] x 2','8'],
-      ]},
-      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail and use it to sew the arms to either side of the body, spanning rounds x to x, with an x-stitch space between them. Hide the yarn tails in the body.'},
-    ],
-  },
-  {
     id:'webbed',
     name:'Webbed Wings',
     subtitle:'Flat wing worked in turned rows, tapering from a wide base to a point',
@@ -552,11 +495,71 @@ const WING_STYLES = [
       {type:'note', text:'Fasten off, leaving a long tail. Weave the yarn tail through the last row so it comes out the opposite side of the wing tip. Thread a needle with the tail, then use it to sew the wings to the back of the body, spanning rounds 11 and 16, with the row 1 edge on top, two stitches away from each leg. Hide the tails in the body.'},
     ],
   },
+];
+
+const ARM_STYLES = [
+  {
+    id:'round',
+    name:'Round arms',
+    subtitle:'Small round arms, single color',
+    photo:'data:image/webp;base64,{{PHOTO_ARM_STYLES_round}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for arms', materialsLabel:'the arms', defaultColorIdx:13},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','[2 sc, inc] x 2','8'],
+        ['3','8 sc','8'],
+      ]},
+      {type:'note', text:'Flatten the arm and insert the hook under the first two stitches across from each other so there are five loops on the hook. Sc both sides together, then continue to sc together the next three pairs of stitches. Fasten off leaving a long tail.'},
+      {type:'note', text:'Thread a needle with the tail and use it to sew the arms to either side of the body, three stitches back from the eyes, between rounds 10 and 11. Hide the yarn tail in the body.'},
+    ],
+  },
+  {
+    id:'tiny',
+    name:'Tiny arms',
+    subtitle:'Extra small arms, worked directly into the body, single color',
+    photo:'data:image/webp;base64,{{PHOTO_ARM_STYLES_tiny}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for arms', materialsLabel:'the arms', defaultColorIdx:2},
+    ],
+    blocks:[
+      {type:'note', text:'Repeat the following on each side to create two arms:'},
+      {type:'note', text:'Step 1. Sl st join the yarn to one side of the body between rounds 12 and 13, aligned roughly with the eyes. Insert the hook into the body from the back to the front.'},
+      {type:'note', text:'Step 2. Ch 3.'},
+      {type:'note', text:'Step 3. Sc into the second ch from the hook, sc.'},
+      {type:'note', text:'Step 4. Sl st in the stitch where you made the sl st join, from the front to the back of the body. Both yarn tails should be coming out of the same hole.'},
+      {type:'note', text:'Step 5. Fasten off. Tie the yarn tails together and hide them.'},
+    ],
+  },
+  {
+    id:'stub',
+    name:'Stub arms',
+    subtitle:'Small round stub arms, single color',
+    photo:'data:image/webp;base64,{{PHOTO_ARM_STYLES_stub}}',
+    cutout:true,
+    makeCount:2,
+    colorParts:[
+      {key:'main', label:'Yarn color for the arms', materialsLabel:'the arms', defaultColorIdx:6},
+    ],
+    blocks:[
+      {type:'rounds', part:0, rows:[
+        ['1','__COLOR_START__ start 6 sc in a magic loop','6'],
+        ['2','[2 sc, inc] x 2','8'],
+      ]},
+      {type:'note', text:'Invisible fasten off, leaving a long tail. Thread a needle with the tail and use it to sew the arms to either side of the body, spanning rounds x to x, with an x-stitch space between them. Hide the yarn tails in the body.'},
+    ],
+  },
   {
     id:'sleeved',
     name:'Sleeved arms',
     subtitle:'Small round arms with a contrasting cuff, two colors',
-    photo:'data:image/webp;base64,{{PHOTO_WING_STYLES_sleeved}}',
+    photo:'data:image/webp;base64,{{PHOTO_ARM_STYLES_sleeved}}',
     cutout:true,
     makeCount:2,
     tintSplit:'waist',
@@ -976,7 +979,8 @@ const ADDONS = [
   {key:'mouth', label:'Mouth', emptyIcon:'👄', chooseNote:'choose a style', styles:MOUTH_STYLES},
   {key:'ears', label:'Ears', emptyIcon:'👂', chooseNote:'choose a style', styles:EAR_STYLES},
   {key:'horns', label:'Horns', emptyIcon:'🐮', chooseNote:'choose a style', styles:HORN_STYLES},
-  {key:'wings', label:'Arms', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
+  {key:'wings', label:'Wings', emptyIcon:'🪽', chooseNote:'choose a style', styles:WING_STYLES},
+  {key:'arms', label:'Arms', emptyIcon:'💪', chooseNote:'choose a style', styles:ARM_STYLES},
   {key:'tummy', label:'Tummy', emptyIcon:'⬤', chooseNote:'choose a style', styles:TUMMY_STYLES},
   {key:'feet', label:'Feet', emptyIcon:'🦶', chooseNote:'choose a style', styles:FEET_STYLES},
   {key:'tail', label:'Tail', emptyIcon:'➰', chooseNote:'choose a style', styles:TAIL_STYLES},
@@ -2492,14 +2496,15 @@ const ColorMapper = (function(){
   const HILITE_OFFSET = 0.035;
   const PROFILE_SUBSTEPS = 3;
   const CLICK_MOVE_THRESHOLD = 6;
+  const ARC_SAMPLES = 400;
 
   let body = null, spec = null, rounds = [], shape = null, selected = null;
-  let activeTool = 'pencil'; // 'pencil' | 'rect' | 'circle' — the fill bucket is a one-shot action, not a persistent tool
+  let activeTool = 'pencil'; // 'hand' | 'pencil' | 'bucket' | 'rect' | 'circle' — hand is the only tool with orbit-rotate enabled, so switching to it is required to rotate the view
   let scene, camera, renderer, controls, raycaster, mouse, initialized = false, staticWired = false;
-  let bodyMesh=null, lineMesh=null, seamMesh=null, markerGroup=null, highlightMesh=null;
+  let bodyMesh=null, lineMesh=null, seamMesh=null, markerGroup=null, highlightMesh=null, previewLineMesh=null;
   let triToBlock=[], blockVertexOffset=[], blockCorners=[];
   let unsetColor=null, seamColor=null, startColor=null;
-  let pointerDownPos = null, shapeDragStart = null;
+  let pointerDownPos = null, shapeDragStart = null, isPainting = false, paintValue = null;
 
   function makeRoundsFromSpec(existingMap){
     return spec.list.map(entry=>{
@@ -2525,6 +2530,54 @@ const ColorMapper = (function(){
     return { N: rounds.length, maxR, totalHeight: maxR*2*shape.aspect };
   }
   function blockColor(val){ return val==null ? unsetColor : new THREE.Color(COLORS[val].hex); }
+
+  // Samples the continuous profile curve (radius, height) finely across its
+  // whole silhouette — this is the shape itself, built independent of how
+  // many rounds will be laid onto it — then walks it to get cumulative
+  // surface arc length at each sample.
+  function buildArcLengthTable(maxR, totalHeight){
+    const vs = [0], arc = [0];
+    let prevR = maxR*profileRadius(0), prevH = totalHeight;
+    for(let i=1;i<=ARC_SAMPLES;i++){
+      const v = i/ARC_SAMPLES;
+      const r = maxR*profileRadius(v), h = totalHeight*(1-v);
+      arc.push(arc[i-1] + Math.hypot(r-prevR, h-prevH));
+      vs.push(v);
+      prevR = r; prevH = h;
+    }
+    return {vs, arc};
+  }
+  // Inverts the arc-length table to find the v whose cumulative arc length
+  // equals `target`, via binary search over the monotonic arc[] samples.
+  function vAtArcLength(table, target){
+    const {vs, arc} = table;
+    const total = arc[arc.length-1];
+    if(total<=0) return 0;
+    const t = Math.max(0, Math.min(total, target));
+    let lo=0, hi=arc.length-1;
+    while(lo<hi-1){
+      const mid=(lo+hi)>>1;
+      if(arc[mid]<t) lo=mid; else hi=mid;
+    }
+    const span = arc[hi]-arc[lo];
+    const frac = span>0 ? (t-arc[lo])/span : 0;
+    return vs[lo] + (vs[hi]-vs[lo])*frac;
+  }
+  // Wraps the mesh around the shape built above: gives every round an equal
+  // share of the profile's total arc length, so each round's stitch quads
+  // span the same real surface distance (equal stitch height) instead of an
+  // equal raw v range. Equal-v rounds used to bunch extra arc length into
+  // the rounds nearest the poles, where the profile curve's radius changes
+  // fastest per unit v, making those rounds look taller than the rounds
+  // near the equator.
+  function computeRoundBoundaries(N, maxR, totalHeight){
+    const table = buildArcLengthTable(maxR, totalHeight);
+    const total = table.arc[table.arc.length-1];
+    const bounds = [0];
+    for(let i=1;i<N;i++) bounds.push(vAtArcLength(table, (i/N)*total));
+    bounds.push(1);
+    return bounds;
+  }
 
   function initThree(){
     const canvas = document.getElementById('cmThreeCanvas');
@@ -2557,7 +2610,7 @@ const ColorMapper = (function(){
     renderer.domElement.addEventListener('pointerup', onPointerUp);
     renderer.domElement.addEventListener('contextmenu', e=>e.preventDefault());
     renderer.domElement.addEventListener('pointermove', onCanvasHover);
-    renderer.domElement.addEventListener('pointerleave', ()=>setHover(null));
+    renderer.domElement.addEventListener('pointerleave', ()=>{ setHover(null); clearShapePreview(); });
     document.getElementById('cmResetViewBtn').addEventListener('click', ()=>fitCamera(true));
     document.getElementById('cmResetFrontBtn').addEventListener('click', resetToFront);
     animate();
@@ -2606,6 +2659,7 @@ const ColorMapper = (function(){
     if(rounds.length===0){ if(opts&&opts.refit) fitCamera(true); return; }
 
     const {N, maxR, totalHeight} = computeProfile();
+    const bounds = computeRoundBoundaries(N, maxR, totalHeight);
     const height = v => totalHeight * (1-v);
     const radius = v => maxR * profileRadius(v);
     const positions = [], colors = [], linePts = [];
@@ -2613,13 +2667,14 @@ const ColorMapper = (function(){
     for(let ri=0; ri<N; ri++){
       const rnd = rounds[ri];
       const step = (Math.PI*2)/rnd.count;
+      const vLo=bounds[ri], vHi=bounds[ri+1];
       for(let bi=0; bi<rnd.count; bi++){
         const a0 = SEAM_ANGLE + bi*step;
         const a1 = SEAM_ANGLE + (bi+1)*step;
         const col = blockColor(rnd.colors[bi]);
         const vOffset = positions.length/3;
         for(let s=0; s<PROFILE_SUBSTEPS; s++){
-          const v0 = (ri+s/PROFILE_SUBSTEPS)/N, v1 = (ri+(s+1)/PROFILE_SUBSTEPS)/N;
+          const v0 = vLo+(vHi-vLo)*s/PROFILE_SUBSTEPS, v1 = vLo+(vHi-vLo)*(s+1)/PROFILE_SUBSTEPS;
           const r0=radius(v0), r1=radius(v1), h0=height(v0), h1=height(v1);
           const bl=[r0*Math.cos(a0),h0,r0*Math.sin(a0)];
           const br=[r0*Math.cos(a1),h0,r0*Math.sin(a1)];
@@ -2632,7 +2687,6 @@ const ColorMapper = (function(){
           linePts.push(...tl,...tr);
         }
         blockVertexOffset[ri][bi] = {offset:vOffset, count:PROFILE_SUBSTEPS*6};
-        const vLo=ri/N, vHi=(ri+1)/N;
         const rLo=radius(vLo), rHi=radius(vHi), hLo=height(vLo), hHi=height(vHi);
         blockCorners[ri][bi] = [
           [rLo*Math.cos(a0),hLo,rLo*Math.sin(a0)],
@@ -2657,14 +2711,16 @@ const ColorMapper = (function(){
     lineMesh = new THREE.LineSegments(lineGeom, lineMat);
     scene.add(lineMesh);
 
-    buildSeamMarker(N, height, radius);
+    buildSeamMarker(N, height, radius, bounds);
     if(opts && opts.refit) fitCamera(true, maxR, totalHeight);
   }
-  function buildSeamMarker(N, height, radius){
+  function buildSeamMarker(N, height, radius, bounds){
     const totalSamples = N*PROFILE_SUBSTEPS;
     const pts = [];
     for(let k=0;k<=totalSamples;k++){
-      const v = k/(N*PROFILE_SUBSTEPS);
+      const ri = Math.min(N-1, Math.floor(k/PROFILE_SUBSTEPS));
+      const frac = k/PROFILE_SUBSTEPS - ri;
+      const v = bounds[ri] + (bounds[ri+1]-bounds[ri])*frac;
       const r = radius(v), h = height(v);
       const [x,y,z] = pushOut([r*Math.cos(SEAM_ANGLE), h, r*Math.sin(SEAM_ANGLE)]);
       pts.push(new THREE.Vector3(x,y,z));
@@ -2776,62 +2832,140 @@ const ColorMapper = (function(){
     return Math.hypot(a[0]-b[0], a[1]-b[1], a[2]-b[2]);
   }
 
-  // Fills every stitch whose round falls between the two dragged rounds and
-  // whose position-around-the-round (as a fraction, since round stitch
-  // counts differ) falls between the two dragged fractions — a rectangle in
-  // the unrolled round/stitch grid, which is the grid a crochet pattern is
-  // actually written in.
-  function fillRect(start, end){
-    const val = currentPaintValue();
-    if(val===undefined){ showToast('Pick a color first'); return; }
+  // An "included" value is an array parallel to `rounds` — included[ri] is
+  // either null (round untouched) or an array of booleans parallel to that
+  // round's stitches. Both the rectangle and circle tools build one of these
+  // to describe what a drag would paint; the same value drives the actual
+  // fill (applyIncluded) and the live dashed-boundary preview
+  // (buildBoundarySegments), so the preview can never drift from the result.
+  function isIncluded(included, ri, bi){
+    const row = included[ri];
+    return !!(row && row[bi]);
+  }
+
+  // Rounds have different stitch counts, so "the same position in the next
+  // round" is a proportional index, not the same bi.
+  function matchedIndex(bi, fromCount, toCount){
+    return Math.min(toCount-1, Math.round(bi/fromCount*toCount));
+  }
+
+  // A rectangle in the unrolled round/stitch grid — the grid a crochet
+  // pattern is actually written in: bounded by the two dragged rounds, and
+  // by the two dragged fractional positions around the round (a fraction
+  // since round stitch counts differ).
+  function rectIncluded(start, end){
     const riLo = Math.min(start.ri, end.ri), riHi = Math.max(start.ri, end.ri);
     const fracA = start.bi / rounds[start.ri].count;
     const fracB = end.bi / rounds[end.ri].count;
     const fLo = Math.min(fracA, fracB), fHi = Math.max(fracA, fracB);
-    for(let ri=riLo; ri<=riHi; ri++){
-      const rnd = rounds[ri];
-      for(let bi=0; bi<rnd.count; bi++){
+    return rounds.map((rnd, ri)=>{
+      if(ri<riLo || ri>riHi) return null;
+      return Array.from({length:rnd.count}, (_,bi)=>{
         const frac = bi / rnd.count;
-        if(frac >= fLo && frac <= fHi) rnd.colors[bi] = val;
-      }
-    }
+        return frac >= fLo && frac <= fHi;
+      });
+    });
+  }
+
+  // Every stitch within the real 3D distance (across the curved surface)
+  // between the drag's start and end stitches.
+  function circleIncluded(start, end){
+    const center = blockCenter(start.ri, start.bi);
+    const edge = blockCenter(end.ri, end.bi);
+    if(!center || !edge) return null;
+    const radius = dist3(center, edge);
+    return rounds.map((rnd, ri)=> Array.from({length:rnd.count}, (_,bi)=>{
+      const c = blockCenter(ri, bi);
+      return !!(c && dist3(c, center) <= radius);
+    }));
+  }
+
+  function applyIncluded(included, val){
+    rounds.forEach((rnd, ri)=>{
+      const row = included[ri];
+      if(!row) return;
+      row.forEach((inc, bi)=>{ if(inc) rnd.colors[bi] = val; });
+    });
     buildMesh({refit:false});
     renderRoundsList();
     renderLegend();
     renderPreview();
   }
 
-  // Fills every stitch within the real 3D distance (across the curved
-  // surface) between the drag's start and end stitches.
+  function fillRect(start, end){
+    const val = currentPaintValue();
+    if(val===undefined){ showToast('Pick a color first'); return; }
+    applyIncluded(rectIncluded(start, end), val);
+  }
   function fillCircle(start, end){
     const val = currentPaintValue();
     if(val===undefined){ showToast('Pick a color first'); return; }
-    const center = blockCenter(start.ri, start.bi);
-    const edge = blockCenter(end.ri, end.bi);
-    if(!center || !edge) return;
-    const radius = dist3(center, edge);
-    for(let ri=0; ri<rounds.length; ri++){
-      const rnd = rounds[ri];
-      for(let bi=0; bi<rnd.count; bi++){
-        const c = blockCenter(ri, bi);
-        if(c && dist3(c, center) <= radius) rnd.colors[bi] = val;
-      }
-    }
-    buildMesh({refit:false});
-    renderRoundsList();
-    renderLegend();
-    renderPreview();
+    const included = circleIncluded(start, end);
+    if(!included) return;
+    applyIncluded(included, val);
   }
 
-  // Orbit-rotate on left-drag is switched off (in favor of drawing) whenever
-  // the rect/circle tool is active — those two tools have no other use for
-  // a left-drag.
+  // The dashed boundary is just every block edge whose neighbor (in-round,
+  // or the proportionally-matched stitch in the round above/below) isn't
+  // also included — i.e. the perimeter of the selection.
+  function buildBoundarySegments(included){
+    const segs = [];
+    rounds.forEach((rnd, ri)=>{
+      const row = included[ri];
+      if(!row) return;
+      const count = rnd.count;
+      for(let bi=0; bi<count; bi++){
+        if(!row[bi]) continue;
+        const corners = blockCorners[ri] && blockCorners[ri][bi];
+        if(!corners) continue;
+        const [bl,br,tr,tl] = corners.map(pushOut);
+        const biPrev = (bi-1+count)%count, biNext = (bi+1)%count;
+        if(!row[biPrev]) segs.push(bl, tl);
+        if(!row[biNext]) segs.push(br, tr);
+        if(ri===0 || !isIncluded(included, ri-1, matchedIndex(bi, count, rounds[ri-1].count))) segs.push(bl, br);
+        if(ri===rounds.length-1 || !isIncluded(included, ri+1, matchedIndex(bi, count, rounds[ri+1].count))) segs.push(tl, tr);
+      }
+    });
+    return segs;
+  }
+  function ensurePreviewLine(){
+    if(previewLineMesh) return;
+    const geom = new THREE.BufferGeometry();
+    const mat = new THREE.LineDashedMaterial({color:0xffffff, dashSize:0.08, gapSize:0.05, transparent:true, opacity:0.9, depthTest:false});
+    previewLineMesh = new THREE.LineSegments(geom, mat);
+    previewLineMesh.renderOrder = 998;
+    previewLineMesh.visible = false;
+    scene.add(previewLineMesh);
+  }
+  function updateShapePreview(start, end){
+    const included = activeTool==='rect' ? rectIncluded(start, end) : circleIncluded(start, end);
+    if(!included){ clearShapePreview(); return; }
+    const segs = buildBoundarySegments(included);
+    if(!segs.length){ clearShapePreview(); return; }
+    ensurePreviewLine();
+    const positions = [];
+    segs.forEach(p=>positions.push(p[0],p[1],p[2]));
+    previewLineMesh.geometry.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(positions),3));
+    previewLineMesh.geometry.attributes.position.needsUpdate = true;
+    previewLineMesh.geometry.computeBoundingSphere();
+    previewLineMesh.computeLineDistances();
+    previewLineMesh.visible = true;
+  }
+  function clearShapePreview(){
+    if(previewLineMesh) previewLineMesh.visible = false;
+  }
+
+  // Orbit-rotate on left-drag is only enabled for the hand tool — every
+  // other tool uses left-drag for its own drawing/selection gesture instead.
   function updateCanvasInteractionMode(){
-    const dragToDraw = activeTool==='rect' || activeTool==='circle';
-    controls.mouseButtons.LEFT = dragToDraw ? null : THREE.MOUSE.ROTATE;
+    controls.mouseButtons.LEFT = activeTool==='hand' ? THREE.MOUSE.ROTATE : null;
   }
   function setActiveTool(tool){
     activeTool = tool;
+    isPainting = false;
+    paintValue = null;
+    shapeDragStart = null;
+    clearShapePreview();
     document.querySelectorAll('#cmToolRow .cm-tool-btn[data-tool]').forEach(b=>{
       b.classList.toggle('selected', b.dataset.tool===tool);
     });
@@ -2842,6 +2976,15 @@ const ColorMapper = (function(){
     pointerDownPos = {x:e.clientX, y:e.clientY};
     if(activeTool==='rect' || activeTool==='circle'){
       if(e.button===0) shapeDragStart = pickBlock(e);
+      return;
+    }
+    if(activeTool==='pencil' && (e.button===0 || e.button===2)){
+      const val = e.button===2 ? null : currentPaintValue();
+      if(val===undefined){ showToast('Pick a color first'); return; }
+      isPainting = true;
+      paintValue = val;
+      const hit = pickBlock(e);
+      if(hit) paintBlock(hit.ri, hit.bi, val);
     }
   }
   function onPointerUp(e){
@@ -2849,28 +2992,39 @@ const ColorMapper = (function(){
       const start = shapeDragStart;
       shapeDragStart = null;
       pointerDownPos = null;
+      clearShapePreview();
       if(!start) return;
       const end = pickBlock(e) || start;
       if(activeTool==='rect') fillRect(start, end);
       else fillCircle(start, end);
       return;
     }
+    if(activeTool==='pencil'){
+      isPainting = false;
+      paintValue = null;
+      pointerDownPos = null;
+      return;
+    }
     if(!pointerDownPos) return;
     const moved = Math.hypot(e.clientX-pointerDownPos.x, e.clientY-pointerDownPos.y);
     pointerDownPos = null;
     if(moved > CLICK_MOVE_THRESHOLD) return;
-    if(e.button===2){
+    if(activeTool==='bucket' && e.button===0){
       const hit = pickBlock(e);
-      if(hit) paintBlock(hit.ri, hit.bi, null);
+      if(hit) fillAll();
+    }
+  }
+  function onCanvasHover(e){
+    const hit = pickBlock(e);
+    setHover(hit);
+    if(isPainting && activeTool==='pencil'){
+      if(hit) paintBlock(hit.ri, hit.bi, paintValue);
       return;
     }
-    if(e.button!==0) return;
-    const val = currentPaintValue();
-    if(val===undefined){ showToast('Pick a color first'); return; }
-    const hit = pickBlock(e);
-    if(hit) paintBlock(hit.ri, hit.bi, val);
+    if(shapeDragStart && (activeTool==='rect' || activeTool==='circle')){
+      updateShapePreview(shapeDragStart, hit || shapeDragStart);
+    }
   }
-  function onCanvasHover(e){ setHover(pickBlock(e)); }
   function paintBlock(ri, bi, val){
     rounds[ri].colors[bi] = val;
     updateBlockColor(ri, bi);
@@ -2978,8 +3132,7 @@ const ColorMapper = (function(){
     document.getElementById('cmToolRow').addEventListener('click', e=>{
       const btn = e.target.closest('[data-tool]');
       if(!btn) return;
-      if(btn.dataset.tool==='bucket') fillAll();
-      else setActiveTool(btn.dataset.tool);
+      setActiveTool(btn.dataset.tool);
     });
     document.getElementById('cmRoundsList').addEventListener('click', e=>{
       if(e.target.dataset.fill!==undefined) fillRound(parseInt(e.target.dataset.fill,10));
