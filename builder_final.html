@@ -2390,6 +2390,16 @@ function formatColorNameList(names){
   return `${names.slice(0,-1).join(', ')}, and ${names[names.length-1]}`;
 }
 
+// Every color used across the body plus every active addon, de-duplicated by hex, in first-seen order.
+function collectUsedColorNames(bodyColors, activeAddons){
+  const usedColors = [];
+  const seenColorHexes = new Set();
+  const addUsedColor = c => { if(!seenColorHexes.has(c.hex)){ seenColorHexes.add(c.hex); usedColors.push(c); } };
+  bodyColors.forEach(addUsedColor);
+  activeAddons.forEach(a => a.colors.forEach(addUsedColor));
+  return formatColorNameList(usedColors.map(c=>c.name));
+}
+
 // Rewrites a body's `rounds` blocks with a custom per-stitch color map
 // spliced in, in place of the ordinary single/dual-swatch token
 // substitution compilePieceBlocks performs. Only a round whose coloring
@@ -2705,37 +2715,50 @@ function buildPatternText(body){
     return { addon, style, colors: compiled.colors, segments: compiled.segments };
   }).filter(Boolean);
 
+  const colorList = collectUsedColorNames(colors, activeAddons);
+
   const lines = [];
-  lines.push(`${buildPatternTitle(body).toUpperCase()} AMIGURUMI`);
+  lines.push(buildPatternTitle(body).toUpperCase());
+  lines.push('An amigurumi pattern designed by MagicBearCrochet');
   lines.push('');
   lines.push('MATERIALS');
-  const usedColors = [];
-  const seenColorHexes = new Set();
-  const addUsedColor = c => { if(!seenColorHexes.has(c.hex)){ seenColorHexes.add(c.hex); usedColors.push(c); } };
-  colors.forEach(addUsedColor);
-  activeAddons.forEach(a => a.colors.forEach(addUsedColor));
-  const colorList = formatColorNameList(usedColors.map(c=>c.name));
-  lines.push(`- Beginner Yarn in ${colorList}`);
-  lines.push('');
-  lines.push('* Cuddle Craft Tube Yarn by Loops & Threads');
-  lines.push('* Easy Peasy Yarn by The Woobles');
-  lines.push('* "Beginner Yarn" on Amazon');
-  lines.push('');
   lines.push('- 4.00mm Crochet hook');
   lines.push('- Stuffing');
   lines.push('- 2 8mm safety eyes');
   lines.push('- Stitch marker');
   lines.push('- Yarn needle');
   lines.push('');
+  lines.push('YARN');
+  lines.push(`- Colors: ${colorList}`);
+  lines.push('');
+  lines.push('* Cuddle Craft Tube Yarn by Loops & Threads');
+  lines.push('* Easy Peasy Yarn by The Woobles');
+  lines.push('* "Beginner Yarn" on Amazon');
+  lines.push('');
+  lines.push('DIFFICULTY');
+  lines.push('Beginner');
+  lines.push('');
+  lines.push('FINISHED SIZE');
+  lines.push('Varies depending on the pieces you choose and how firmly you stuff it.');
+  lines.push('');
+  lines.push('ABBREVIATIONS');
+  lines.push('sc — single crochet');
+  lines.push('inc — increase (2 sc in the same stitch)');
+  lines.push('dec — decrease (single crochet 2 stitches together)');
+  lines.push('st(s) — stitch(es)');
+  lines.push('rnd — round');
+  lines.push('');
+  lines.push(`© ${new Date().getFullYear()} MagicBearCrochet. All rights reserved. This pattern is for personal use only. You may not copy, share, resell, teach from, or redistribute this pattern in any form, digital or physical. You may sell finished items handmade from this pattern, provided you credit "MagicBearCrochet" as the pattern designer. This pattern may not be used to train any artificial intelligence model.`);
+  lines.push('');
   lines.push('HEAD & BODY');
-  lines.push(`With ${formatColorNameList(colors.map(c=>c.name.toLowerCase()))} yarn.`);
+  lines.push(`🧶  With ${formatColorNameList(colors.map(c=>c.name.toLowerCase()))} yarn.`);
   lines.push('');
   segments.forEach(seg=>{
     if(seg.kind==='table'){
       seg.rows.forEach(r=>{ lines.push(`Rnd ${r[0]}.`.padEnd(12) + `${r[1]}` + (r[2] ? `  (${r[2]})` : '')); });
       lines.push('');
     } else {
-      lines.push(seg.text);
+      lines.push(`●  ${seg.text}`);
       lines.push('');
     }
   });
@@ -2743,14 +2766,14 @@ function buildPatternText(body){
   activeAddons.forEach(a=>{
     const makeSuffix = a.style.makeCount && a.style.makeCount > 1 ? ` (make ${a.style.makeCount})` : '';
     lines.push(`${a.style.name.toUpperCase()}${makeSuffix}`);
-    lines.push(`With ${a.colors.map(c=>c.name.toLowerCase()).join(' and ')} yarn.`);
+    lines.push(`🧶  With ${a.colors.map(c=>c.name.toLowerCase()).join(' and ')} yarn.`);
     lines.push('');
     a.segments.forEach(seg=>{
       if(seg.kind==='table'){
         seg.rows.forEach(r=>{ lines.push(`Rnd ${r[0]}.`.padEnd(12) + `${r[1]}` + (r[2] ? `  (${r[2]})` : '')); });
         lines.push('');
       } else {
-        lines.push(seg.text);
+        lines.push(`●  ${seg.text}`);
         lines.push('');
       }
     });
@@ -2805,26 +2828,34 @@ function escapeHtml(text){
 }
 
 // Static approximation of the hand-designed header/materials/abbreviations
-// block from the live Google Doc template — only the title varies per
-// pattern. Ask Iana to confirm this still matches
-// https://docs.google.com/document/d/1W3pT68B1oajELq-SBQcD0YVuRKyr2SsrUa1kNDtdLSs/edit
+// block from the live Google Doc template — only the title and color list
+// vary per pattern. Ask Iana to confirm this still matches
+// https://docs.google.com/document/d/1PKd7RqloJpUoH6X8EOHiZsAVdhGeUOgJiWL2IlS6WRo/edit
 // and adjust as needed.
-function buildPatternDocHeaderHtml(title){
+function buildPatternDocHeaderHtml(title, colorList){
   return `
     <h1 style="font-family:Nunito, Arial, sans-serif;font-size:28px;font-weight:800;color:#2B2130;margin:0 0 4px 0;">${escapeHtml(title)}</h1>
-    <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#6B6072;margin:0 0 20px 0;">An amigurumi pattern designed by IanaStitchSquad</p>
+    <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#6B6072;margin:0 0 20px 0;">An amigurumi pattern designed by MagicBearCrochet</p>
     <h2 style="font-family:Nunito, Arial, sans-serif;font-size:16px;font-weight:800;color:#2B2130;margin:18px 0 8px 0;">Materials</h2>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 4px 0;">4.00mm crochet hook</p>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 4px 0;">Stuffing</p>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 4px 0;">2 8mm safety eyes</p>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 4px 0;">Stitch marker</p>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 20px 0;">Yarn needle</p>
+    <h2 style="font-family:Nunito, Arial, sans-serif;font-size:16px;font-weight:800;color:#2B2130;margin:18px 0 8px 0;">Yarn</h2>
+    <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 4px 0;">Beginner / Tube Yarn: Cuddle Craft Tube or Easy Peasy</p>
+    <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 20px 0;">Colors: <b>${escapeHtml(colorList)}</b></p>
+    <h2 style="font-family:Nunito, Arial, sans-serif;font-size:16px;font-weight:800;color:#2B2130;margin:18px 0 8px 0;">Difficulty</h2>
+    <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 20px 0;">Beginner</p>
+    <h2 style="font-family:Nunito, Arial, sans-serif;font-size:16px;font-weight:800;color:#2B2130;margin:18px 0 8px 0;">Finished size</h2>
+    <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 20px 0;">Varies depending on the pieces you choose and how firmly you stuff it.</p>
     <h2 style="font-family:Nunito, Arial, sans-serif;font-size:16px;font-weight:800;color:#2B2130;margin:18px 0 8px 0;">Abbreviations</h2>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 4px 0;">sc — single crochet</p>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 4px 0;">inc — increase (2 sc in the same stitch)</p>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 4px 0;">dec — decrease (single crochet 2 stitches together)</p>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 4px 0;">st(s) — stitch(es)</p>
     <p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 20px 0;">rnd — round</p>
+    <p style="font-family:Nunito, Arial, sans-serif;font-size:9pt;color:#9A8FA0;margin:0 0 20px 0;">© ${new Date().getFullYear()} MagicBearCrochet. All rights reserved. This pattern is for personal use only. You may not copy, share, resell, teach from, or redistribute this pattern in any form, digital or physical. You may sell finished items handmade from this pattern, provided you credit "MagicBearCrochet" as the pattern designer. This pattern may not be used to train any artificial intelligence model.</p>
   `;
 }
 
@@ -2832,7 +2863,7 @@ function buildPatternDocPieceHtml(heading, makeCount, colors, segments){
   const makeSuffix = makeCount && makeCount > 1 ? ` (make ${makeCount})` : '';
   const colorNames = formatColorNameList(colors.map(c=>c.name));
   let html = `<h2 style="font-family:Nunito, Arial, sans-serif;font-size:18px;font-weight:800;color:#2B2130;margin:22px 0 8px 0;">${escapeHtml(heading)}${escapeHtml(makeSuffix)}</h2>`;
-  html += `<p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 10px 0;">📷&nbsp;&nbsp;With <b>${escapeHtml(colorNames)}</b> yarn.</p>`;
+  html += `<p style="font-family:Nunito, Arial, sans-serif;font-size:12pt;color:#2B2130;margin:0 0 10px 0;">🧶&nbsp;&nbsp;<b>With ${escapeHtml(colorNames)} yarn.</b></p>`;
   segments.forEach(seg=>{
     if(seg.kind==='table'){
       seg.rows.forEach(r=>{
@@ -2864,8 +2895,10 @@ function buildPatternDocHtml(body){
     return { addon, style, colors: compiled.colors, segments: compiled.segments };
   }).filter(Boolean);
 
+  const colorList = collectUsedColorNames(bodyColors, activeAddons);
+
   let html = '<div>';
-  html += buildPatternDocHeaderHtml(buildPatternTitle(body));
+  html += buildPatternDocHeaderHtml(buildPatternTitle(body), colorList);
   html += buildPatternDocPieceHtml('Head & Body', 1, bodyColors, segments);
   activeAddons.forEach(a=>{
     html += buildPatternDocPieceHtml(a.style.docName || a.style.name, a.style.makeCount, a.colors, a.segments);
